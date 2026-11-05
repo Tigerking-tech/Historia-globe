@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 80%;
+    --accent-foreground: 0 0% 90%;
+    --destructive: 0 0% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 80%;
+    --radius: 0px;
+    --chart-1: 0 0% 20%;
+    --chart-2: 0 0% 30%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 0 0% 50%;
+    --chart-5: 0 0% 60%;
+  }
+
+  .dark {
+    --background: 222 47% 5%;
+    --foreground: 213 27% 92%;
+    --card: 222 44% 8%;
+    --card-foreground: 213 27% 92%;
+    --popover: 222 44% 7%;
+    --popover-foreground: 213 27% 92%;
+    --primary: 199 89% 60%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 217 33% 14%;
+    --secondary-foreground: 213 27% 92%;
+    --muted: 217 33% 13%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
+    --accent-foreground: 213 27% 92%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 33% 16%;
+    --input: 217 33% 16%;
+    --ring: 199 89% 60%;
+    --chart-1: 199 89% 60%;
+    --chart-2: 43 96% 56%;
+    --chart-3: 0 0% 70%;
+    --chart-4: 280 60% 65%;
+    --chart-5: 160 60% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01", "cv01";
+    /* Premium ambient glow over deep navy */
+    background-image:
+      radial-gradient(1200px 700px at 82% -12%, rgba(56, 189, 248, 0.10), transparent 55%),
+      radial-gradient(900px 620px at -5% 105%, rgba(251, 191, 36, 0.06), transparent 55%);
+  }
+  
+  /* Selection styling for better readability and terminal-like aesthetics */
+  ::selection {
+    background: rgba(128, 128, 128, 0.3);
+    color: rgb(200, 200, 200);
+  }
+  
+  /* Custom scrollbar styling for modern browsers */
+  ::-webkit-scrollbar {
+    width: 8px; /* Narrow scrollbar for minimal visual impact */
+    height: 8px;
+  }
+  
+  /* Dark scrollbar track matching theme */
+  ::-webkit-scrollbar-track {
+    background: hsl(0 0% 3.9%);
+  }
+  
+  /* Subtle scrollbar thumb with hover effect */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 0; /* Sharp edges for modern look */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.3);
+  }
+}
+
+@layer utilities {
+  .text-brand { color: #38bdf8; }
+  .bg-brand { background-color: #38bdf8; }
+  .border-brand { border-color: #38bdf8; }
+  .text-heritage { color: #fbbf24; }
+  .bg-heritage { background-color: #fbbf24; }
+  .glass {
+    background: rgba(13, 22, 38, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+  }
+  .editorial {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Cesium Viewer 默认在画面角落显示 "Cesium ion" 水印与内置 credit。
+   本项目不依赖任何 ion 资源（ion 免费层禁商用），显示该水印会误导用户；
+   所有必要署名已由探索页自定义署名条统一给出，故彻底隐藏内置 credit。 */
+.cesium-viewer-bottom,
+.cesium-widget-credits,
+.cesium-credit-logoContainer,
+.cesium-credit-expand-link,
+.cesium-credit-lightbox {
+  display: none !important;
+}
