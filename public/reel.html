@@ -150,12 +150,12 @@ h1 em{font-style:normal;color:#fbbf24}
       <h1>回到<em>那一刻</em></h1>
       <div class="lead">输入任意事件或日期，地球飞往事发地，把当年留下的真实照片一张张放给你看。</div>
       <div class="search">
-        <input id="q" type="text" inputmode="text" autocomplete="off" placeholder="试试输入 10.1 或 911" value="10.1">
+        <input id="q" type="text" inputmode="text" autocomplete="off" placeholder="试试输入 911 或任意事件" value="911">
         <button class="go" id="go">出发</button>
       </div>
       <div class="chips">
-        <button class="chip" data-q="10.1">10.1 开国大典</button>
         <button class="chip" data-q="911">9·11 事件</button>
+        <button class="chip" data-q="10.1">10.1 开国大典</button>
         <button class="chip" data-q="Apollo 11 Moon Landing 1969">1969 登月</button>
         <button class="chip" data-q="Fall of the Berlin Wall 1989">1989 柏林墙</button>
       </div>
@@ -167,8 +167,8 @@ h1 em{font-style:normal;color:#fbbf24}
 
   <div class="globeTag" id="gtag">
     <div class="dot"></div>
-    <div class="tt">北京 · 天安门</div>
-    <div class="ss">39.9°N　116.4°E</div>
+    <div class="tt">拖动地球 · 探索历史</div>
+    <div class="ss">HISTORIA GLOBE</div>
   </div>
 
   <div id="reel">
@@ -182,12 +182,12 @@ h1 em{font-style:normal;color:#fbbf24}
         <div class="es">No freely licensed archival photo found</div>
         <div class="ed">当前网络未能检索到该事件的免费授权照片。上线（境外直连 Wikimedia Commons）后会自动检索并轮换。此处不展示任何矢量示意或生成的画面。</div>
       </div>
-      <div id="eraBig"><div class="y">1949</div><div class="l">BEIJING</div></div>
+      <div id="eraBig"><div class="y">——</div><div class="l">THE SITE</div></div>
       <div id="shotNote"><div class="t" id="shotT"></div><div class="d" id="shotD"></div></div>
       <div id="topBar">
         <div class="l">
-          <div id="evName">1949 · 开国大典</div>
-          <div id="evSub">北京天安门 · 真实史料照片</div>
+          <div id="evName">回到那一刻</div>
+          <div id="evSub">真实史料照片 · 幻灯片</div>
         </div>
         <button id="back">返回地球</button>
       </div>
@@ -372,6 +372,24 @@ function applyManifest(m){
   ss.textContent=(ev.lat!=null&&ev.lon!=null)
     ? (Number(ev.lat).toFixed(1)+"°N　"+Number(ev.lon).toFixed(1)+"°E")
     : (zh?"该事件暂无坐标":"location not pinned");
+  // URAA 排除事件与普通「没检索到」用不同占位文案：主动合规排除不能被误读成网络故障，
+  // 也不允许用矢量示意或生成画面顶替。
+  const em=$("emptyCard").querySelector(".em"),
+        es=$("emptyCard").querySelector(".es"),
+        ed=$("emptyCard").querySelector(".ed");
+  if(m.emptyReason==="uraa-excluded"){
+    em.textContent=zh?"该事件史料照片存在版权风险":"Copyright risk for this event's photos";
+    es.textContent="URAA · NOT PD IN THE US";
+    ed.textContent=zh
+      ? "该事件现存史料照片多为 1946–1953 年中国作品。依美国 URAA（17 U.S.C. §104A），其美国版权已被恢复，约保护至 2044 年。本项目不展示这类素材，也不用矢量示意或生成画面顶替。"
+      : "Most archival photos for this event are 1946-1953 Chinese works. Under the US URAA (17 U.S.C. §104A) their US copyright was restored, lasting until about 2044. We do not display them, and never substitute a schematic or generated image.";
+  } else {
+    em.textContent=zh?"暂无可用的自由授权史料照片":"No freely licensed archival photo found";
+    es.textContent="No freely licensed archival photo found";
+    ed.textContent=zh
+      ? "当前网络未能检索到该事件的免费授权照片。上线（境外直连 Wikimedia Commons）后会自动检索并轮换。此处不展示任何矢量示意或生成的画面。"
+      : "No freely licensed photo was found on this network. Production (direct Wikimedia Commons egress) will retry automatically. No schematic or generated image is shown here.";
+  }
 }
 
 function localEmpty(q){

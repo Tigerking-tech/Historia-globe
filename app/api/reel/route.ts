@@ -7,12 +7,14 @@ import type { ReelEventInput } from "@/lib/reel/types";
  *
  * 全站只有一种形态：真实照片幻灯片。返回一份照片清单 JSON（不生成/存储任何视频）。
  * GET /api/reel?q=911                         → 9/11 公有领域史料照片，幻灯片轮换
- * GET /api/reel?q=10.1                        → 1949 开国大典史料照片，幻灯片轮换
+ * GET /api/reel?q=10.1                        → 该组 PD-China 素材因 URAA 风险已排除，返回专用诚实占位
  * GET /api/reel?title=Apollo 11&year=1969...  → 任意事件按需检索 Commons 自由授权照片
  * GET /api/reel?debug=1                       → 探测图源可达性（部署 Vercel 后自检）
  *
  * 素材只来自 Wikimedia Commons 的 PD / CC0 / CC BY / CC BY-SA（逐条解析许可并署名），
- * 或本地已核验的公有领域缓存。项目内不再包含任何需要另行取得商用授权的素材。
+ * 或本地已核验的 9·11 公有领域缓存。来源国「已过期」型 PD（如 PD-China）因美国
+ * URAA 版权恢复风险一律排除，见 docs/REEL-COMMONS-CREDITS.md。项目内不再包含任何
+ * 需要另行取得商用授权、或在美国版权状态存疑的素材。
  * 沙箱网络不可达时接口照常 200 并返回 mode:"empty" 的诚实占位；部署到 Vercel
  * （境外直连）后自动命中真实照片，无需改代码、无需重新构建。
  */

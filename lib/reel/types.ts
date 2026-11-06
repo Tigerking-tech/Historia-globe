@@ -6,12 +6,15 @@
  *
  * 背景：绝大多数历史事件不存在「当年拍摄的连续活动影像」，能自由商用的更少。
  * 与其用视频通道、照片配运镜、矢量示意三级混搭，不如全站统一为「照片轮换」。
+ *
+ * 2026-11-06 URAA 复核后，PD-China 等「来源国过期型公有领域」素材已整体排除：
+ * 它们在中国已进公版，但在美国可能因 17 U.S.C. §104A 恢复版权（约至 2044 年）。
+ * 详见 docs/REEL-COMMONS-CREDITS.md。
  */
 
 export type ReelSourceName =
   | "commons-image"
   | "wikipedia"
-  | "curated-1949"
   | "curated-911";
 
 export type SourceStatus = "ok" | "empty" | "unreachable" | "filtered" | "disabled";
@@ -67,10 +70,12 @@ export interface ReelEventInput {
 
 export interface ReelManifest {
   version: 2;
-  /** 缓存键：同一事件稳定不变 */
+  /** 缓存键：同一事件稳定不变（ASCII 安全，会写入 X-Reel-Key 响应头） */
   key: string;
-  /** slides = 有可用照片；empty = 暂无自由授权照片，前端显示诚实占位（仍是同一套幻灯片容器） */
+  /** slides = 有可用照片；empty = 暂无可安全商用的照片，前端显示诚实占位（仍是同一套幻灯片容器） */
   mode: "slides" | "empty";
+  /** empty 的原因：普通没检索到 / 该事件素材已被 URAA 风险排除 */
+  emptyReason?: "no-photo" | "uraa-excluded";
   event: {
     title: string;
     year: number | null;

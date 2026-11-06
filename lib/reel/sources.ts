@@ -162,6 +162,7 @@ export async function searchCommonsImages(
 
   const images: FoundImage[] = [];
   let filtered = 0;
+  let uraa = 0;
   for (const p of pages) {
     if (images.length >= MAX_PER_SOURCE) break;
     const ii = p.imageinfo?.[0];
@@ -179,7 +180,10 @@ export async function searchCommonsImages(
       artist: stripHtml(meta(em, "Artist")),
       attributionRequired: meta(em, "AttributionRequired"),
     });
-    if (!lic.ok) { filtered++; continue; }
+    if (!lic.ok) {
+      if (lic.reason === "uraa-restored-foreign-pd") uraa++; else filtered++;
+      continue;
+    }
 
     const url = ii.thumburl || ii.url;
     if (!isAllowedMediaUrl(url)) { filtered++; continue; }
@@ -201,10 +205,11 @@ export async function searchCommonsImages(
       },
     });
   }
-  const status: SourceReport["status"] = images.length ? "ok" : filtered ? "filtered" : "empty";
+  const status: SourceReport["status"] = images.length ? "ok" : (filtered || uraa) ? "filtered" : "empty";
+  const detail = [filtered ? `license-filtered=${filtered}` : "", uraa ? `uraa-filtered=${uraa}` : ""].filter(Boolean).join(" ") || undefined;
   return {
     images,
-    sources: [report("commons-image", status, t0, images.length, filtered ? `license-filtered=${filtered}` : undefined)],
+    sources: [report("commons-image", status, t0, images.length, detail)],
   };
 }
 

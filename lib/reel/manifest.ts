@@ -6,7 +6,8 @@
  * 因此 N 个事件的成本 = N 份小 JSON + 按需图片，不存在 N 个视频文件。
  *
  * 数据来源（统一走同一套幻灯片渲染器，风格一致）：
- *   1. 本地已核验策展集（1949 / 911）—— 任何网络下都能播真实史料照片；
+ *   1. 本地已核验策展集（仅 9·11 / PD-USGov）—— 任何网络下都能播真实史料照片；
+ *      PD-China 组因美国 URAA 版权恢复风险已整体移除，见 docs/REEL-COMMONS-CREDITS.md；
  *   2. 在线检索 Wikimedia Commons 自由授权图片（Vercel 境外直连自动生效）；
  *   3. 都拿不到 → mode:"empty" 诚实占位，仍用同一套幻灯片容器，绝不用矢量示意或照片配运镜冒充史料。
  *
@@ -15,7 +16,7 @@
  */
 
 import { attributionLine } from "./licenses";
-import { CURATED_SETS, curatedEventOverride, matchCuratedSet } from "./curated-slides";
+import { CURATED_SETS, curatedEventOverride, isUraaExcludedEvent, matchCuratedSet } from "./curated-slides";
 import type { CuratedSet } from "./curated-slides";
 import {
   buildQueries,
@@ -95,6 +96,15 @@ function emptyCopy(zh: boolean): { disclosure: string; badge: string } {
     : { disclosure: "No freely licensed archival photo found on this network · auto-retry in production · NOT historical imagery", badge: "No photo yet · not historical" };
 }
 
+/** URAA 排除事件的专用诚实占位：明确告诉用户为什么这个事件没有照片，
+ *  而不是让它看起来像「网络没抓到」。1946–1953 年中国作品的美国版权
+ *  依 17 U.S.C. §104A 已恢复（约至 2044 年底），本项目不展示。*/
+function uraaEmptyCopy(zh: boolean): { disclosure: string; badge: string } {
+  return zh
+    ? { disclosure: "该事件现存史料照片多为 1946–1953 年中国作品，美国 URAA 已恢复其版权（约至 2044 年），本项目不展示 · 非历史影像", badge: "版权风险已排除 · 非历史影像" }
+    : { disclosure: "Archival photos for this event are mostly 1946–1953 Chinese works whose US copyright was restored under the URAA (~until 2044); not shown · NOT historical footage", badge: "Copyright risk excluded · not historical" };
+}
+
 function eventOf(e: ReelEventInput, override?: ReturnType<typeof curatedEventOverride>, zh?: boolean) {
   const base = {
     title: e.title || e.q || (zh ? "历史事件" : "Historical event"),
@@ -112,11 +122,13 @@ function eventOf(e: ReelEventInput, override?: ReturnType<typeof curatedEventOve
 export function emptyFallback(raw: ReelEventInput, reason: string): ReelManifest {
   const e = normalizeInput(raw);
   const zh = e.lang !== "en";
-  const { disclosure, badge } = emptyCopy(zh);
+  const uraa = isUraaExcludedEvent(e);
+  const { disclosure, badge } = uraa ? uraaEmptyCopy(zh) : emptyCopy(zh);
   return {
     version: 2,
     key: `${makeKey(e)}|empty`,
     mode: "empty",
+    emptyReason: uraa ? "uraa-excluded" : "no-photo",
     event: eventOf(e, undefined, zh),
     slides: [],
     slideMs: SLIDE_MS,
@@ -132,7 +144,7 @@ export function emptyFallback(raw: ReelEventInput, reason: string): ReelManifest
 /** 本地策展集 → 幻灯片清单（受限网络下也能播真图） */
 function curatedSlidesManifest(e: ReelEventInput, key: string, set: CuratedSet): ReelManifest {
   const zh = e.lang !== "en";
-  const override = curatedEventOverride(set, e.lang || "zh");
+  const override = curatedEventOverride(e.lang || "zh");
   const slides: ReelSlide[] = set.slides.map((c, i) => {
     const license: LicenseInfo = {
       short: c.licenseShort,
@@ -190,7 +202,7 @@ export async function buildManifest(raw: ReelEventInput): Promise<ReelManifest> 
   const key = makeKey(e);
   const zh = e.lang !== "en";
 
-  // ① 本地已核验策展集优先：任何网络下都能播真实史料照片，且只配给对应事件
+  // ① 本地已核验策展集优先（现仅 9·11）：任何网络下都能播真实史料照片，且只配给对应事件
   const curated = matchCuratedSet(e);
   if (curated) return curatedSlidesManifest(e, key, curated);
 
@@ -236,10 +248,12 @@ export async function buildManifest(raw: ReelEventInput): Promise<ReelManifest> 
   };
 
   if (!images.length) {
-    const ec = emptyCopy(zh);
+    const uraa = isUraaExcludedEvent(e);
+    const ec = uraa ? uraaEmptyCopy(zh) : emptyCopy(zh);
     return {
       ...base,
       mode: "empty",
+      emptyReason: uraa ? "uraa-excluded" : "no-photo",
       slides: [],
       disclosure: ec.disclosure,
       badge: ec.badge,

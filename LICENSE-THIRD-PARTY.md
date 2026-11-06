@@ -137,7 +137,7 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 | 页面 | `public/reel.html`（唯一渲染器：照片交叉淡入淡出轮换 + 上一张/下一张/暂停/重播/进度点/逐张署名） |
 | 接口 | `app/api/reel/route.ts` — 只返回照片清单 JSON，**不生成、不存储任何视频** |
 | 数据层 | `lib/reel/{types,sources,licenses,manifest,curated-slides}.ts` |
-| 素材 | `public/reel/slides/*.jpg` 6 张本地缓存（受限网络兜底）+ 在线检索的 Commons 自由授权照片 |
+| 素材 | `public/reel/slides/*.jpg` 3 张本地缓存（受限网络兜底，仅 9·11 组）+ 在线检索的 Commons 自由授权照片 |
 
 ### 数据源与许可
 
@@ -145,9 +145,11 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 |---|---|---|---|
 | **Wikimedia Commons** | `w/api.php`（`generator=search` + `imageinfo/extmetadata`） | 逐文件解析：PD / CC0 / CC BY / CC BY-SA / GFDL | **必须**：作者 + 许可名/链接 + 来源页；写入清单 `attributions` 并逐张显示 |
 | **Wikipedia** | `w/api.php`（`list=search`） | 文本 CC BY-SA 4.0 | 仅用于解析规范英文标题与检索词，**不取图片** |
-| **本地已核验缓存** | `public/reel/slides/*.jpg` | 1949 组 PD-China；9·11 组 PD-USGov（NOAA / NIST / 美国海军），均公有领域 | 逐张署名；见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md) |
+| **本地已核验缓存** | `public/reel/slides/*.jpg` | 仅 9·11 组 PD-USGov（NOAA / NIST / 美国海军，17 U.S.C. §105），公有领域；1949 组 PD-China 已按 URAA 复核结论移除 | 逐张署名；见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md) |
 
 **许可过滤（`lib/reel/licenses.ts`）**：放行 PD / CC0 / CC BY / CC BY-SA / GFDL 及政府公有领域标记；拒绝 NC、ND、All rights reserved、fair use、许可缺失或无法识别。CC BY-SA 的 share-alike 只约束衍生作品，本项目仅展示原图、不修改后分发，不触发开源义务，但署名必须保留。**Internet Archive 影片检索与 Commons 视频检索已移除**——全站只用照片。
+
+**URAA 风险黑名单（2026-11-06 新增）**：另拒绝 `Not-PD-US-URAA`、任何 URAA 版权恢复提示、以及中国来源国「过期型 PD」标签（`PD-China` / `PD-PRC` / `PD-ROC` 等），即使许可名只写 "Public domain"。识别同时检查 `LicenseShortName` + `UsageTerms` + `LicenseUrl`（后者常指向 `Template:PD-China`）。理由：中国 URAA 生效日 1996-01-01，而 1990 年《著作权法》第 21 条给摄影作品「发表后 50 年」保护期，1949 年照片在 1996 年仍受保护 → 满足 17 U.S.C. §104A(h)(6) 恢复条件，恢复后美国版权约至 2044 年。完整复核与引用见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md) 第一节。
 
 ### 合规要点
 
@@ -155,8 +157,8 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 2. **统一形态与诚实标注**：`slides` 显示自由授权真实照片并逐张署名；`empty`（当前网络未检索到照片）显示诚实占位卡，明确「非历史影像」，**绝不用矢量示意、AI 生成画面或无关照片冒充史料**。不做 Ken Burns 运镜。
 3. **不下载、不转码、不落盘**：在线素材由浏览器直连 `upload.wikimedia.org`，本站只取元数据与 URL；本地缓存仅为已核验的固定策展图，不是按事件批量抓取的数据集。
 4. **SSRF 防护**：上游 URL 由服务端常量 + `encodeURIComponent` 拼装，不接受用户传入 URL；返回的素材 URL 经 host 白名单校验。
-5. **请求礼仪**：带 `Api-User-Agent`（Wikimedia 强制）、8s 超时、失败重试、进程内 1 小时短缓存、清单走 CDN `s-maxage`。
-6. **地域风险如实登记**：1949 组 PD-China 依据中国大陆「发表后 50 年届满」，Commons 文件页提示美国 URAA 可能恢复版权、不适用较短期限规则的法域未必认可。**面向欧美收费运营前须逐张复核，或替换为明确 `CC0` / `PD-US` / `PD-1996` 的同类史料**；1949 第 2 张为二手镜像标注，优先级最高。9·11 组为美国联邦政府作品（17 U.S.C. §105），全球争议最小。含人物的照片另涉肖像权 / 商标权，商用需单独判断。
+5. **请求礼仪**：带 `Api-User-Agent`（Wikimedia 强制）、4s 超时、超时不重试（快速失败，避免受限网络首屏等待翻倍）、进程内 1 小时短缓存、清单走 CDN `s-maxage`。
+6. **URAA 复核已完成并落实**：1949 组 PD-China 在美国依 17 U.S.C. §104A 已恢复版权（约至 2044 年），判定为高风险，三张照片与策展组已整体移除；在线检索加黑名单防止复发；`10.1` 等事件返回 `emptyReason:"uraa-excluded"` 的专用诚实占位。9·11 组为美国联邦政府作品（17 U.S.C. §105），全球争议最小。含人物的照片另涉肖像权 / 商标权，商用需单独判断。依据与引用见 [credits 文档](docs/REEL-COMMONS-CREDITS.md) 第一节。
 7. **Vercel 行为**：沙箱 / 受限网络不可达时返回 `mode:"empty"` 占位，不白屏、不报错；上线境外直连后任意事件自动检索真实自由授权照片，无需改代码。`GET /api/reel?debug=1` 可探测图源可达性。
 
 ## 九、维护者义务补充清单（本节）
@@ -165,9 +167,9 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 - [x] 移除 `<video>` / footage / 三镜 10 秒 / Ken Burns / schematic / `?fixture=1` / `?commons=1` 全部代码与文案
 - [x] 全站统一「照片幻灯片」：首页 CTA、`/explore` 面板按钮、每个事件卡片入口指向同一渲染器
 - [x] 在线检索逐条解析许可、过滤 NC/ND/版权不明、逐张署名
-- [x] 本地缓存 6 张照片逐张目视确认、逐张登记来源与许可
-- [x] 1949 第 1 张裁掉第三方水印（900×606→900×472，人物主体完整，未做内容篡改），如实登记
-- [ ] **面向欧美收费运营前**：复核 1949 组 PD-China 的 URAA 状态与法域差异，或替换为明确 `CC0` / `PD-US` / `PD-1996` 的同类史料（属法务复核，非购买授权）
+- [x] 本地缓存 3 张照片逐张目视确认、逐张登记来源与许可
+- [x] **URAA 地域风险复核完成**：判定 PD-China 在美国版权已恢复（约至 2044 年）为高风险 → 移除 1949 组 3 张照片与策展代码，并在 `lib/reel/licenses.ts` 增加在线检索黑名单防止复发
+- [x] `10.1` 等被排除事件显示专用诚实占位，明确说明版权风险原因，不伪装成网络故障
 - [ ] 含可识别人物的史料照片，商用前评估肖像权 / 商标权
 
 > 变更记录：早期第八节登记的「1949 开国大典真实史料影像（原型资产，尚未取得商用授权）」
