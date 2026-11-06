@@ -274,9 +274,8 @@ export default function ExploreClient() {
   // 例如只把日期切到 10/1、不点任何事件，也应落在天安门，而不是默认城市。
   const dayAnchor = detail ?? events.find((e) => e.lat != null && e.lon != null) ?? null;
 
-  // 「回到那一刻」：任意事件都能生成 10 秒影像。
-  // 只传事件元数据，不传任何视频地址 —— 服务端按需检索免费授权素材并返回时间轴描述，
-  // 因此不需要为每个事件预生成 / 预存 MP4。
+  // 「回到那一刻」：任意事件都播放同一套「真实照片幻灯片」。
+  // 只传事件元数据 —— 服务端按需返回自由授权史料照片清单，不预生成 / 预存任何视频。
   const reelHrefFor = (e: HistoryEvent) => {
     const p = new URLSearchParams();
     p.set("e", e.title);
@@ -290,6 +289,7 @@ export default function ExploreClient() {
     if (e.lat != null) p.set("lat", String(e.lat));
     if (e.lon != null) p.set("lon", String(e.lon));
     if (/开国|大典|国庆|天安门/.test(e.title) || (today.m === 10 && today.d === 1)) p.set("q", "10.1");
+    else if (/\b9\/?11\b|\b911\b|世贸|双塔|双子塔|world trade center|\bwtc\b|ground zero/i.test(`${e.title} ${e.place}`)) p.set("q", "911");
     return "/reel.html?" + p.toString();
   };
   const reelTarget = detail ?? dayAnchor ?? events[0] ?? null;
@@ -634,28 +634,16 @@ export default function ExploreClient() {
             >
               ● {lang === "zh" ? "活在当下 · 看现在的样子" : "Right Now · see it today"}
             </button>
-            {/* 任意事件通用入口：按需检索免费授权素材，生成 10 秒影像时间轴 */}
+            {/* 全站统一入口：任意事件 → 同一套真实照片幻灯片 */}
             {reelTarget && (
               <a
                 href={reelHrefFor(reelTarget)}
                 className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-3 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-400/25"
                 title={lang === "zh"
-                  ? "按需生成 10 秒影像：真实活动影片 / 授权史料图片编排 / 矢量示意，页面逐帧标注素材性质"
-                  : "Generate a 10s reel on demand: licensed footage / archival stills / schematic, with honest disclosure"}
+                  ? "播放该事件的自由授权史料照片幻灯片：真实照片自动轮换，逐张标注来源与许可"
+                  : "Play the archival photo slideshow: freely licensed photos rotating, with per-image credits"}
               >
-                ▶ {lang === "zh" ? "看当年影像" : "Watch the moment"}
-              </a>
-            )}
-            {/* 1949 开国大典专属：维基共享资源公有领域真实史料照片（非活动影像） */}
-            {reelTarget && /开国|大典|国庆|天安门|1949|founding|tiananmen/i.test(`${reelTarget.title} ${reelTarget.place}`) && (
-              <a
-                href={reelHrefFor(reelTarget) + "&commons=1"}
-                className="rounded-lg border border-sky-400/40 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
-                title={lang === "zh"
-                  ? "播放维基共享资源公有领域的 1949 真实史料照片（静帧编排 · 非活动影像），逐张署名"
-                  : "Play public-domain 1949 archival photographs from Wikimedia Commons (still montage, not footage)"}
-              >
-                ▤ {lang === "zh" ? "维基真史料照片" : "Commons archival photos"}
+                ▤ {lang === "zh" ? "看史料幻灯片" : "View slideshow"}
               </a>
             )}
           </div>
@@ -712,13 +700,13 @@ export default function ExploreClient() {
                   </div>
                 </div>
               </button>
-              {/* 每个事件都能单独生成 10 秒影像，无需预存视频 */}
+              {/* 每个事件都能播放统一的历史照片幻灯片 */}
               <a
                 href={reelHrefFor(e)}
                 className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-amber-400/35 bg-amber-400/10 text-[11px] text-amber-200 transition hover:bg-amber-400/25"
-                title={lang === "zh" ? "为这个事件生成 10 秒影像" : "Generate a 10s reel for this event"}
+                title={lang === "zh" ? "查看这个事件的史料照片幻灯片" : "View the archival photo slideshow for this event"}
               >
-                ▶
+                ▤
               </a>
             </div>
           ))}

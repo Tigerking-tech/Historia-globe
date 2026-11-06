@@ -1,59 +1,45 @@
-/** 事件 → 10 秒时间轴描述（ReelManifest）
+/** 事件 → 照片幻灯片清单（ReelManifest）
  *
- * 这是整套方案的核心：**不生成视频、不存视频**。
- * 服务端只在被请求时，把「事件」翻译成一份约 2KB 的 JSON：
- *   三镜时间轴 + 免费授权素材 URL + 运镜参数 + 字幕 + 署名 + 素材性质标注。
- * 素材字节流由浏览器直连 Wikimedia / archive.org CDN，CDN 只缓存这份小 JSON。
- * 因此 N 个事件的成本 = N 份 JSON + 按需图片，不存在 N 个 MP4，也没有转码算力。
+ * 全站统一「照片幻灯片」：**不生成视频、不存视频、不做三镜时间轴、不做 Ken Burns 运镜**。
+ * 服务端只把「事件」翻译成一份很小的 JSON：一组自由授权真实照片 + 逐张署名 +
+ * 轮换节奏 + 素材性质标注。素材字节流由浏览器直连上游 CDN（或同源缓存）。
+ * 因此 N 个事件的成本 = N 份小 JSON + 按需图片，不存在 N 个视频文件。
+ *
+ * 数据来源（统一走同一套幻灯片渲染器，风格一致）：
+ *   1. 本地已核验策展集（1949 / 911）—— 任何网络下都能播真实史料照片；
+ *   2. 在线检索 Wikimedia Commons 自由授权图片（Vercel 境外直连自动生效）；
+ *   3. 都拿不到 → mode:"empty" 诚实占位，仍用同一套幻灯片容器，绝不用矢量示意或照片配运镜冒充史料。
+ *
+ * 许可：只放行 PD / CC0 / CC BY / CC BY-SA（在 sources.ts 逐条解析过滤），
+ * 逐张保留署名。项目内不再包含任何「需要另行取得商用授权」的素材。
  */
 
 import { attributionLine } from "./licenses";
-import { CURATED_1949_IMAGES, matchesCuratedCommons } from "./commons-curated";
+import { CURATED_SETS, curatedEventOverride, matchCuratedSet } from "./curated-slides";
+import type { CuratedSet } from "./curated-slides";
 import {
   buildQueries,
   cleanTerms,
   resolveWikipediaTitle,
-  searchArchive,
-  searchCommons,
+  searchCommonsImages,
 } from "./sources";
+import type { FoundImage } from "./sources";
 import type {
-  KenBurns,
-  ReelAsset,
+  LicenseInfo,
   ReelEventInput,
   ReelManifest,
-  ReelMode,
-  ReelShot,
+  ReelSlide,
   SourceReport,
 } from "./types";
 
-const SHOT_LEN = 10 / 3;
-
-function hash(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
-  return h >>> 0;
-}
-function seeded(seed: number): () => number {
-  let x = seed || 1;
-  return () => { x = (Math.imul(x, 1664525) + 1013904223) >>> 0; return x / 4294967296; };
-}
-/** 运镜参数由事件 key 决定：同一事件每次生成完全一致，CDN 缓存不会抖动 */
-function makePan(key: string, i: number): KenBurns {
-  const r = seeded(hash(`${key}:${i}`));
-  const dir = r() > 0.5 ? 1 : -1;
-  return {
-    fromScale: 1.06 + r() * 0.06,
-    toScale: 1.16 + r() * 0.10,
-    fromX: dir * (0.02 + r() * 0.03),
-    toX: -dir * (0.02 + r() * 0.03),
-    fromY: (r() - 0.5) * 0.04,
-    toY: -(r() - 0.5) * 0.04,
-  };
-}
+/** 每张照片停留时长（毫秒） */
+export const SLIDE_MS = 3600;
+/** 在线检索最多取多少张 */
+const MAX_SLIDES = 8;
 
 function clampNum(v: unknown, min: number, max: number): number | null {
   const n = Number(v);
-  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : null;
+  return Number.isFinite(n) && v !== null && v !== "" ? Math.min(max, Math.max(min, n)) : null;
 }
 
 function normalizeInput(input: ReelEventInput): ReelEventInput {
@@ -72,214 +58,120 @@ function normalizeInput(input: ReelEventInput): ReelEventInput {
   };
 }
 
+/** 缓存键会被写进 X-Reel-Key 响应头，而 HTTP 头只接受 ByteString（Latin-1）。
+ *  中文查询词（如「世贸中心」）若原样写入，NextResponse.json 会抛
+ *  "Cannot convert argument to a ByteString ... value 19990"，被路由 catch 吞掉后
+ *  整页错误降级成 mode:"empty"。这里统一百分号编码，保证 key 永远 ASCII 安全。*/
 function makeKey(e: ReelEventInput): string {
-  return `${(e.eventId || e.title || e.q || "unknown").toLowerCase().replace(/\s+/g, "-")}|${e.year ?? "na"}|${e.lang}`;
+  const raw = `${(e.eventId || e.title || e.q || "unknown").toLowerCase().replace(/\s+/g, "-")}|${e.year ?? "na"}|${e.lang}`;
+  return encodeURIComponent(raw).slice(0, 120);
 }
 
-/** 字幕：按事件动态生成；footage(1949) 沿用已核验的三镜文案 */
-function shotCopy(e: ReelEventInput, mode: ReelMode, i: number): { title: string; note: string } {
-  const zh = e.lang !== "en";
-  if (mode === "footage" && isCurated(e)) {
-    const t = [
-      [zh ? "01　天安门城楼 · 宣告" : "01  The Gate · Proclamation", zh ? "1949 原始活动胶片 · 城楼上的历史一刻" : "Original 1949 footage · the moment on the rostrum"],
-      [zh ? "02　天安门广场 · 第一面国旗" : "02  The Square · First Flag", zh ? "三十万军民齐集广场 · 礼炮二十八响" : "300,000 in the square · 21-gun salute"],
-      [zh ? "03　万众欢腾" : "03  The Crowd Rejoices", zh ? "那一刻，被历史记住" : "A moment remembered by history"],
-    ];
-    return { title: t[i][0], note: t[i][1] };
-  }
-  const y = e.year != null ? String(Math.abs(e.year)) + (e.year < 0 ? (zh ? " 公元前" : " BCE") : "") : "";
-  const place = e.place || (zh ? "事发地" : "the site");
-  const title = e.title || e.q || (zh ? "历史事件" : "Historical event");
-  const lines = zh
-    ? [
-        [`01　${title}`, y ? `${y} 年 · 这一刻发生的事` : "这一刻发生的事"],
-        [`02　${place}`, y ? `${y} · 事件发生的地点` : "事件发生的地点"],
-        ["03　那一刻之后", mode === "stills" ? "授权史料图片编排 · 非活动影像" : "示意画面 · 非历史影像"],
-      ]
-    : [
-        [`01  ${title}`, y ? `The year ${y} · what happened` : "What happened"],
-        [`02  ${place}`, y ? `${y} · where it happened` : "Where it happened"],
-        ["03  After that moment", mode === "stills" ? "Licensed archival stills · not moving footage" : "Schematic illustration · not historical imagery"],
-      ];
-  return { title: lines[i][0], note: lines[i][1] };
+function captionFor(img: FoundImage | { license: LicenseInfo }): string {
+  const l = img.license;
+  return attributionLine({
+    short: l.short,
+    url: l.url,
+    author: l.author,
+    sourcePage: l.sourcePage,
+    source: l.source,
+  });
 }
 
-function disclosureFor(mode: ReelMode, zh: boolean, curated: boolean): { disclosure: string; badge: string } {
-  if (curated) {
+function disclosureFor(zh: boolean, offline: boolean): { disclosure: string; badge: string } {
+  if (offline) {
     return zh
-      ? { disclosure: "真实史料影像 · 视频来源:央视历史资料 · 非 AI 生成 · 原始活动胶片（商用授权待取，见 docs/REEL-1949-LICENSE.md）", badge: "原始活动胶片 · 非 AI 生成" }
-      : { disclosure: "Authentic archival footage · source: CCTV historical archive · not AI-generated (commercial license pending)", badge: "Original footage · not AI" };
-  }
-  if (mode === "footage") {
-    return zh
-      ? { disclosure: "免费授权历史活动影像 · 来源见下方署名 · 非 AI 生成", badge: "授权活动影像 · 非 AI 生成" }
-      : { disclosure: "Freely licensed historical moving footage · see credits · not AI-generated", badge: "Licensed footage · not AI" };
-  }
-  if (mode === "stills") {
-    return zh
-      ? { disclosure: "免费授权史料图片编排（平移/推近/转场）· 非活动影像 · 该事件不存在当年拍摄的连续视频", badge: "史料图片编排 · 非活动影像" }
-      : { disclosure: "Freely licensed archival stills with motion · NOT moving footage · no continuous film exists for this event", badge: "Archival stills · not footage" };
+      ? { disclosure: "维基共享资源公有领域真实史料照片 · 幻灯片轮换 · 逐张署名 · 非活动影像", badge: "真实史料照片 · 幻灯片" }
+      : { disclosure: "Public-domain archival photos from Wikimedia Commons · slideshow · credits per slide · NOT moving footage", badge: "Archival photos · slideshow" };
   }
   return zh
-    ? { disclosure: "未检索到可用的免费授权素材，当前为自绘矢量示意 · 非历史影像 · 上线后自动重试授权源", badge: "示意画面 · 非历史影像" }
-    : { disclosure: "No freely licensed asset found — vector schematic, NOT historical imagery. Will retry licensed sources in production.", badge: "Schematic · not historical" };
+    ? { disclosure: "Wikimedia Commons 自由授权史料照片 · 幻灯片轮换 · 逐条解析许可并保留署名 · 非活动影像", badge: "自由授权史料照片 · 幻灯片" }
+    : { disclosure: "Freely licensed archival photos from Wikimedia Commons · slideshow · per-image license check & credits · NOT moving footage", badge: "Licensed photos · slideshow" };
 }
 
-function isCurated(e: ReelEventInput): boolean {
-  const s = `${e.q || ""} ${e.title || ""} ${e.place || ""}`.toLowerCase();
-  if (/开国|大典|国庆|天安门|founding ceremony|proclamation of the people/i.test(s)) return true;
-  if (/^10[.\-/月]0?1(日)?$/.test((e.q || "").trim())) return true;
-  if (/^1949([.\-/年]|$)/.test((e.q || "").trim()) && /10[.\-/]0?1/.test(e.q || "")) return true;
-  return false;
+function emptyCopy(zh: boolean): { disclosure: string; badge: string } {
+  return zh
+    ? { disclosure: "当前网络未检索到该事件的自由授权史料照片 · 上线（境外直连）后自动检索并轮换 · 非历史影像", badge: "暂无可用照片 · 非历史影像" }
+    : { disclosure: "No freely licensed archival photo found on this network · auto-retry in production · NOT historical imagery", badge: "No photo yet · not historical" };
 }
 
-/** 已人工逐帧核验的 1949 原始活动胶片特例（本地资产，效果与已确认版本 1:1） */
-function curatedManifest(e: ReelEventInput, key: string): ReelManifest {
-  const zh = e.lang !== "en";
-  const { disclosure, badge } = disclosureFor("footage", zh, true);
-  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
-    index: i as 0 | 1 | 2,
-    start: i * SHOT_LEN,
-    end: (i + 1) * SHOT_LEN,
-    ...shotCopy(e, "footage", i),
-    assetIndex: -1,
-    pan: makePan(key, i),
-  }));
-  return {
-    version: 1, key, mode: "footage", duration: 10,
-    event: {
-      title: zh ? "开国大典" : "Founding Ceremony of the PRC",
-      year: 1949, place: zh ? "北京天安门" : "Tian'anmen, Beijing",
-      category: "politics", lat: 39.9, lon: 116.4, lang: e.lang || "zh",
-    },
-    disclosure, badge, shots, assets: [],
-    videoUrl: "/reel/history-1949-real.mp4", videoOffset: 0,
-    attributions: [zh ? "视频来源：央视历史资料（原始活动胶片，授权状态见 docs/REEL-1949-LICENSE.md）" : "Source: CCTV historical archive (license pending, see docs/REEL-1949-LICENSE.md)"],
-    sources: [{ name: "curated", status: "ok", detail: "人工逐帧核验的本地真实史料；商用授权待取" }],
-    fixture: false, generatedAt: new Date().toISOString(),
+function eventOf(e: ReelEventInput, override?: ReturnType<typeof curatedEventOverride>, zh?: boolean) {
+  const base = {
+    title: e.title || e.q || (zh ? "历史事件" : "Historical event"),
+    year: e.year ?? null,
+    place: e.place || "",
+    category: e.category || "",
+    lat: e.lat ?? null,
+    lon: e.lon ?? null,
+    lang: (e.lang || "zh") as "zh" | "en",
   };
+  return override ? { ...base, ...override, lang: base.lang } : base;
 }
 
-/** 上游整体异常时的极简兜底：完全不访问网络，前端仍能播满 10 秒 */
-export function schematicFallback(raw: ReelEventInput, reason: string): ReelManifest {
+/** 上游整体异常时的兜底：完全不访问网络，仍返回同一套「空幻灯片」结构 */
+export function emptyFallback(raw: ReelEventInput, reason: string): ReelManifest {
   const e = normalizeInput(raw);
-  const key = `${makeKey(e)}|fallback`;
   const zh = e.lang !== "en";
-  const { disclosure, badge } = disclosureFor("schematic", zh, false);
-  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
-    index: i as 0 | 1 | 2, start: i * SHOT_LEN, end: (i + 1) * SHOT_LEN,
-    ...shotCopy(e, "schematic", i), assetIndex: -1, pan: makePan(key, i),
-  }));
+  const { disclosure, badge } = emptyCopy(zh);
   return {
-    version: 1, key, mode: "schematic", duration: 10,
-    event: {
-      title: e.title || e.q || (zh ? "历史事件" : "Historical event"),
-      year: e.year ?? null, place: e.place || "", category: e.category || "",
-      lat: e.lat ?? null, lon: e.lon ?? null, lang: e.lang || "zh",
-    },
-    disclosure, badge, shots, assets: [],
-    attributions: [], fixture: false,
+    version: 2,
+    key: `${makeKey(e)}|empty`,
+    mode: "empty",
+    event: eventOf(e, undefined, zh),
+    slides: [],
+    slideMs: SLIDE_MS,
+    disclosure,
+    badge,
+    attributions: [],
     sources: [{ name: "commons-image", status: "unreachable", detail: reason }],
+    offline: false,
     generatedAt: new Date().toISOString(),
   };
 }
 
-/** 离线演示数据：自绘 SVG，明确标注「演示素材 · 非史料」，仅 ?fixture=1 命中 */
-function fixtureManifest(e: ReelEventInput, key: string): ReelManifest {
+/** 本地策展集 → 幻灯片清单（受限网络下也能播真图） */
+function curatedSlidesManifest(e: ReelEventInput, key: string, set: CuratedSet): ReelManifest {
   const zh = e.lang !== "en";
-  const assets: ReelAsset[] = [1, 2, 3].map((n) => ({
-    kind: "image" as const,
-    url: `/reel/fixtures/${n}.svg`,
-    title: `DEMO ${n}`,
-    license: { short: "本站自绘", url: "", author: "Historia Globe", attributionRequired: false, sourcePage: "/", source: "fixture" },
-    score: 3 - n,
-  }));
-  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
-    index: i as 0 | 1 | 2, start: i * SHOT_LEN, end: (i + 1) * SHOT_LEN,
-    ...shotCopy(e, "stills", i), assetIndex: i, pan: makePan(key, i),
-  }));
-  return {
-    version: 1, key: `${key}|fixture`, mode: "stills", duration: 10,
-    event: { title: e.title || e.q || "Demo", year: e.year ?? null, place: e.place || "", category: e.category || "", lat: e.lat ?? null, lon: e.lon ?? null, lang: e.lang || "zh" },
-    disclosure: zh ? "离线演示素材（自绘 SVG）· 非史料 · 仅用于验证播放器链路，生产不会命中" : "Offline demo assets (self-drawn SVG) · NOT archival · verification only",
-    badge: zh ? "演示素材 · 非史料" : "Demo · not archival",
-    shots, assets, videoUrl: undefined,
-    attributions: ["Historia Globe · 自绘演示素材"],
-    sources: [{ name: "fixture", status: "ok", detail: "?fixture=1 local verification" }],
-    fixture: true, generatedAt: new Date().toISOString(),
-  };
-}
-
-/** 维基共享资源真实史料照片版（?commons=1）。
- *  与自绘 SVG 示意的区别：assets 是**真实历史照片**，已逐张核对 Commons 许可。
- *  用途：沙箱/受限网络下也能播真史料；上线后在线检索仍优先。
- *  绝不含糊：明确标注「史料照片（静帧编排）· 非活动影像」，不冒充当年视频。 */
-function commonsCuratedManifest(e: ReelEventInput, key: string): ReelManifest {
-  const zh = e.lang !== "en";
-  // 标题控制在 6 字内：底部三镜列表在 390px 窄屏会把长标题挤到换行
-  const titles = zh
-    ? ["01　城楼宣告", "02　天安门", "03　开国邮票"]
-    : ["01  Proclamation", "02  The Gate", "03  The Stamp"];
-  const notes = zh
-    ? ["1949-10-01 · 天安门城楼上的历史一刻",
-       "1949-02-12 · 北平和平解放后的城楼",
-       "1949-10-08 · 纪1 纪念邮票"]
-    : ["1 Oct 1949 · on the Tian'anmen rostrum",
-       "12 Feb 1949 · the gate after Beiping's liberation",
-       "8 Oct 1949 · the Ji-1 commemorative stamp"];
-  const assets: ReelAsset[] = CURATED_1949_IMAGES.map((c, i) => ({
-    kind: "image" as const,
-    url: c.url,
-    title: c.title,
-    width: c.width,
-    height: c.height,
-    license: {
+  const override = curatedEventOverride(set, e.lang || "zh");
+  const slides: ReelSlide[] = set.slides.map((c, i) => {
+    const license: LicenseInfo = {
       short: c.licenseShort,
       url: c.licenseUrl,
       author: c.author,
       attributionRequired: false,
       sourcePage: c.sourcePage,
-      source: "commons-image",
-    },
-    score: 30 - i,
-  }));
-  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
-    index: i as 0 | 1 | 2,
-    start: i * SHOT_LEN,
-    end: (i + 1) * SHOT_LEN,
-    title: titles[i], note: notes[i],
-    assetIndex: i,
-    pan: makePan(key, i),
-  }));
-  const attributions = CURATED_1949_IMAGES.map((c) =>
-    attributionLine({
-      short: c.licenseShort, url: c.licenseUrl, author: c.author,
-      sourcePage: c.sourcePage, source: "commons-image",
-    }) + (c.verified ? "" : "（许可依据二手镜像标注，上线前须复核 Commons 文件页）"),
-  );
+      source: set.source,
+    };
+    return {
+      index: i,
+      url: c.url,
+      title: c.title,
+      note: c.note,
+      caption: attributionLine({
+        short: c.licenseShort, url: c.licenseUrl, author: c.author,
+        sourcePage: c.sourcePage, source: set.source,
+      }) + (c.verified ? "" : "（许可依据二手镜像标注，上线前须复核 Commons 文件页）"),
+      width: c.width,
+      height: c.height,
+      license,
+    };
+  });
   return {
-    version: 1, key: `${key}|commons`, mode: "stills", duration: 10,
-    event: {
-      title: zh ? "开国大典" : "Founding Ceremony of the PRC",
-      year: 1949, place: zh ? "北京天安门" : "Tian'anmen, Beijing",
-      category: "politics", lat: 39.9, lon: 116.4, lang: e.lang || "zh",
-    },
-    disclosure: zh
-      ? "维基共享资源公有领域史料照片 · 静帧编排 · 非活动影像 · 署名与法务见 docs/REEL-COMMONS-CREDITS.md"
-      : "Public-domain Commons archival photos · still montage · NOT footage · see docs/REEL-COMMONS-CREDITS.md",
-    badge: zh ? "维基真史料照片 · 非活动影像" : "Commons archival photos · not footage",
-    shots, assets, videoUrl: undefined,
-    attributions,
-    sources: [{ name: "commons-image", status: "ok", detail: "本地缓存的 Wikimedia Commons 公有领域史料照片（沙箱通过图片代理取得），许可逐张核验，见 docs/REEL-COMMONS-CREDITS.md" }],
-    fixture: false, generatedAt: new Date().toISOString(),
+    version: 2,
+    key: `${key}|${set.id}`,
+    mode: "slides",
+    event: eventOf(e, override, zh),
+    slides,
+    slideMs: SLIDE_MS,
+    disclosure: zh ? set.disclosureZh : set.disclosureEn,
+    badge: zh ? set.badgeZh : set.badgeEn,
+    attributions: slides.map((s) => s.caption),
+    sources: [{ name: set.source, status: "ok", count: slides.length, detail: "本地缓存的 Wikimedia Commons 公有领域史料照片，许可逐张核验，见 docs/REEL-COMMONS-CREDITS.md" }],
+    offline: true,
+    generatedAt: new Date().toISOString(),
   };
 }
 
-function imageCountAll(results: { assets?: ReelAsset[] }[]): number {
-  return results.reduce((n, r) => n + (r?.assets?.filter((a) => a.kind === "image").length || 0), 0);
-}
-
-/** 同一源可能被多组检索词调用多次；合并报告，保留最好的状态并累加命中数 */
 function mergeSources(list: SourceReport[]): SourceReport[] {
   const rank: Record<SourceReport["status"], number> = { ok: 4, filtered: 3, empty: 2, unreachable: 1, disabled: 0 };
   const map = new Map<string, SourceReport>();
@@ -292,83 +184,83 @@ function mergeSources(list: SourceReport[]): SourceReport[] {
   return Array.from(map.values());
 }
 
-export interface BuildOptions { fixture?: boolean; debug?: boolean; commons?: boolean; }
-
-export async function buildManifest(raw: ReelEventInput, opts: BuildOptions = {}): Promise<ReelManifest> {
+/** 在线检索 Commons 自由授权图片 → 幻灯片清单；无素材则返回 empty */
+export async function buildManifest(raw: ReelEventInput): Promise<ReelManifest> {
   const e = normalizeInput(raw);
   const key = makeKey(e);
-  // 显式请求「维基共享资源真实史料照片」优先级最高：用户明确要看维基真图时，
-  // 就给照片而不是本地胶片；仅对 1949 相关事件命中，避免配错史料。
-  if (opts.commons && matchesCuratedCommons(e)) return commonsCuratedManifest(e, key);
-  if (isCurated(e)) return curatedManifest(e, key);
-  if (opts.fixture) return fixtureManifest(e, key);
+  const zh = e.lang !== "en";
 
+  // ① 本地已核验策展集优先：任何网络下都能播真实史料照片，且只配给对应事件
+  const curated = matchCuratedSet(e);
+  if (curated) return curatedSlidesManifest(e, key, curated);
+
+  // ② 在线检索：多组检索词 + 维基规范标题补充
   const queries = buildQueries(e);
   const primary = queries[0] || e.title || e.q || "history";
   const sources: SourceReport[] = [];
-
-  // 并发检索：Wikipedia 解析英文标题、Commons 图片/视频、Archive 影片。
-  // 单个源超时或不可达不影响其它源，也不会让整个接口失败。
-  const tasks: Promise<{ assets: ReelAsset[]; sources: SourceReport[] }>[] = [
-    searchCommons(primary, "image"),
-    searchCommons(primary, "video"),
-    searchArchive(primary),
-  ];
-  if (queries[1] && queries[1] !== primary) tasks.push(searchCommons(queries[1], "image"));
-
+  const tasks = queries.slice(0, 2).map((q) => searchCommonsImages(q));
   const wikiP = resolveWikipediaTitle(primary);
-  const [wiki, ...settled] = await Promise.all([wikiP, ...tasks.map((t) => t.catch(() => ({ assets: [], sources: [] })))]);
+
+  const [wiki, ...settled] = await Promise.all([
+    wikiP,
+    ...tasks.map((t) => t.catch(() => ({ images: [] as FoundImage[], sources: [] as SourceReport[] }))),
+  ]);
   sources.push(...wiki.sources);
 
-  // 若中文原词没命中图片，但维基解析出了更规范的英文标题，再补一次检索
-  let extra: { assets: ReelAsset[]; sources: SourceReport[] } = { assets: [], sources: [] };
-  if (wiki.title && imageCountAll(settled) < 3 && wiki.title.toLowerCase() !== primary.toLowerCase()) {
-    extra = await searchCommons(cleanTerms(`${wiki.title} ${e.year ?? ""}`), "image").catch(() => ({ assets: [], sources: [] }));
+  const all: FoundImage[] = [];
+  for (const r of settled) { if (r) { all.push(...r.images); sources.push(...r.sources); } }
+
+  let extra: { images: FoundImage[]; sources: SourceReport[] } = { images: [], sources: [] };
+  if (wiki.title && all.length < 3 && wiki.title.toLowerCase() !== primary.toLowerCase()) {
+    extra = await searchCommonsImages(cleanTerms(`${wiki.title} ${e.year ?? ""}`)).catch(() => ({ images: [], sources: [] }));
+  }
+  for (const r of [extra]) { if (r) { all.push(...r.images); sources.push(...r.sources); } }
+
+  // 去重（按 URL）+ 保持相关性顺序
+  const seen = new Set<string>();
+  const images = all
+    .filter((a) => { if (seen.has(a.url)) return false; seen.add(a.url); return true; })
+    .slice(0, MAX_SLIDES);
+
+  const { disclosure, badge } = disclosureFor(zh, false);
+  const base = {
+    version: 2 as const,
+    key,
+    event: eventOf(e, undefined, zh),
+    slideMs: SLIDE_MS,
+    disclosure,
+    badge,
+    sources: mergeSources(sources),
+    offline: false,
+    generatedAt: new Date().toISOString(),
+  };
+
+  if (!images.length) {
+    const ec = emptyCopy(zh);
+    return {
+      ...base,
+      mode: "empty",
+      slides: [],
+      disclosure: ec.disclosure,
+      badge: ec.badge,
+      attributions: [],
+    };
   }
 
-  const all: ReelAsset[] = [];
-  for (const r of [...settled, extra]) { if (r) { all.push(...r.assets); sources.push(...r.sources); } }
-
-  // 去重 + 相关性排序
-  const seen = new Set<string>();
-  const assets = all
-    .filter((a) => { if (seen.has(a.url)) return false; seen.add(a.url); return true; })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 12);
-
-  const videos = assets.filter((a) => a.kind === "video");
-  const images = assets.filter((a) => a.kind === "image");
-  const mode: ReelMode = videos.length ? "footage" : images.length ? "stills" : "schematic";
-  const zh = e.lang !== "en";
-  const { disclosure, badge } = disclosureFor(mode, zh, false);
-
-  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
-    index: i as 0 | 1 | 2,
-    start: i * SHOT_LEN,
-    end: (i + 1) * SHOT_LEN,
-    ...shotCopy(e, mode, i),
-    assetIndex: mode === "stills" ? i % Math.max(1, images.length) : -1,
-    pan: makePan(key, i),
+  const slides: ReelSlide[] = images.map((a, i) => ({
+    index: i,
+    url: a.url,
+    title: a.title || (zh ? `史料照片 ${i + 1}` : `Archival photo ${i + 1}`),
+    note: a.note || (zh ? "Wikimedia Commons 自由授权史料照片" : "Freely licensed photo, Wikimedia Commons"),
+    caption: captionFor(a),
+    width: a.width,
+    height: a.height,
+    license: a.license,
   }));
-
-  const used = mode === "footage" ? (videos[0] ? [videos[0]] : []) : mode === "stills" ? images.slice(0, 3) : [];
-  const attributions = used.map((a) => attributionLine({
-    short: a.license.short, url: a.license.url, author: a.license.author,
-    sourcePage: a.license.sourcePage, source: a.license.source,
-  }));
-
   return {
-    version: 1, key, mode, duration: 10,
-    event: {
-      title: e.title || e.q || (zh ? "历史事件" : "Historical event"),
-      year: e.year ?? null, place: e.place || "", category: e.category || "",
-      lat: e.lat ?? null, lon: e.lon ?? null, lang: e.lang || "zh",
-    },
-    disclosure, badge, shots, assets,
-    videoUrl: mode === "footage" ? videos[0]?.url : undefined,
-    videoOffset: 0,
-    attributions, sources: mergeSources(sources),
-    fixture: false,
-    generatedAt: new Date().toISOString(),
+    ...base,
+    mode: "slides",
+    slides,
+    attributions: slides.map((s) => s.caption),
   };
 }

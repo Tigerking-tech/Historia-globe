@@ -121,75 +121,55 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 - [x] 图片代理 / 直连并发竞速与 host 白名单；代理仅作传输层，不改变 CC BY-SA 4.0 署名义务
 - [x] 全部图标自绘矢量 SVG，未使用任何第三方素材图标
 
-## 八、「回到那一刻」1949 开国大典真实史料影像 —— 原型资产，**尚未取得商用授权**
+## 八、「回到那一刻」统一照片幻灯片 —— 免费授权源（已启用，无需商用授权）
 
-> **与 §一–§七 的性质不同：前面全部数据源的许可已核实并落实署名；本节素材是真实历史纪录片胶片，尚未获得书面商用授权。**
-> 详见 [`docs/REEL-1949-LICENSE.md`](docs/REEL-1949-LICENSE.md)。
+> **本节素材全部为公有领域 / 自由许可，可免费商用，无需向任何权利人取得书面授权。**
+> 早期版本中「1949 央视原始纪录片胶片（商用授权待取）」及其授权文档、AI 视频成品、
+> 矢量示意素材**已从仓库彻底删除**，见文末变更记录。
+
+产品形态由用户决策统一为：**所有事件的「回到那一刻」都是同一套真实照片幻灯片**，
+不再有视频通道、照片配运镜、矢量示意三种混搭。原因：绝大多数历史事件不存在
+当年拍摄的连续活动影像，能自由商用的更少；Commons 视频仅约 0.25% 且不支持 MP4/H.264。
+架构见 [`docs/REEL-ARCHITECTURE.md`](docs/REEL-ARCHITECTURE.md)。
 
 | 项 | 内容 |
 |---|---|
-| 文件 | `public/reel.html` / `public/reel/history-1949-real.mp4`（960×540、10.000s、H.264+AAC、3.37 MB） |
-| 素材 | 1949-10-01 开国大典**原始活动胶片**（城楼宣告 / 广场升旗 / 万众欢腾三镜），**非 AI 生成、非照片配运镜** |
-| 来源 | 央视网公开页 `tv.cctv.com/v/v1/VIDE1355508018661251.html`，页面标注「视频来源：央视历史资料」 |
-| 取得与处理 | 公开视频信息接口取 HLS → 逐帧核验 1–46s 连续史料 → 裁切、烧字幕与来源角标、加环境音、每秒关键帧（**已构成对原片的修改**） |
-| 页面署名 | 控制条元信息「真实史料影像 · 视频来源:央视历史资料 · 非 AI 生成」、视频角标、首屏说明 |
+| 页面 | `public/reel.html`（唯一渲染器：照片交叉淡入淡出轮换 + 上一张/下一张/暂停/重播/进度点/逐张署名） |
+| 接口 | `app/api/reel/route.ts` — 只返回照片清单 JSON，**不生成、不存储任何视频** |
+| 数据层 | `lib/reel/{types,sources,licenses,manifest,curated-slides}.ts` |
+| 素材 | `public/reel/slides/*.jpg` 6 张本地缓存（受限网络兜底）+ 在线检索的 Commons 自由授权照片 |
 
-**授权状态（三层）：**
+### 数据源与许可
 
-1. 原始 1949–1951 年首次发表的视听作品，财产权按「发表后 50 年」口径**可能**已届满；但若为录像制品或所用为修复版 / 数字化版 / 汇编节目，起算点不同，**不能直接认定公版**。
-2. 署名权、修改权、保护作品完整权**永久**受保护；本项目的裁切、烧字幕、加角标、配音涉及修改权与保护作品完整权。
-3. 平台播放版本另有节目汇编形态、平台服务条款与邻接权；「网页可公开播放」≠「可下载、可改、可放进收费 SaaS」，合理使用不适用于商业产品。
-
-**结论：当前仅作为原型 / 内部演示资产纳入仓库，正式对外收费或公开运营前必须取得书面授权。**
-
-**授权渠道**：中央新影集团影视资料部（010-82077339 / yingzi@cndfilm.com）、中国电影资料馆、上海音像资料馆、央视网 / 总台版权部门。需明确主体、方式（点播 / 内嵌 / 是否下载）、地域、期限、可否剪辑加字幕、可否用于收费产品。
-
-**已落实**：来源署名与「非 AI 生成 · 原始活动胶片」角标、法务留痕文档、入口文案如实标注素材性质、未声称为自有版权、未纳入付费素材包。
-**未完成**：`[ ]` 权利人书面商用授权 —— 上线前必须补齐；若无法取得，按 `docs/REEL-1949-LICENSE.md` §五 降级（移除 MP4 与首页 / 探索页入口，或显著标注「示意画面，非历史影像」）。
-
-## 九、通用「回到那一刻」免费授权影像源 —— 已启用（按需检索，不落盘）
-
-> 架构与「不预生成视频」的方案见 [`docs/REEL-ARCHITECTURE.md`](docs/REEL-ARCHITECTURE.md)。
-> 本节登记的是**已核实为免费商用**的数据源，与 §八 授权待取的 1949 特例性质不同。
-
-| 源 | 接口 | 许可 | 署名义务 | 用途 |
-|---|---|---|---|---|
-| **Wikimedia Commons** | `commons.wikimedia.org/w/api.php`（`generator=search` + `prop=imageinfo` + `extmetadata`） | 逐文件解析：PD / CC0 / CC BY / CC BY-SA / GFDL | **必须**：作者 + 许可名/链接 + 来源页；本项目写入 manifest `attributions` 并逐条显示 | 史料图片、历史活动影片 |
-| **Internet Archive** | `advancedsearch.php`（`mediatype:movies`）→ `/metadata/{id}` → `/download/{id}/*.mp4` | 仅接受 `licenseurl` / `rights` 明确标注 Public Domain / CC BY / CC0 的条目 | 按条目许可署名 | 公版历史影片 |
-| **Wikipedia** | `en.wikipedia.org/w/api.php`（`list=search`） | 文本 CC BY-SA 4.0 | 规范标题/摘要仅用于检索词与字幕 | 中英事件名解析，**不取图片** |
-| **自绘矢量示意** | `public/reel/fixtures/*.svg` | 本站原创 | 无 | 无授权素材时的诚实兜底（明确标注「非历史影像」） |
-
-**许可过滤（`lib/reel/licenses.ts`）**：放行 PD / CC0 / CC BY / CC BY-SA / GFDL 及政府公有领域标记；拒绝 NC、ND、All rights reserved、fair use、许可缺失或无法识别。`Copyrighted=True` 但许可名在白名单的 Commons 文件仍可放行（作者保留署名权）。CC BY-SA 的 share-alike 只约束衍生作品，本项目仅展示与实时编排、不修改素材后再分发，不触发开源义务，但署名必须保留。
-
-**合规要点：**
-
-1. **不下载、不转码、不落盘**：服务端只取元数据与 URL，素材字节流由浏览器直连 `upload.wikimedia.org` / `archive.org` CDN；本站不缓存、不二次分发素材。
-2. **SSRF 防护**：上游请求 URL 全部由服务端常量 + `encodeURIComponent` 拼装，不接受用户传入的 URL；返回给播放器的素材 URL 经 host 白名单校验。
-3. **请求礼仪**：带 `Api-User-Agent`（Wikimedia 强制）、8s 超时、失败重试、进程内 1 小时短缓存、manifest 走 CDN `s-maxage`，避免对上游造成压力。
-4. **诚实标注（红线）**：只有命中活动影片才称「影像」；只有史料图片时角标必须为「史料图片编排 · 非活动影像」；无授权素材时为「示意画面 · 非历史影像」。**绝不用 AI 生成画面或照片配运镜冒充当年实拍**。
-5. **1900 年前事件的物理限制**：多数不存在连续活动影像，这是史实，不是实现缺陷；产品不宣称「所有事件都有当年视频」。
-6. **Vercel 行为**：沙箱网络不可达时接口返回 `schematic` 并照常播放，上线后境外直连自动命中真实素材，无需改代码。`GET /api/reel?debug=1` 可探测各源可达性。
-7. **1949 特例仍按 §八 处理**：`public/reel/history-1949-real.mp4` 商用授权待取，不属于本节免费授权源，正式商用前须取得书面许可或替换。
-
-## 十、维基共享资源真实史料照片（本地缓存） —— ?commons=1
-
-> 逐张来源、许可、署名与法务边界见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md)。
-
-沙箱 / 受限网络下 `commons.wikimedia.org`、`en.wikipedia.org`、`upload.wikimedia.org`、`archive.org`
-直连全部超时，在线检索无法命中，播放器只能降级为自绘矢量示意。为让产品在任何网络下
-都能播**真实史料照片**而非示意图，以下三张通过 `wsrv.nl` 图片代理取得、逐张目视确认并核对
-Commons 文件页许可的照片缓存到 `public/reel/commons/`（合计 ~436 KB）：
-
-| 文件 | Commons 来源 | 许可 | 核验状态 |
+| 源 | 接口 | 许可 | 署名义务 |
 |---|---|---|---|
-| `1949-rostrum-proclamation.jpg` | File:Founding Ceremony of People's Republic of China.jpg | PD-China 公有领域 | 已直接核验 |
-| `1949-tiananmen-feb.jpg` | File:Tiananmen 1949.jpg | Public Domain | ⚠️ 二手镜像标注，上线前须复核 |
-| `1949-ji1-stamp.jpg` | File:Ji1, 4-1, Beijing Tiananmen, 1949.jpg | PD-China 公有领域 | 已直接核验 |
+| **Wikimedia Commons** | `w/api.php`（`generator=search` + `imageinfo/extmetadata`） | 逐文件解析：PD / CC0 / CC BY / CC BY-SA / GFDL | **必须**：作者 + 许可名/链接 + 来源页；写入清单 `attributions` 并逐张显示 |
+| **Wikipedia** | `w/api.php`（`list=search`） | 文本 CC BY-SA 4.0 | 仅用于解析规范英文标题与检索词，**不取图片** |
+| **本地已核验缓存** | `public/reel/slides/*.jpg` | 1949 组 PD-China；9·11 组 PD-USGov（NOAA / NIST / 美国海军），均公有领域 | 逐张署名；见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md) |
 
-**合规要点：**
+**许可过滤（`lib/reel/licenses.ts`）**：放行 PD / CC0 / CC BY / CC BY-SA / GFDL 及政府公有领域标记；拒绝 NC、ND、All rights reserved、fair use、许可缺失或无法识别。CC BY-SA 的 share-alike 只约束衍生作品，本项目仅展示原图、不修改后分发，不触发开源义务，但署名必须保留。**Internet Archive 影片检索与 Commons 视频检索已移除**——全站只用照片。
 
-1. **性质如实标注**：三张均为**静态照片**，编排时角标「维基真史料照片 · 静帧编排 · 非活动影像」，不冒充 1949 原始纪录片胶片。
-2. **仅对 1949 开国大典相关事件命中**（`matchesCuratedCommons`），避免给不相干事件配错史料。
-3. **面向欧美商用须复核**：PD-China 依据中国大陆「发表后 50 年届满」，Commons 文件页明确提示美国 URAA 可能恢复版权、不采用较短期限规则的法域（美/瑞士 70 年等）未必视为公版。正式对外收费前须由法务逐张确认，或改用明确 `CC0` / `PD-US` / `PD-1996` 的同类史料。
-4. **不违背按需架构**：这是「已核验的固定策展素材」，不是为每个事件预生成视频；上线 Vercel 后在线检索仍优先，缓存只作受限网络兜底。
-5. **有照片，没有那段视频**：[Category:Founding Ceremony of PRC](https://commons.wikimedia.org/wiki/Category:Founding_Ceremony_of_People%27s_Republic_of_China) 至少 24 个文件全为静态图；Commons 约 36 万视频（占比约 0.25%）且**仅接受 WebM / Ogg Theora / MPEG-1/2，不支持 MP4 / H.264**。1949 当年拍摄的连续活动胶片不属于 Commons 自由许可素材，仍按 §八 单独处理。
+### 合规要点
+
+1. **零视频、零授权负担**：无 `<video>`、无 MP4/HLS/Blob、无音轨、无转码；项目内不再含任何「商用授权待取」的资产。
+2. **统一形态与诚实标注**：`slides` 显示自由授权真实照片并逐张署名；`empty`（当前网络未检索到照片）显示诚实占位卡，明确「非历史影像」，**绝不用矢量示意、AI 生成画面或无关照片冒充史料**。不做 Ken Burns 运镜。
+3. **不下载、不转码、不落盘**：在线素材由浏览器直连 `upload.wikimedia.org`，本站只取元数据与 URL；本地缓存仅为已核验的固定策展图，不是按事件批量抓取的数据集。
+4. **SSRF 防护**：上游 URL 由服务端常量 + `encodeURIComponent` 拼装，不接受用户传入 URL；返回的素材 URL 经 host 白名单校验。
+5. **请求礼仪**：带 `Api-User-Agent`（Wikimedia 强制）、8s 超时、失败重试、进程内 1 小时短缓存、清单走 CDN `s-maxage`。
+6. **地域风险如实登记**：1949 组 PD-China 依据中国大陆「发表后 50 年届满」，Commons 文件页提示美国 URAA 可能恢复版权、不适用较短期限规则的法域未必认可。**面向欧美收费运营前须逐张复核，或替换为明确 `CC0` / `PD-US` / `PD-1996` 的同类史料**；1949 第 2 张为二手镜像标注，优先级最高。9·11 组为美国联邦政府作品（17 U.S.C. §105），全球争议最小。含人物的照片另涉肖像权 / 商标权，商用需单独判断。
+7. **Vercel 行为**：沙箱 / 受限网络不可达时返回 `mode:"empty"` 占位，不白屏、不报错；上线境外直连后任意事件自动检索真实自由授权照片，无需改代码。`GET /api/reel?debug=1` 可探测图源可达性。
+
+## 九、维护者义务补充清单（本节）
+
+- [x] 删除所有需商用授权资产：`public/reel/history-1949-real.mp4`、`docs/REEL-1949-LICENSE.md`、`public/reel/fixtures/*.svg`、workspace 顶层旧 MP4 / AI 视频成品
+- [x] 移除 `<video>` / footage / 三镜 10 秒 / Ken Burns / schematic / `?fixture=1` / `?commons=1` 全部代码与文案
+- [x] 全站统一「照片幻灯片」：首页 CTA、`/explore` 面板按钮、每个事件卡片入口指向同一渲染器
+- [x] 在线检索逐条解析许可、过滤 NC/ND/版权不明、逐张署名
+- [x] 本地缓存 6 张照片逐张目视确认、逐张登记来源与许可
+- [x] 1949 第 1 张裁掉第三方水印（900×606→900×472，人物主体完整，未做内容篡改），如实登记
+- [ ] **面向欧美收费运营前**：复核 1949 组 PD-China 的 URAA 状态与法域差异，或替换为明确 `CC0` / `PD-US` / `PD-1996` 的同类史料（属法务复核，非购买授权）
+- [ ] 含可识别人物的史料照片，商用前评估肖像权 / 商标权
+
+> 变更记录：早期第八节登记的「1949 开国大典真实史料影像（原型资产，尚未取得商用授权）」
+> 及其授权渠道（中央新影集团影视资料部等）已随素材删除而作废；本项目不再使用该素材，
+> 也不再需要向其取得授权。

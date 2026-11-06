@@ -24,7 +24,7 @@ const en: Dict = {
       "Pick any day and watch the globe light up with what was happening across the planet — wars, discoveries, revolutions, all on the same twenty-four hours. Then ask Historia to connect the threads.",
     ctaExplore: "Explore the globe",
     ctaPricing: "See pricing",
-    ctaReel: "Watch 1949 in 10s",
+    ctaReel: "View the slideshow",
     openData: "Built on open data from Wikipedia & UNESCO World Heritage.",
   },
   features: {
@@ -201,7 +201,7 @@ const zh: Dict = {
       "任选一天，看着地球被当日全球发生的大事点亮——战争、发现、革命，全部浓缩在相同的二十四小时里。然后，让 Historia 把散落的线索连成一体。",
     ctaExplore: "探索地球",
     ctaPricing: "查看价格",
-    ctaReel: "看 10 秒真实影像",
+    ctaReel: "看史料幻灯片",
     openData: "数据基于维基百科与联合国教科文组织世界遗产名录。",
   },
   features: {
