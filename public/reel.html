@@ -60,6 +60,7 @@ h1 em{font-style:normal;color:#fbbf24}
 #stage:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(ellipse at 50% 50%,rgba(190,140,70,.10) 0%,rgba(120,80,35,.05) 45%,transparent 72%)}
 #vid{width:100%;height:100%;object-fit:contain;display:block;background:transparent;position:relative;z-index:2}
+#tlc{position:absolute;inset:0;width:100%;height:100%;display:none;z-index:2;background:transparent}
 /* 竖屏：把 16:9 影像上下的黑区变成有内容的设计区（z-index 需高于铺满的 video 元素） */
 #eraBig,#shotNote{display:none}
 @media (max-aspect-ratio:3/4){
@@ -133,17 +134,17 @@ h1 em{font-style:normal;color:#fbbf24}
     <div class="in">
       <div class="kicker">Historia Globe · Reel</div>
       <h1>回到<em>那一刻</em></h1>
-      <div class="lead">输入一个日期，地球飞往事发地，播放一段 10 秒的当时影像。</div>
+      <div class="lead">输入任意事件或日期，地球飞往事发地，播放一段 10 秒的当时影像。</div>
       <div class="search">
         <input id="q" type="text" inputmode="text" autocomplete="off" placeholder="试试输入 10.1" value="10.1">
         <button class="go" id="go">出发</button>
       </div>
       <div class="chips">
         <button class="chip" data-q="10.1">10.1 开国大典</button>
-        <button class="chip" data-q="1949">1949</button>
-        <button class="chip" data-q="开国大典">开国大典</button>
+        <button class="chip" data-q="Apollo 11 Moon Landing 1969">1969 登月</button>
+        <button class="chip" data-q="Fall of the Berlin Wall 1989">1989 柏林墙</button>
       </div>
-      <div class="hint">单指拖动地球 · 双指张开放大 / 捏合缩小<br>影像为 1949 年开国大典真实史料活动胶片 · 非 AI 生成</div>
+      <div class="hint">单指拖动地球 · 双指张开放大 / 捏合缩小<br>任意事件按需生成 10 秒影像：真实活动影片 / 授权史料图片编排 / 矢量示意，逐帧标注素材性质</div>
       <a href="/" style="display:inline-block;margin-top:14px;font-size:11px;letter-spacing:.08em;color:#8ea3bb;text-decoration:none;border-bottom:1px solid rgba(142,163,187,.35);padding-bottom:2px">← 返回 Historia Globe 首页</a>
       <div id="msg"></div>
     </div>
@@ -158,6 +159,7 @@ h1 em{font-style:normal;color:#fbbf24}
   <div id="reel">
     <div id="stage">
       <video id="vid" playsinline webkit-playsinline muted preload="auto"></video>
+      <canvas id="tlc"></canvas>
       <div id="eraBig"><div class="y">1949</div><div class="l">OCTOBER FIRST · BEIJING</div></div>
       <div id="shotNote"><div class="t" id="shotT">01　天安门城楼 · 宣告</div>
         <div class="d" id="shotD">1949 原始活动胶片 · 城楼上的历史一刻</div></div>
@@ -184,7 +186,7 @@ h1 em{font-style:normal;color:#fbbf24}
           <span class="sg" data-i="1"><b>02</b> 广场升旗</span>
           <span class="sg" data-i="2"><b>03</b> 万众欢腾</span>
         </div>
-        <span>真实史料影像 · 视频来源:央视历史资料 · 非 AI 生成</span>
+        <span id="metaRight">真实史料影像 · 非 AI 生成</span>
       </div>
     </div>
   </div>
@@ -279,139 +281,312 @@ function drawGlobe(t,alpha){
     S.targetZoom=clamp(S.targetZoom*(e.deltaY>0?.9:1.1),.6,2.3);},{passive:false});
 })();
 
-/* ---------- 状态机 ---------- */
-let state="idle";          // idle | fly | reel
+/* ---------- 状态机：manifest 驱动的通用 10 秒影像 ---------- */
+/* 核心：服务端不生成、不存储视频，只返回一份时间轴描述 JSON。
+   三种素材模式：
+     footage   —— 命中真实活动影片，用 <video> 播放（1949 特例效果 1:1 保留）
+     stills    —— 只有免费授权史料图片，用 Canvas 参数化时间轴（平移/推近/转场）
+     schematic —— 连授权素材都没有，自绘矢量示意（明确标注「非历史影像」）
+   后两者没有视频文件，进度条/暂停/重播都作用于虚拟时钟，天然可 seek。*/
+let state="idle";                 // idle | fly | reel
 const vid=$("vid");
+const tlc=$("tlc"),tctx=tlc.getContext("2d");
 const TOTAL=10.0;
-/* 发布平台不支持 HTTP Range（返回 200 而非 206），直接给 video 一个网络 URL 会导致
-   seek / 拖进度条失效。改为一次性 fetch 成 Blob，用 Blob URL 播放：seek 是浏览器本地操作，
-   完全不依赖服务器分段。5MB 视频首屏即后台预加载，飞行 1.9s 内通常已就绪。*/
+let manifest=null, mode="schematic", pendingManifest=null;
 let videoBlobUrl=null, videoReady=false, videoErr=false;
 let readyResolve=null;
 const videoReadyPromise=new Promise(res=>{readyResolve=res;});
-(function loadVideo(){
-  const c=new URLSearchParams(location.search).get("sharecode");
-  const u="/reel/history-1949-real.mp4"+(c?"?sharecode="+encodeURIComponent(c):"");
-  fetch(u).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.blob();})
-    .then(b=>{
-      videoBlobUrl=URL.createObjectURL(b);
-      vid.src=videoBlobUrl;vid.load();
-      const done=()=>{if(!videoReady){videoReady=true;readyResolve();}};
-      vid.addEventListener("loadeddata",done,{once:true});
-      setTimeout(done,1200);              // 兜底：某些浏览器事件时序
-    })
-    .catch(e=>{videoErr=true;readyResolve();console.warn("影像加载失败",e.message);});
-})();
-let flyT0=0;
-const EV={lon:116.4,lat:39.9,name:"1949 · 10 · 01　开国大典"};
+let virtualT=0, virtualPaused=true, virtualLast=0;
+const imgMap=new Map();
+
+/* 统一时钟：footage 用 <video>，其余用虚拟时钟；控件代码对两者完全一致 */
+const clock={
+  get t(){ return mode==="footage" ? (vid.currentTime||0) : virtualT; },
+  set t(v){ if(mode==="footage"){ try{vid.currentTime=clamp(v,0,TOTAL);}catch(e){} } else virtualT=clamp(v,0,TOTAL); },
+  get paused(){ return mode==="footage" ? vid.paused : virtualPaused; },
+  play(){ if(mode==="footage"){const p=vid.play();if(p&&p.catch)p.catch(()=>{});}
+          else {virtualPaused=false;virtualLast=performance.now();} },
+  pause(){ if(mode==="footage")vid.pause(); else virtualPaused=true; },
+  reset(){ if(mode==="footage"){try{vid.currentTime=0;}catch(e){}} else virtualT=0; }
+};
 
 function fmt(s){s=clamp(s,0,TOTAL);return "0:"+String(Math.floor(s)).padStart(2,"0")+" / 0:10";}
 function showMsg(t){const m=$("msg");m.textContent=t;m.classList.add("on");
   clearTimeout(showMsg._t);showMsg._t=setTimeout(()=>m.classList.remove("on"),3200);}
 
-/* 输入解析：10.1 / 1949 / 开国大典 / 国庆 等均命中 */
+/* 解析：10.1 / 1949 / 开国大典 等；任意其它输入也允许（会作为检索词交给 /api/reel） */
 function parse(q){
   q=(q||"").trim();
   if(!q)return null;
-  if(/开国|大典|国庆|天安门|北京/.test(q))return EV;
-  if(/^1949([.\-\/年]|$)/.test(q))return EV;
-  if(/^10[.\-\/月]0?1(日|$)/.test(q))return EV;
-  if(/^10[.\-\/]1$/.test(q))return EV;
+  if(/开国|大典|国庆|天安门|北京/.test(q))return {lon:116.4,lat:39.9};
+  if(/^1949([.\-\/年]|$)/.test(q))return {lon:116.4,lat:39.9};
+  if(/^10[.\-\/月]0?1(日|$)/.test(q))return {lon:116.4,lat:39.9};
+  if(/^10[.\-\/]1$/.test(q))return {lon:116.4,lat:39.9};
   const m=q.match(/^(\d{1,2})[.\-\/](\d{1,2})$/);
-  if(m&&+m[1]===10&&+m[2]===1)return EV;
+  if(m&&+m[1]===10&&+m[2]===1)return {lon:116.4,lat:39.9};
   return null;
 }
 
-function go(q){
+/* 从 URL 读事件参数：探索页把 title/year/place/lat/lon/id 带过来，所有事件通用 */
+function eventFromUrl(){
+  const p=new URLSearchParams(location.search);
+  const e=p.get("e")||p.get("title");
+  if(!e&&!p.get("q"))return null;
+  return {q:p.get("q")||"",title:e||p.get("q")||"",year:p.get("y")||"",
+    place:p.get("place")||"",category:p.get("cat")||"",lat:p.get("lat")||"",
+    lon:p.get("lon")||"",id:p.get("id")||"",lang:p.get("lang")||"zh",
+    m:p.get("m")||"",d:p.get("d")||""};
+}
+function apiUrl(ev,q){
+  const p=new URLSearchParams();
+  if(ev){
+    if(ev.q)p.set("q",ev.q);
+    p.set("title",ev.title||q||"历史事件");
+    for(const [k,v] of [["year",ev.year],["place",ev.place],["category",ev.category],
+                        ["lat",ev.lat],["lon",ev.lon],["lang",ev.lang],["id",ev.id],["m",ev.m],["d",ev.d]]){
+      if(v)p.set(k,v);
+    }
+  } else { p.set("q",q||"10.1"); p.set("title",q||"10.1"); }
+  if(new URLSearchParams(location.search).get("fixture")==="1")p.set("fixture","1");
+  return "/api/reel?"+p.toString();
+}
+
+async function resolveManifest(q,ev){
+  const r=await fetch(apiUrl(ev,q),{headers:{Accept:"application/json"}});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  return await r.json();
+}
+
+function shortTitle(s){return (s||"").replace(/^\s*0?[1-3][\s　]*/,"").slice(0,16);}
+function applyManifest(m){
+  manifest=m; mode=m.mode||"schematic";
+  const ev=m.event||{}, zh=(ev.lang||"zh")!=="en";
+  $("evName").textContent=(ev.year?ev.year+" · ":"")+(ev.title||(zh?"历史事件":"Historical event"));
+  $("evSub").textContent=(ev.place?ev.place+" · ":"")+(m.badge||"")+" · 10 秒";
+  $("metaEv").textContent=(ev.year?ev.year+" · ":"")+(ev.title||"")+" · ";
+  $("metaRight").textContent=m.disclosure||"";
+  $("eraBig").querySelector(".y").textContent=ev.year!=null?String(ev.year):"——";
+  $("eraBig").querySelector(".l").textContent=(ev.place||(zh?"事发地":"THE SITE")).toUpperCase();
+  document.querySelectorAll("#segs span.sg").forEach((s,i)=>{
+    s.textContent="";
+    const b=document.createElement("b");b.textContent=String(i+1).padStart(2,"0");
+    s.appendChild(b);
+    s.appendChild(document.createTextNode(" "+shortTitle(m.shots&&m.shots[i]?m.shots[i].title:("0"+(i+1)))));
+  });
+  const tt=$("gtag").querySelector(".tt"),ss=$("gtag").querySelector(".ss");
+  tt.textContent=ev.place||(zh?"事发地":"The site");
+  ss.textContent=(ev.lat!=null&&ev.lon!=null)
+    ? (Number(ev.lat).toFixed(1)+"°N　"+Number(ev.lon).toFixed(1)+"°E")
+    : (zh?"该事件暂无坐标":"location not pinned");
+}
+
+/* 预加载：footage 取视频（同源用 Blob，保证无 Range 的平台也能 seek）；
+   stills 取授权图片（浏览器直连上游 CDN，不经本站、不落盘）；schematic 无需素材。*/
+async function prepareAssets(m){
+  videoReady=false;videoErr=false;imgMap.clear();
+  if(m.mode==="footage"&&m.videoUrl){
+    const src=m.videoUrl;
+    const c=new URLSearchParams(location.search).get("sharecode");
+    if(/^\//.test(src)){
+      const u=src+(c?"?sharecode="+encodeURIComponent(c):"");
+      const r=await fetch(u);
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      const b=await r.blob();
+      videoBlobUrl=URL.createObjectURL(b);
+      vid.src=videoBlobUrl;vid.load();
+    } else { vid.src=src;vid.load(); }
+    await new Promise(res=>{
+      let done=false;const fin=()=>{if(!done){done=true;res();}};
+      vid.addEventListener("loadeddata",fin,{once:true});
+      setTimeout(fin,1600);
+    });
+    videoReady=true;readyResolve();
+  } else {
+    const list=(m.assets||[]).filter(a=>a.kind==="image"&&a.url).slice(0,6);
+    await Promise.all(list.map(a=>new Promise(res=>{
+      const im=new Image();im.crossOrigin="anonymous";
+      im.onload=()=>{imgMap.set(a.url,im);res();};
+      im.onerror=()=>{res();};
+      im.src=a.url;
+    })));
+    videoReady=true;readyResolve();
+  }
+}
+
+function go(q,ev){
   if(state!=="idle")return false;
-  const ev=parse(q);
-  if(!ev){showMsg("目前已完成 1949.10.1 的写实影像，其他日期陆续制作中");return false;}
   state="fly";flyT0=performance.now();
   S.flyFrom={rot:S.rot,tilt:S.tilt,zoom:S.zoom};
-  S.targetRot=ev.lon;S.targetTilt=clamp(ev.lat*.55,-40,55);S.targetZoom=1.5;
-  S.vRot=0;S.vTilt=0;
+  const lon=ev&&ev.lon!==""?Number(ev.lon):116.4;
+  const lat=ev&&ev.lat!==""?Number(ev.lat):39.9;
+  S.targetRot=Number.isFinite(lon)?lon:116.4;
+  S.targetTilt=clamp((Number.isFinite(lat)?lat:39.9)*.55,-40,55);
+  S.targetZoom=1.5;S.vRot=0;S.vTilt=0;
   $("gtag").style.opacity="1";
   $("home").style.opacity="0";
+  pendingManifest=resolveManifest(q||"10.1",ev).then(async m=>{
+    applyManifest(m);
+    if(Number.isFinite(m.event&&m.event.lon)){
+      S.targetRot=m.event.lon;
+      S.targetTilt=clamp((m.event.lat||0)*.55,-40,55);
+    }
+    await prepareAssets(m);
+  }).catch(e=>{videoErr=true;readyResolve();console.warn("影像检索失败",e.message);
+    showMsg("影像检索失败，已切换为示意画面");});
   return true;
 }
 
+function resizeTlc(){
+  const r=$("stage").getBoundingClientRect();
+  const d=Math.min(2,window.devicePixelRatio||1);
+  tlc.width=Math.max(1,Math.round(r.width*d));
+  tlc.height=Math.max(1,Math.round(r.height*d));
+  tlc.style.width=r.width+"px";tlc.style.height=r.height+"px";
+  tctx.setTransform(d,0,0,d,0,0);
+}
+window.addEventListener("resize",()=>{if(state==="reel"&&mode!=="footage")resizeTlc();});
+
+/* Canvas 时间轴：把一张静态授权图＋运镜参数渲染成连续运动的 10 秒画面。
+   没有视频文件，t 就是唯一状态，所以 seek / 暂停 / 重播都是 O(1)。*/
+function drawTimeline(t){
+  const w=tlc.clientWidth||tlc.width,h=tlc.clientHeight||tlc.height;
+  if(!w||!h)return;
+  tctx.clearRect(0,0,w,h);
+  const i=t<3.333?0:t<6.667?1:2;
+  const shot=manifest&&manifest.shots?manifest.shots[i]:null;
+  const local=shot?clamp((t-shot.start)/(shot.end-shot.start),0,1):0;
+  const pal=[["#0d1c2c","#31597a"],["#221a2c","#6a4b7c"],["#12261f","#3d7057"]][i];
+
+  if(mode==="stills"){
+    const asset=shot&&manifest.assets?manifest.assets[shot.assetIndex]:null;
+    const im=asset?imgMap.get(asset.url):null;
+    if(im&&im.width){
+      const p=shot.pan||{fromScale:1.08,toScale:1.2,fromX:0,toX:0,fromY:0,toY:0};
+      const sc=p.fromScale+(p.toScale-p.fromScale)*local;
+      const px=p.fromX+(p.toX-p.fromX)*local,py=p.fromY+(p.toY-p.fromY)*local;
+      const ar=Math.max(w*sc/im.width,h*sc/im.height);
+      const dw=im.width*ar,dh=im.height*ar;
+      tctx.drawImage(im,(w-dw)/2+px*w,(h-dh)/2+py*h,dw,dh);
+    } else {
+      const g=tctx.createLinearGradient(0,0,w,h);g.addColorStop(0,pal[0]);g.addColorStop(1,pal[1]);
+      tctx.fillStyle=g;tctx.fillRect(0,0,w,h);
+      tctx.fillStyle="rgba(230,238,247,.55)";tctx.textAlign="center";
+      tctx.font="13px system-ui";tctx.fillText("授权图片加载中 / 暂无可用图片",w/2,h/2);
+    }
+  } else {
+    /* schematic：自绘矢量，绝不冒充史料。三镜几何/配色不同，保证画面确实在动。*/
+    const g=tctx.createLinearGradient(0,0,w,h);g.addColorStop(0,pal[0]);g.addColorStop(1,pal[1]);
+    tctx.fillStyle=g;tctx.fillRect(0,0,w,h);
+    tctx.strokeStyle="rgba(180,210,235,.35)";tctx.lineWidth=1.2;
+    const R0=Math.min(w,h)*(0.22+0.03*Math.sin(local*3.14+i));
+    tctx.beginPath();tctx.arc(w/2,h*.44,R0,0,6.283);tctx.stroke();
+    for(let k=1;k<=3;k++){tctx.beginPath();tctx.ellipse(w/2,h*.44,R0,R0*k/4,i*.5,0,6.283);tctx.stroke();}
+    tctx.beginPath();tctx.moveTo(0,h*.78);
+    for(let x=0;x<=w;x+=8)tctx.lineTo(x,h*.78+Math.sin((x/w)*9+i*2+local*2)*10);
+    tctx.stroke();
+    tctx.fillStyle="rgba(235,242,250,.85)";tctx.textAlign="center";
+    tctx.font="600 15px system-ui";tctx.fillText("SCHEMATIC · 示意画面",w/2,h*.88);
+    tctx.font="11px system-ui";tctx.fillStyle="rgba(200,220,238,.6)";
+    tctx.fillText("未检索到免费授权素材 · 非历史影像",w/2,h*.93);
+  }
+
+  /* 统一质感：暗角 + 轻微胶片颗粒，让参数化画面也有「影像」观感 */
+  const vg=tctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.25,w/2,h/2,Math.max(w,h)*.72);
+  vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.55)");
+  tctx.fillStyle=vg;tctx.fillRect(0,0,w,h);
+  tctx.fillStyle="rgba(255,255,255,.035)";
+  const seed=Math.floor(t*25);
+  for(let n=0;n<26;n++){
+    const x=((seed*37+n*97)%1000)/1000*w,y=((seed*61+n*53)%1000)/1000*h;
+    tctx.fillRect(x,y,1.2,1.2);
+  }
+  tctx.textAlign="end";tctx.fillStyle="rgba(240,228,202,.5)";tctx.font="10px system-ui";
+  tctx.fillText("0:"+String(Math.floor(t)).padStart(2,"0")+" / 0:10",w-14,h-14);
+}
+
+function updateUI(t){
+  const k=clamp(t/TOTAL,0,1)*100;
+  $("fill").style.width=k+"%";$("knob").style.left=k+"%";
+  $("clock").textContent=fmt(t);
+  const i=t<3.3?0:t<6.7?1:2;
+  document.querySelectorAll("#segs span.sg").forEach(s=>s.classList.toggle("cur",+s.dataset.i===i));
+  const s=manifest&&manifest.shots?manifest.shots[i]:null;
+  if(s){$("shotT").textContent=s.title;$("shotD").textContent=s.note;}
+}
+
 function playReel(){
-  if(state!=="reel")return;
+  if(state!=="reel"||mode!=="footage")return;
   if(videoErr){$("evSub").textContent="影像加载失败，请刷新页面重试";return;}
-  vid.currentTime=0;vid.muted=true;
-  const p=vid.play();
-  if(p&&p.catch)p.catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
-  $("playBtn").textContent="暂停";
-  $("soundBtn").textContent="声音";
+  clock.reset();vid.muted=true;
+  const p=vid.play();if(p&&p.catch)p.catch(()=>{vid.muted=true;vid.play().catch(()=>{});});
+  $("playBtn").textContent="暂停";$("soundBtn").textContent="声音";
 }
 function enterReel(){
   state="reel";
   $("reel").classList.add("on");
   $("gtag").style.opacity="0";
-  $("evSub").textContent=videoReady?"北京天安门 · 真实史料影像 · 10 秒":"影像加载中…";
-  if(videoReady)playReel();
-  else videoReadyPromise.then(()=>{
-    if(state!=="reel")return;
-    $("evSub").textContent="北京天安门 · 真实史料影像 · 10 秒";
-    playReel();
-  });
+  const start=()=>{
+    if(!manifest)return;
+    mode=manifest.mode;
+    $("evSub").textContent=(manifest.event.place?manifest.event.place+" · ":"")+(manifest.badge||"")+" · 10 秒";
+    if(mode==="footage"){
+      vid.style.display="block";tlc.style.display="none";
+      if(videoReady)playReel();
+      else videoReadyPromise.then(()=>{if(state==="reel")playReel();});
+    } else {
+      vid.style.display="none";tlc.style.display="block";
+      resizeTlc();
+      virtualT=0;virtualPaused=false;virtualLast=performance.now();
+      $("playBtn").textContent="暂停";
+      drawTimeline(0);
+    }
+    updateUI(clock.t);
+  };
+  if(manifest)start();
+  else pendingManifest.then(()=>{if(state==="reel")start();});
 }
-
 function back(){
-  vid.pause();
+  clock.pause();
+  if(mode==="footage"){try{vid.pause();}catch(e){}}
   $("reel").classList.remove("on");
-  state="idle";
-  $("home").style.opacity="1";
+  state="idle";$("home").style.opacity="1";
   S.targetRot=S.rot;S.targetTilt=S.tilt;S.targetZoom=1;
+  virtualT=0;
 }
 
 /* ---------- 控件 ---------- */
-$("go").addEventListener("click",()=>go($("q").value));
-$("q").addEventListener("keydown",e=>{if(e.key==="Enter")go($("q").value);});
+$("go").addEventListener("click",()=>go($("q").value||"10.1"));
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")go($("q").value||"10.1");});
 document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
   $("q").value=c.dataset.q;go(c.dataset.q);}));
 $("back").addEventListener("click",back);
-/* 从产品内（如 /explore 的 10.1）带 ?q=10.1 进入时自动飞往北京并播放，
-   不破坏首屏手动输入流程；未带参数时行为与独立成品页完全一致。*/
-(function autoStartFromProduct(){
-  const q=new URLSearchParams(location.search).get("q");
-  if(q&&parse(q)) setTimeout(()=>{if(state==="idle")go(q);},420);
-})();
 $("playBtn").addEventListener("click",()=>{
-  if(vid.paused){vid.play().catch(()=>{});$("playBtn").textContent="暂停";}
-  else {vid.pause();$("playBtn").textContent="播放";}
+  if(clock.paused){clock.play();$("playBtn").textContent="暂停";}
+  else {clock.pause();$("playBtn").textContent="播放";}
 });
 $("replayBtn").addEventListener("click",()=>{
-  vid.currentTime=0;vid.play().catch(()=>{});$("playBtn").textContent="暂停";});
+  clock.reset();clock.play();$("playBtn").textContent="暂停";});
 $("soundBtn").addEventListener("click",()=>{
+  if(mode!=="footage"){showMsg("本段为图片编排 / 示意画面，没有原始音轨");return;}
   vid.muted=!vid.muted;$("soundBtn").textContent=vid.muted?"声音":"静音";
   if(!vid.muted&&vid.paused)vid.play().catch(()=>{});
 });
 $("track").addEventListener("pointerdown",e=>{
   const r=$("track").getBoundingClientRect();
-  vid.currentTime=clamp((e.clientX-r.left)/r.width,0,1)*TOTAL;
+  clock.t=clamp((e.clientX-r.left)/r.width,0,1)*TOTAL;
+  updateUI(clock.t);
+  if(mode!=="footage")drawTimeline(clock.t);
 });
-vid.addEventListener("timeupdate",()=>{
-  const t=vid.currentTime||0,k=clamp(t/TOTAL,0,1)*100;
-  $("fill").style.width=k+"%";$("knob").style.left=k+"%";
-  $("clock").textContent=fmt(t);
-  const i=t<3.3?0:t<6.7?1:2;
-  document.querySelectorAll("#segs span.sg").forEach(s=>s.classList.toggle("cur",+s.dataset.i===i));
-  const NOTES=[["01　天安门城楼 · 宣告","1949 原始活动胶片 · 城楼上的历史一刻"],
-    ["02　天安门广场 · 第一面国旗","三十万军民齐集广场 · 礼炮二十八响"],
-    ["03　万众欢腾","那一刻，被历史记住"]];
-  $("shotT").textContent=NOTES[i][0];$("shotD").textContent=NOTES[i][1];
-});
+vid.addEventListener("timeupdate",()=>{if(mode==="footage")updateUI(vid.currentTime);});
 vid.addEventListener("ended",()=>{$("playBtn").textContent="播放";});
 vid.addEventListener("error",()=>{showMsg("影像加载失败，请检查网络后重试");});
 
-/* ---------- 主循环：确定性飞行插值 ---------- */
+/* ---------- 主循环 ---------- */
 function loop(now){
   if(state==="idle"){
     if(!S.dragging){
       S.rot+=S.vRot;S.tilt=clamp(S.tilt+S.vTilt,-70,70);
-      S.vRot*=.93;S.vTilt*=.93;
-      S.targetRot+=.02;
+      S.vRot*=.93;S.vTilt*=.93;S.targetRot+=.02;
     }
     S.rot+=(S.targetRot-S.rot)*.08;
     S.tilt+=(S.targetTilt-S.tilt)*.08;
@@ -427,23 +602,47 @@ function loop(now){
     if(k>=1)enterReel();
   } else if(state==="reel"){
     drawGlobe(now,.0);
+    if(mode!=="footage"){
+      if(!virtualPaused){
+        const dt=Math.min(120,now-virtualLast);virtualLast=now;
+        virtualT=clamp(virtualT+dt/1000,0,TOTAL);
+        if(virtualT>=TOTAL){virtualPaused=true;$("playBtn").textContent="播放";}
+      }
+      drawTimeline(virtualT);
+      updateUI(virtualT);
+    }
   }
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
+/* 从产品内带 ?q= 或 ?e= 进入时自动飞往事发地并播放 */
+(function autoStart(){
+  const p=new URLSearchParams(location.search);
+  const ev=eventFromUrl();
+  const q=p.get("q");
+  if(q||ev)setTimeout(()=>{if(state==="idle")go(q||"10.1",ev);},420);
+})();
+
 /* ---------- 自检接口 ---------- */
 window.__REEL__={
-  go,back,parse,
+  go:(q)=>go(q),back,parse,
   getState:()=>({state,rot:Math.round(S.rot*10)/10,tilt:Math.round(S.tilt*10)/10,
     zoom:Math.round(S.zoom*100)/100,targetRot:Math.round(S.targetRot*10)/10}),
-  video:()=>({readyState:vid.readyState,duration:vid.duration,
-    currentTime:vid.currentTime,paused:vid.paused,muted:vid.muted,
-    error:vid.error?vid.error.code:null,w:vid.videoWidth,h:vid.videoHeight,
-    blob:!!videoBlobUrl,ready:videoReady,failed:videoErr}),
-  seek:t=>{vid.currentTime=clamp(t,0,TOTAL);},
-  pause:()=>vid.pause(),play:()=>vid.play(),
-  scene:()=>{const t=vid.currentTime;return t<3.3?"01 城楼宣告":t<6.7?"02 广场升旗":"03 万众欢腾";},
+  video:()=>mode==="footage"?({
+    readyState:vid.readyState,duration:vid.duration,currentTime:vid.currentTime,
+    paused:vid.paused,muted:vid.muted,error:vid.error?vid.error.code:null,
+    w:vid.videoWidth,h:vid.videoHeight,blob:!!videoBlobUrl,ready:videoReady,failed:videoErr,mode
+  }):({
+    readyState:4,duration:TOTAL,currentTime:virtualT,paused:virtualPaused,muted:true,
+    error:null,w:tlc.width,h:tlc.height,blob:false,ready:videoReady,failed:videoErr,mode
+  }),
+  seek:t=>{clock.t=clamp(t,0,TOTAL);updateUI(clock.t);if(mode!=="footage")drawTimeline(clock.t);},
+  pause:()=>clock.pause(),play:()=>clock.play(),
+  scene:()=>{const t=clock.t,i=t<3.3?0:t<6.7?1:2;
+    return manifest&&manifest.shots[i]?manifest.shots[i].title:("0"+(i+1));},
+  manifest:()=>manifest,
+  mode:()=>mode,
 };
 </script>
 </body>

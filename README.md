@@ -10,7 +10,7 @@
 - **按日期探索**：`/explore` 输入月日（或分享链接还原），拉取当天事件并落到事发地坐标；镜头巡游、分享链接、类别筛选。
 - **此刻此地 / Right Now**：任意历史事件坐标按附近真实地面街景检索（Panoramax CC BY-SA 4.0）、地标实景（Pexels）、卫星兜底（Esri），配当地真实时间与实时天气。
 - **AskHistoria**：以当天事件、视角与语言为上下文的历史 AI 对话。
-- **回到那一刻（Reel）**：`/reel.html` —— 输入 `10.1`，地球飞往北京，播放 10 秒 **1949 开国大典真实史料活动胶片**（城楼宣告 / 广场升旗 / 万众欢腾），非 AI 生成、非照片配运镜。首页有通用入口，`/explore` 在 10 月 1 日当天出现「看当年真实影像」按钮，带 `?q=10.1` 自动飞往北京播放。
+- **回到那一刻（Reel）**：`/reel.html` —— **任意事件**输入后地球飞往事发地，播放 10 秒影像。服务端不预生成、不预存任何 MP4，而是按需返回一份约 2KB 的时间轴描述：命中免费授权活动影片就播真实视频（1949 开国大典原始胶片效果 1:1 保留），只有史料图片就做 Canvas 参数化编排（角标「史料图片编排 · 非活动影像」），连授权素材都没有就自绘矢量（角标「示意画面 · 非历史影像」）。首页、探索页面板与**每个事件卡片**都有入口。免费授权源：Wikimedia Commons、Internet Archive、Wikipedia，逐条解析许可并保留署名。架构见 [docs/REEL-ARCHITECTURE.md](docs/REEL-ARCHITECTURE.md)。
 - **中英文切换**：全站 i18n。
 
 ## 本地运行
@@ -23,6 +23,8 @@ npm run dev
 ```
 
 `npm run build` 会先执行 `scripts/copy-cesium.mjs` 把 Cesium 静态资源拷到 `public/cesium`，再执行 `next build`。部署到 Vercel 时不需要 `HTTP_PROXY`（那是沙箱本地抓取数据的代理），但需配置生产数据库与 Creem / 认证相关的环境变量。
+
+`/api/reel` 在沙箱内无法直连 Wikimedia / archive.org 时会返回 `schematic` 并照常播满 10 秒；部署到 Vercel（境外直连）后自动命中真实免费授权素材，**无需改代码**。`GET /api/reel?debug=1` 可探测各源可达性，`?fixture=1` 是本地离线演示（自绘 SVG，明确标注「演示素材 · 非史料」）。
 
 ## 数据与许可
 

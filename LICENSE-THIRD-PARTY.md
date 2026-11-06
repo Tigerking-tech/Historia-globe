@@ -146,3 +146,27 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 
 **已落实**：来源署名与「非 AI 生成 · 原始活动胶片」角标、法务留痕文档、入口文案如实标注素材性质、未声称为自有版权、未纳入付费素材包。
 **未完成**：`[ ]` 权利人书面商用授权 —— 上线前必须补齐；若无法取得，按 `docs/REEL-1949-LICENSE.md` §五 降级（移除 MP4 与首页 / 探索页入口，或显著标注「示意画面，非历史影像」）。
+
+## 九、通用「回到那一刻」免费授权影像源 —— 已启用（按需检索，不落盘）
+
+> 架构与「不预生成视频」的方案见 [`docs/REEL-ARCHITECTURE.md`](docs/REEL-ARCHITECTURE.md)。
+> 本节登记的是**已核实为免费商用**的数据源，与 §八 授权待取的 1949 特例性质不同。
+
+| 源 | 接口 | 许可 | 署名义务 | 用途 |
+|---|---|---|---|---|
+| **Wikimedia Commons** | `commons.wikimedia.org/w/api.php`（`generator=search` + `prop=imageinfo` + `extmetadata`） | 逐文件解析：PD / CC0 / CC BY / CC BY-SA / GFDL | **必须**：作者 + 许可名/链接 + 来源页；本项目写入 manifest `attributions` 并逐条显示 | 史料图片、历史活动影片 |
+| **Internet Archive** | `advancedsearch.php`（`mediatype:movies`）→ `/metadata/{id}` → `/download/{id}/*.mp4` | 仅接受 `licenseurl` / `rights` 明确标注 Public Domain / CC BY / CC0 的条目 | 按条目许可署名 | 公版历史影片 |
+| **Wikipedia** | `en.wikipedia.org/w/api.php`（`list=search`） | 文本 CC BY-SA 4.0 | 规范标题/摘要仅用于检索词与字幕 | 中英事件名解析，**不取图片** |
+| **自绘矢量示意** | `public/reel/fixtures/*.svg` | 本站原创 | 无 | 无授权素材时的诚实兜底（明确标注「非历史影像」） |
+
+**许可过滤（`lib/reel/licenses.ts`）**：放行 PD / CC0 / CC BY / CC BY-SA / GFDL 及政府公有领域标记；拒绝 NC、ND、All rights reserved、fair use、许可缺失或无法识别。`Copyrighted=True` 但许可名在白名单的 Commons 文件仍可放行（作者保留署名权）。CC BY-SA 的 share-alike 只约束衍生作品，本项目仅展示与实时编排、不修改素材后再分发，不触发开源义务，但署名必须保留。
+
+**合规要点：**
+
+1. **不下载、不转码、不落盘**：服务端只取元数据与 URL，素材字节流由浏览器直连 `upload.wikimedia.org` / `archive.org` CDN；本站不缓存、不二次分发素材。
+2. **SSRF 防护**：上游请求 URL 全部由服务端常量 + `encodeURIComponent` 拼装，不接受用户传入的 URL；返回给播放器的素材 URL 经 host 白名单校验。
+3. **请求礼仪**：带 `Api-User-Agent`（Wikimedia 强制）、8s 超时、失败重试、进程内 1 小时短缓存、manifest 走 CDN `s-maxage`，避免对上游造成压力。
+4. **诚实标注（红线）**：只有命中活动影片才称「影像」；只有史料图片时角标必须为「史料图片编排 · 非活动影像」；无授权素材时为「示意画面 · 非历史影像」。**绝不用 AI 生成画面或照片配运镜冒充当年实拍**。
+5. **1900 年前事件的物理限制**：多数不存在连续活动影像，这是史实，不是实现缺陷；产品不宣称「所有事件都有当年视频」。
+6. **Vercel 行为**：沙箱网络不可达时接口返回 `schematic` 并照常播放，上线后境外直连自动命中真实素材，无需改代码。`GET /api/reel?debug=1` 可探测各源可达性。
+7. **1949 特例仍按 §八 处理**：`public/reel/history-1949-real.mp4` 商用授权待取，不属于本节免费授权源，正式商用前须取得书面许可或替换。

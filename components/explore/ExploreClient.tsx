@@ -274,6 +274,26 @@ export default function ExploreClient() {
   // 例如只把日期切到 10/1、不点任何事件，也应落在天安门，而不是默认城市。
   const dayAnchor = detail ?? events.find((e) => e.lat != null && e.lon != null) ?? null;
 
+  // 「回到那一刻」：任意事件都能生成 10 秒影像。
+  // 只传事件元数据，不传任何视频地址 —— 服务端按需检索免费授权素材并返回时间轴描述，
+  // 因此不需要为每个事件预生成 / 预存 MP4。
+  const reelHrefFor = (e: HistoryEvent) => {
+    const p = new URLSearchParams();
+    p.set("e", e.title);
+    p.set("y", String(e.year));
+    p.set("place", e.place || "");
+    p.set("cat", e.category || "");
+    p.set("id", e.id || "");
+    p.set("lang", lang);
+    p.set("m", String(today.m));
+    p.set("d", String(today.d));
+    if (e.lat != null) p.set("lat", String(e.lat));
+    if (e.lon != null) p.set("lon", String(e.lon));
+    if (/开国|大典|国庆|天安门/.test(e.title) || (today.m === 10 && today.d === 1)) p.set("q", "10.1");
+    return "/reel.html?" + p.toString();
+  };
+  const reelTarget = detail ?? dayAnchor ?? events[0] ?? null;
+
   // 「此刻此地」：确定要拍哪一处的"现在"。
   // 优先选中事件 → 当天代表事件 → 用户真正看到的地表点 → 城市 → 默认坐标。
   const openNow = () => {
@@ -614,14 +634,16 @@ export default function ExploreClient() {
             >
               ● {lang === "zh" ? "活在当下 · 看现在的样子" : "Right Now · see it today"}
             </button>
-            {/* 1949.10.1 专属：进入已验证的真实史料 10 秒影像页，并自动飞往北京开始播放 */}
-            {today.m === 10 && today.d === 1 && (
+            {/* 任意事件通用入口：按需检索免费授权素材，生成 10 秒影像时间轴 */}
+            {reelTarget && (
               <a
-                href="/reel.html?q=10.1"
+                href={reelHrefFor(reelTarget)}
                 className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-3 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-400/25"
-                title={lang === "zh" ? "播放 1949 年开国大典真实史料活动胶片（10 秒，非 AI 生成）" : "Play the authentic 1949 archival footage (10s, not AI-generated)"}
+                title={lang === "zh"
+                  ? "按需生成 10 秒影像：真实活动影片 / 授权史料图片编排 / 矢量示意，页面逐帧标注素材性质"
+                  : "Generate a 10s reel on demand: licensed footage / archival stills / schematic, with honest disclosure"}
               >
-                ▶ {lang === "zh" ? "看当年真实影像" : "Watch 1949 footage"}
+                ▶ {lang === "zh" ? "看当年影像" : "Watch the moment"}
               </a>
             )}
           </div>
@@ -653,28 +675,40 @@ export default function ExploreClient() {
             </div>
           )}
           {events.map((e) => (
-            <button
+            <div
               key={e.id}
-              onClick={() => setDetail(e)}
-              className={`w-full text-left rounded-xl px-3 py-2.5 transition border ${
+              className={`relative rounded-xl border transition ${
                 detail?.id === e.id ? "bg-white/5 border-sky-400/40" : "border-transparent hover:bg-white/5"
               }`}
             >
-              <div className="flex items-start gap-2.5">
-                <span
-                  className="mt-1 h-2.5 w-2.5 rounded-full shrink-0"
-                  style={{ background: categoryColor(e.category) }}
-                />
-                <div className="min-w-0">
-                  <div className="text-sm text-white font-medium leading-snug">{e.title}</div>
-                  <div className="text-[11px] text-slate-400 mt-1 flex flex-wrap gap-x-2">
-                    <span className="text-sky-300 font-semibold">{fmtYear(e.year, zh)}</span>
-                    <span>{e.place || t("explore.locationNotPinned")}</span>
-                    <span className="text-slate-500">· {t(`category.${e.category}`)}</span>
+              <button
+                onClick={() => setDetail(e)}
+                className="w-full text-left rounded-xl px-3 py-2.5 pr-10"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span
+                    className="mt-1 h-2.5 w-2.5 rounded-full shrink-0"
+                    style={{ background: categoryColor(e.category) }}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm text-white font-medium leading-snug">{e.title}</div>
+                    <div className="text-[11px] text-slate-400 mt-1 flex flex-wrap gap-x-2">
+                      <span className="text-sky-300 font-semibold">{fmtYear(e.year, zh)}</span>
+                      <span>{e.place || t("explore.locationNotPinned")}</span>
+                      <span className="text-slate-500">· {t(`category.${e.category}`)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </button>
+              </button>
+              {/* 每个事件都能单独生成 10 秒影像，无需预存视频 */}
+              <a
+                href={reelHrefFor(e)}
+                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-amber-400/35 bg-amber-400/10 text-[11px] text-amber-200 transition hover:bg-amber-400/25"
+                title={lang === "zh" ? "为这个事件生成 10 秒影像" : "Generate a 10s reel for this event"}
+              >
+                ▶
+              </a>
+            </div>
           ))}
         </div>
 
