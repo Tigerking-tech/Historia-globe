@@ -614,6 +614,16 @@ export default function ExploreClient() {
             >
               ● {lang === "zh" ? "活在当下 · 看现在的样子" : "Right Now · see it today"}
             </button>
+            {/* 1949.10.1 专属：进入已验证的真实史料 10 秒影像页，并自动飞往北京开始播放 */}
+            {today.m === 10 && today.d === 1 && (
+              <a
+                href="/reel.html?q=10.1"
+                className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-3 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-400/25"
+                title={lang === "zh" ? "播放 1949 年开国大典真实史料活动胶片（10 秒，非 AI 生成）" : "Play the authentic 1949 archival footage (10s, not AI-generated)"}
+              >
+                ▶ {lang === "zh" ? "看当年真实影像" : "Watch 1949 footage"}
+              </a>
+            )}
           </div>
           {tourActive && tourShots.length > 0 && (
             <div className="mt-2 text-[11px] text-sky-300 leading-snug">

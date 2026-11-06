@@ -89,6 +89,12 @@ export default function Hero() {
               >
                 {t("hero.ctaPricing")}
               </a>
+              <a
+                href="/reel.html"
+                className="rounded-xl border border-amber-400/40 bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 px-6 py-3 text-sm transition"
+              >
+                ▶ {t("hero.ctaReel")}
+              </a>
             </motion.div>
             <motion.p
               initial="hidden"
