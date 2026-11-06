@@ -26,6 +26,8 @@ npm run dev
 
 `/api/reel` 在沙箱内无法直连 Wikimedia / archive.org 时会返回 `schematic` 并照常播满 10 秒；部署到 Vercel（境外直连）后自动命中真实免费授权素材，**无需改代码**。`GET /api/reel?debug=1` 可探测各源可达性，`?fixture=1` 是本地离线演示（自绘 SVG，明确标注「演示素材 · 非史料」）。
 
+**`?commons=1`（维基真史料照片）**：维基百科体系里**有**免费可商用的 1949 开国大典真实史料照片，沙箱内已通过图片代理取得三张并缓存到 `public/reel/commons/`，逐张核对 Commons 许可（PD-China / Public Domain）、逐张署名，因此**受限网络下也能播真实照片而非示意图**。探索页 1949 相关事件会出现「维基真史料照片」入口。注意三张均为**静态照片**，角标明确「静帧编排 · 非活动影像」，不冒充当年纪录片胶片；Commons 上没有 1949 原始连续活动影像（仅约 0.25% 文件是视频且不支持 MP4/H.264），那段仍按下方授权风险单独处理。来源与法务边界见 [docs/REEL-COMMONS-CREDITS.md](docs/REEL-COMMONS-CREDITS.md)。
+
 ## 数据与许可
 
 所有地理 / 影像 / 天气 / 事件数据源的许可、条款与署名义务见 [LICENSE-THIRD-PARTY.md](LICENSE-THIRD-PARTY.md)（§一–§七，均已核实为免费商用并落实署名）。

@@ -105,7 +105,7 @@ h1 em{font-style:normal;color:#fbbf24}
   font-size:10.5px;color:#8e7d63;line-height:1.6}
 #meta b{color:#c9b896;font-weight:600}
 #segs{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
-#segs span.sg{padding:2px 7px;border-radius:5px;border:1px solid transparent;transition:.25s}
+#segs span.sg{padding:2px 7px;border-radius:5px;border:1px solid transparent;transition:.25s;white-space:nowrap}
 #segs span.sg.cur{color:#fbbf24;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.09)}
 #metaEv{display:none}
 /* 桌面/横屏：视频铺满，页面顶栏文字会与视频烧录时间码在左上角重叠 → 隐藏，事件名移至控制区 */
@@ -347,7 +347,9 @@ function apiUrl(ev,q){
       if(v)p.set(k,v);
     }
   } else { p.set("q",q||"10.1"); p.set("title",q||"10.1"); }
-  if(new URLSearchParams(location.search).get("fixture")==="1")p.set("fixture","1");
+  const ls=new URLSearchParams(location.search);
+  if(ls.get("fixture")==="1")p.set("fixture","1");
+  if(ls.get("commons")==="1")p.set("commons","1");
   return "/api/reel?"+p.toString();
 }
 

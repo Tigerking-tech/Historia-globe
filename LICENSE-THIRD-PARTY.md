@@ -170,3 +170,26 @@ Cesium 官方的 `createOsmBuildingsAsync()`（OSM Buildings 3D Tiles，3.5 亿�
 5. **1900 年前事件的物理限制**：多数不存在连续活动影像，这是史实，不是实现缺陷；产品不宣称「所有事件都有当年视频」。
 6. **Vercel 行为**：沙箱网络不可达时接口返回 `schematic` 并照常播放，上线后境外直连自动命中真实素材，无需改代码。`GET /api/reel?debug=1` 可探测各源可达性。
 7. **1949 特例仍按 §八 处理**：`public/reel/history-1949-real.mp4` 商用授权待取，不属于本节免费授权源，正式商用前须取得书面许可或替换。
+
+## 十、维基共享资源真实史料照片（本地缓存） —— ?commons=1
+
+> 逐张来源、许可、署名与法务边界见 [`docs/REEL-COMMONS-CREDITS.md`](docs/REEL-COMMONS-CREDITS.md)。
+
+沙箱 / 受限网络下 `commons.wikimedia.org`、`en.wikipedia.org`、`upload.wikimedia.org`、`archive.org`
+直连全部超时，在线检索无法命中，播放器只能降级为自绘矢量示意。为让产品在任何网络下
+都能播**真实史料照片**而非示意图，以下三张通过 `wsrv.nl` 图片代理取得、逐张目视确认并核对
+Commons 文件页许可的照片缓存到 `public/reel/commons/`（合计 ~436 KB）：
+
+| 文件 | Commons 来源 | 许可 | 核验状态 |
+|---|---|---|---|
+| `1949-rostrum-proclamation.jpg` | File:Founding Ceremony of People's Republic of China.jpg | PD-China 公有领域 | 已直接核验 |
+| `1949-tiananmen-feb.jpg` | File:Tiananmen 1949.jpg | Public Domain | ⚠️ 二手镜像标注，上线前须复核 |
+| `1949-ji1-stamp.jpg` | File:Ji1, 4-1, Beijing Tiananmen, 1949.jpg | PD-China 公有领域 | 已直接核验 |
+
+**合规要点：**
+
+1. **性质如实标注**：三张均为**静态照片**，编排时角标「维基真史料照片 · 静帧编排 · 非活动影像」，不冒充 1949 原始纪录片胶片。
+2. **仅对 1949 开国大典相关事件命中**（`matchesCuratedCommons`），避免给不相干事件配错史料。
+3. **面向欧美商用须复核**：PD-China 依据中国大陆「发表后 50 年届满」，Commons 文件页明确提示美国 URAA 可能恢复版权、不采用较短期限规则的法域（美/瑞士 70 年等）未必视为公版。正式对外收费前须由法务逐张确认，或改用明确 `CC0` / `PD-US` / `PD-1996` 的同类史料。
+4. **不违背按需架构**：这是「已核验的固定策展素材」，不是为每个事件预生成视频；上线 Vercel 后在线检索仍优先，缓存只作受限网络兜底。
+5. **有照片，没有那段视频**：[Category:Founding Ceremony of PRC](https://commons.wikimedia.org/wiki/Category:Founding_Ceremony_of_People%27s_Republic_of_China) 至少 24 个文件全为静态图；Commons 约 36 万视频（占比约 0.25%）且**仅接受 WebM / Ogg Theora / MPEG-1/2，不支持 MP4 / H.264**。1949 当年拍摄的连续活动胶片不属于 Commons 自由许可素材，仍按 §八 单独处理。

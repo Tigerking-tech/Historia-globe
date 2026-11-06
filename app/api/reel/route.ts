@@ -8,7 +8,8 @@ import type { ReelEventInput } from "@/lib/reel/types";
  * GET /api/reel?q=10.1
  * GET /api/reel?title=Apollo%2011&year=1969&place=Houston&lat=29.55&lon=-95.1&lang=zh
  * GET /api/reel?debug=1        探测各免费图源可达性（部署 Vercel 后自检用）
- * GET /api/reel?fixture=1&...  离线演示数据，仅用于验证播放器链路
+ * GET /api/reel?fixture=1&...  离线演示数据（自绘 SVG），仅用于验证播放器链路
+ * GET /api/reel?commons=1&...  维基共享资源真实史料照片（1949 相关事件），许可逐张核验
  *
  * 返回的是**时间轴描述 JSON**，不是视频，也不生成/存储视频。
  * 沙箱内 Wikimedia / archive.org 不可达时，接口照常 200 并返回 schematic，
@@ -66,7 +67,10 @@ export async function GET(req: NextRequest) {
   };
 
   try {
-    const manifest = await buildManifest(input, { fixture: p.get("fixture") === "1" });
+    const manifest = await buildManifest(input, {
+      fixture: p.get("fixture") === "1",
+      commons: p.get("commons") === "1",
+    });
     return NextResponse.json(manifest, {
       headers: {
         "Cache-Control": CACHE_HEADER,

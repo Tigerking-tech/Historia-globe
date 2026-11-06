@@ -646,6 +646,18 @@ export default function ExploreClient() {
                 ▶ {lang === "zh" ? "看当年影像" : "Watch the moment"}
               </a>
             )}
+            {/* 1949 开国大典专属：维基共享资源公有领域真实史料照片（非活动影像） */}
+            {reelTarget && /开国|大典|国庆|天安门|1949|founding|tiananmen/i.test(`${reelTarget.title} ${reelTarget.place}`) && (
+              <a
+                href={reelHrefFor(reelTarget) + "&commons=1"}
+                className="rounded-lg border border-sky-400/40 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                title={lang === "zh"
+                  ? "播放维基共享资源公有领域的 1949 真实史料照片（静帧编排 · 非活动影像），逐张署名"
+                  : "Play public-domain 1949 archival photographs from Wikimedia Commons (still montage, not footage)"}
+              >
+                ▤ {lang === "zh" ? "维基真史料照片" : "Commons archival photos"}
+              </a>
+            )}
           </div>
           {tourActive && tourShots.length > 0 && (
             <div className="mt-2 text-[11px] text-sky-300 leading-snug">

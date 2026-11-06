@@ -8,6 +8,7 @@
  */
 
 import { attributionLine } from "./licenses";
+import { CURATED_1949_IMAGES, matchesCuratedCommons } from "./commons-curated";
 import {
   buildQueries,
   cleanTerms,
@@ -209,6 +210,71 @@ function fixtureManifest(e: ReelEventInput, key: string): ReelManifest {
   };
 }
 
+/** 维基共享资源真实史料照片版（?commons=1）。
+ *  与自绘 SVG 示意的区别：assets 是**真实历史照片**，已逐张核对 Commons 许可。
+ *  用途：沙箱/受限网络下也能播真史料；上线后在线检索仍优先。
+ *  绝不含糊：明确标注「史料照片（静帧编排）· 非活动影像」，不冒充当年视频。 */
+function commonsCuratedManifest(e: ReelEventInput, key: string): ReelManifest {
+  const zh = e.lang !== "en";
+  // 标题控制在 6 字内：底部三镜列表在 390px 窄屏会把长标题挤到换行
+  const titles = zh
+    ? ["01　城楼宣告", "02　天安门", "03　开国邮票"]
+    : ["01  Proclamation", "02  The Gate", "03  The Stamp"];
+  const notes = zh
+    ? ["1949-10-01 · 天安门城楼上的历史一刻",
+       "1949-02-12 · 北平和平解放后的城楼",
+       "1949-10-08 · 纪1 纪念邮票"]
+    : ["1 Oct 1949 · on the Tian'anmen rostrum",
+       "12 Feb 1949 · the gate after Beiping's liberation",
+       "8 Oct 1949 · the Ji-1 commemorative stamp"];
+  const assets: ReelAsset[] = CURATED_1949_IMAGES.map((c, i) => ({
+    kind: "image" as const,
+    url: c.url,
+    title: c.title,
+    width: c.width,
+    height: c.height,
+    license: {
+      short: c.licenseShort,
+      url: c.licenseUrl,
+      author: c.author,
+      attributionRequired: false,
+      sourcePage: c.sourcePage,
+      source: "commons-image",
+    },
+    score: 30 - i,
+  }));
+  const shots: ReelShot[] = [0, 1, 2].map((i) => ({
+    index: i as 0 | 1 | 2,
+    start: i * SHOT_LEN,
+    end: (i + 1) * SHOT_LEN,
+    title: titles[i], note: notes[i],
+    assetIndex: i,
+    pan: makePan(key, i),
+  }));
+  const attributions = CURATED_1949_IMAGES.map((c) =>
+    attributionLine({
+      short: c.licenseShort, url: c.licenseUrl, author: c.author,
+      sourcePage: c.sourcePage, source: "commons-image",
+    }) + (c.verified ? "" : "（许可依据二手镜像标注，上线前须复核 Commons 文件页）"),
+  );
+  return {
+    version: 1, key: `${key}|commons`, mode: "stills", duration: 10,
+    event: {
+      title: zh ? "开国大典" : "Founding Ceremony of the PRC",
+      year: 1949, place: zh ? "北京天安门" : "Tian'anmen, Beijing",
+      category: "politics", lat: 39.9, lon: 116.4, lang: e.lang || "zh",
+    },
+    disclosure: zh
+      ? "维基共享资源公有领域史料照片 · 静帧编排 · 非活动影像 · 署名与法务见 docs/REEL-COMMONS-CREDITS.md"
+      : "Public-domain Commons archival photos · still montage · NOT footage · see docs/REEL-COMMONS-CREDITS.md",
+    badge: zh ? "维基真史料照片 · 非活动影像" : "Commons archival photos · not footage",
+    shots, assets, videoUrl: undefined,
+    attributions,
+    sources: [{ name: "commons-image", status: "ok", detail: "本地缓存的 Wikimedia Commons 公有领域史料照片（沙箱通过图片代理取得），许可逐张核验，见 docs/REEL-COMMONS-CREDITS.md" }],
+    fixture: false, generatedAt: new Date().toISOString(),
+  };
+}
+
 function imageCountAll(results: { assets?: ReelAsset[] }[]): number {
   return results.reduce((n, r) => n + (r?.assets?.filter((a) => a.kind === "image").length || 0), 0);
 }
@@ -226,11 +292,14 @@ function mergeSources(list: SourceReport[]): SourceReport[] {
   return Array.from(map.values());
 }
 
-export interface BuildOptions { fixture?: boolean; debug?: boolean; }
+export interface BuildOptions { fixture?: boolean; debug?: boolean; commons?: boolean; }
 
 export async function buildManifest(raw: ReelEventInput, opts: BuildOptions = {}): Promise<ReelManifest> {
   const e = normalizeInput(raw);
   const key = makeKey(e);
+  // 显式请求「维基共享资源真实史料照片」优先级最高：用户明确要看维基真图时，
+  // 就给照片而不是本地胶片；仅对 1949 相关事件命中，避免配错史料。
+  if (opts.commons && matchesCuratedCommons(e)) return commonsCuratedManifest(e, key);
   if (isCurated(e)) return curatedManifest(e, key);
   if (opts.fixture) return fixtureManifest(e, key);
 
