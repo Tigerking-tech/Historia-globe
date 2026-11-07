@@ -37,12 +37,19 @@ export async function generateMetadata({
   if (!parsed) return getSEOTags({ title: "On This Day · Historia Globe" });
   const c = getDateContent(params.date);
   const label = dateLabel(parsed.m, parsed.d);
+  const events = c?.events ?? [];
+  const hasEvents = events.length > 0;
   return getSEOTags({
-    title: `On This Day: ${label} in history · Historia Globe`,
-    description: c
-      ? `${label} in history: ${c.events.length} verified, geolocated event${c.events.length === 1 ? "" : "s"} — ${c.events.slice(0, 3).map((e) => `${e.title} (${e.year})`).join("; ")}. Free, with source links and archival photos.`
-      : `${label} in history. Browse the curated archive of this date on an interactive 3D globe, free.`,
+    // L2 差异化主词进 title：避开 Wikipedia / History.com 垄断的 "on this day in history"。
+    title: `${label} in History Around the World · Historia Globe`,
+    description: hasEvents
+      ? `${label} in history around the world: ${events.length} verified, geolocated event${events.length === 1 ? "" : "s"} across continents — ${events.slice(0, 3).map((e) => `${e.title} (${e.year})`).join("; ")}. What else happened that day? Free, with clickable source links and real archival photos.`
+      : `${label} in history around the world. This date currently has no curated event in our archive; browse nearby dates or explore the interactive 3D history globe to see what else happened that day. Free, with clickable sources.`,
     canonicalUrlRelative: `/on-this-day/${params.date}`,
+    // 零事件日期页不进入索引，避免 220 个薄页稀释整站质量分。
+    // sitemap 仍保留 366 个日期 URL（既有验收要求 sitemap >500 条），noindex 优先级更高。
+    // 构建期补齐静态数据后 hasEvents 变 true，无需改代码即自动恢复索引。
+    ...(hasEvents ? {} : { extraTags: { robots: { index: false, follow: true } } }),
   });
 }
 

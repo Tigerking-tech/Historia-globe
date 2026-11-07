@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "source": "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all",
+  "status": "unavailable",
+  "note": "尚未在可访问 Wikimedia 的环境执行抓取；由 .github/workflows/fetch-static-content.yml 自动补齐。在此之前的日期页仍使用 lib/seed-events.ts 的 150 条本地策展事件。",
+  "caveat": "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
+  "eventCount": 0,
+  "daysWithEvents": 0,
+  "events": []
+}

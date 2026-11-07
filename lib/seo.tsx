@@ -32,8 +32,15 @@ export const getSEOTags = ({
     title: title || config.appName,
     // up to 160 characters (how does your app help the user?)
     description: description || config.appDescription,
-    // some keywords separated by commas. by default it will be your app name
-    keywords: keywords || [config.appName],
+    // 统一全站词面：L1 品牌词 + L2 差异化主词。
+    // meta keywords 权重已近零，这里只用于保持各页词面一致，不指望它带排名。
+    keywords: keywords || [
+      config.appName,
+      "what happened on this day around the world",
+      "interactive history globe by date",
+      "same day global history across continents",
+      "AI history with citations",
+    ],
     applicationName: config.appName,
     // set a base URL prefix for other fields that require a fully qualified URL (.e.g og:image: og:image: 'https://yourdomain.com/share.png' => '/share.png')
     metadataBase: new URL(

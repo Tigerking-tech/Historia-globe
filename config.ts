@@ -2,7 +2,7 @@
 const config = {
   appName: "Historia Globe",
   appDescription:
-    "See the whole world's history at once. Pick any date and explore the global events that shaped it — on an interactive globe, with an AI that connects the threads across continents.",
+    "See what happened around the world on any date: global events of the same day on a 3D history globe, with real archival photos and clickable sources.",
   domainName: "historiaglobe.com",
 
   // Creem 支付（模板已接好；填入你的 Creem 测试/正式密钥即可启用结账）
