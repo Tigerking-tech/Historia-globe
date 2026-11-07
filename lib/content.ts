@@ -10,6 +10,66 @@
 
 import { SEED_EVENTS, type SeedEvent } from "./seed-events";
 import { CURATED_SETS } from "./reel/curated-slides";
+import generated from "../data/generated-events.json";
+
+// ---- 构建期补入的静态条目（由 scripts/build-static-content.mjs 生成） ----
+// 这一层是**只读补充**：只进日期页，绝不并入 CONTENT_EVENTS。
+// 原因：生成条目没有经纬度、没有站内事件页/地点页，并进去会破坏地球 pin 层、
+// 事件页与地点页链路，还会在页面上渲染出 NaN° 坐标和 /event/ 死链。
+// 因此页面渲染时单独成段，直接链接到该条目的真实 Wikipedia 出处 URL。
+export type SupplementalEvent = {
+  m: number;
+  d: number;
+  year: number;
+  title: string;
+  description: string;
+  sourceUrl: string;
+};
+
+const SUPPLEMENTAL_MAP = new Map<string, SupplementalEvent[]>();
+{
+  type Raw = Partial<SupplementalEvent> & { m?: unknown; d?: unknown; year?: unknown };
+  const rows = (generated as unknown as { events?: Raw[] }).events ?? [];
+  const seen = new Set<string>();
+  for (const g of rows) {
+    if (!g || typeof g !== "object") continue;
+    if (!Number.isInteger(g.m) || !Number.isInteger(g.d) || !Number.isFinite(g.year as number)) continue;
+    if (typeof g.title !== "string" || !g.title.trim()) continue;
+    if (typeof g.sourceUrl !== "string" || !/^https:\/\//.test(g.sourceUrl)) continue;
+    const m = g.m as number, d = g.d as number, year = g.year as number;
+    if (m < 1 || m > 12 || d < 1 || d > 31) continue;
+    const key = `${m}-${d}-${year}-${g.title}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const item: SupplementalEvent = {
+      m, d, year,
+      title: g.title.trim().slice(0, 240),
+      description: typeof g.description === "string" ? g.description.slice(0, 600) : "",
+      sourceUrl: g.sourceUrl,
+    };
+    const slug = dateSlug(m, d);
+    if (!SUPPLEMENTAL_MAP.has(slug)) SUPPLEMENTAL_MAP.set(slug, []);
+    SUPPLEMENTAL_MAP.get(slug)!.push(item);
+  }
+  // 用 Array.from 而非直接迭代 Map.values()：项目 tsconfig target 低于 es2015，
+  // 直接 for...of 会触发 TS2802（需要 downlevelIteration）。
+  for (const list of Array.from(SUPPLEMENTAL_MAP.values())) {
+    list.sort((a: SupplementalEvent, b: SupplementalEvent) => b.year - a.year);
+  }
+}
+
+/** 日期页专用：该日期从 Wikipedia On this day 补入的静态条目（可能为空数组）。 */
+export function getSupplementalEvents(slug: string): SupplementalEvent[] {
+  return SUPPLEMENTAL_MAP.get(slug) ?? [];
+}
+
+export function supplementalStats() {
+  return {
+    events: Array.from(SUPPLEMENTAL_MAP.values()).reduce((n, l) => n + l.length, 0),
+    days: SUPPLEMENTAL_MAP.size,
+    status: (generated as { status?: string }).status ?? "unknown",
+  };
+}
 
 export type ContentEvent = SeedEvent & {
   slug: string;

@@ -337,8 +337,11 @@ async function main() {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  // --soft-fail 供 Vercel 构建期使用：上游波动或 partial 不应让整次部署失败，
+  // 此时保留仓库里的旧快照，页面自动退回当前内容，零回归。
+  const softFail = argv.includes("--soft-fail");
   main()
-    .then((code) => process.exit(code))
+    .then((code) => process.exit(softFail && (code === 1 || code === 2) ? 0 : code))
     .catch((e) => {
       console.error("[build-static-content] 未预期错误：", e);
       process.exit(3);

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/copy-cesium.mjs && next build",
+    "build": "node scripts/copy-cesium.mjs && node scripts/build-static-content.mjs --soft-fail && next build",
     "start": "next start",
     "lint": "next lint"
   },
