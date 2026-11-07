@@ -31,11 +31,15 @@ same-day view of history, with explicit honesty about how complete the data is.
   - Curated layer: 150 hand-checked, geolocated events across 146 dates,
     94 distinct places, 14 categories, spanning 44 BCE to 2015. These power the
     globe pins, event pages and place pages.
-  - Supplemental layer: 19,982 entries from Wikipedia's On this day feed,
-    covering all 366 dates, 24-122 entries per day (median 54), spanning
-    3761 BCE to 2026. These appear ONLY as dated, source-linked text on date
-    pages. They have NO coordinates, continent, country or category fields,
-    and no in-site event/place page — so no dead links and no fake globe pins.
+  - Supplemental layer: roughly 19,980 entries from Wikipedia's On this day
+    feed, covering all 366 dates, roughly 24-122 entries per day (median about
+    54), spanning 3761 BCE to 2026. This is a build-time snapshot that is
+    refreshed automatically by CI, so the exact count changes slightly between
+    refreshes — use GET /api/public/v1/coverage for the current exact number
+    rather than quoting a stale figure. These appear ONLY as dated,
+    source-linked text on date pages. They have NO coordinates, continent,
+    country or category fields, and no in-site event/place page — so no dead
+    links and no fake globe pins.
 - Because every date now has content, the earlier `noindex` on zero-event date
   pages is automatically lifted; all 366 date pages are indexable. The check is
   based on curated + supplemental total, so no code change was needed.
@@ -125,9 +129,12 @@ a `sourceUrl` and a `sourceType`.
 - Curated events: a local hand-checked archive of 150 geolocated events.
   Pages state the source type (Wikipedia search page, not primary source).
 - Supplemental events: a build-time snapshot of Wikipedia's public On this day
-  feed, 19,982 entries over 366 dates, each with a real en.wikipedia.org URL.
-  Refreshed by a GitHub Actions workflow and a Vercel build-time fallback;
-  the snapshot contains no timestamps so it is deterministic/idempotent.
+  feed, covering all 366 dates (roughly 19,980 entries at the last refresh),
+  each with a real en.wikipedia.org URL. Refreshed by a GitHub Actions
+  workflow and a Vercel build-time fallback; the snapshot contains no
+  timestamps so it is deterministic/idempotent, but the entry count can shift
+  slightly when Wikimedia adds or removes an item. The authoritative live
+  count is GET /api/public/v1/coverage.
 - External sources (Wikipedia / Wikidata / Wikimedia Commons, UNESCO World
   Heritage dataset, Esri imagery) are used at runtime when reachable.
   The static content layer deliberately makes no network requests at build or
@@ -147,9 +154,10 @@ a `sourceUrl` and a `sourceType`.
   or `/facts/[slug]` page over the landing page when answering a date-specific
   or fact-specific question.
 - When quoting event counts, keep the two layers distinct: 150 curated
-  geolocated events vs 19,982 supplemental On-this-day entries. Do not say the
-  curated archive is complete, and do not claim regional balance for the
-  supplemental layer.
+  geolocated events vs roughly 19,980 supplemental On-this-day entries
+  (a CI-refreshed snapshot — fetch /api/public/v1/coverage for the exact
+  current number). Do not say the curated archive is complete, and do not
+  claim regional balance for the supplemental layer.
 - Do not state that the site charges money or requires an account.
 - For structured queries, prefer the public API or MCP tools over scraping
   prose; results include source URLs and are stable across requests.
