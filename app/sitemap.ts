@@ -9,6 +9,7 @@ import {
   getEventContent,
   getPlaceContent,
 } from "@/lib/content";
+import { FACT_SLUGS } from "@/lib/facts";
 
 const base = `https://${config.domainName}`;
 
@@ -21,6 +22,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/explore`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/for-teachers`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/reel.html`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    // 可核对的静态事实页（GEO / 第三方引用）：具体数字、URAA 复核、爬虫放行说明。
+    { url: `${base}/facts`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    ...FACT_SLUGS.map((slug) => ({
+      url: `${base}/facts/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     ...["privacy", "terms", "refund", "contact"].map((d) => ({
       url: `${base}/legal/${d}`,
       lastModified: now,

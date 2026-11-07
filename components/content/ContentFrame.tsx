@@ -32,6 +32,8 @@ export function SiteFooterLinks() {
         <Link href="/legal/refund" className="hover:text-white">Refund</Link>
         <Link href="/legal/contact" className="hover:text-white">Contact</Link>
         <Link href="/for-teachers" className="hover:text-white">For teachers</Link>
+        <Link href="/facts" className="hover:text-white">Facts &amp; coverage</Link>
+        <Link href="/llms.txt" className="hover:text-white">llms.txt</Link>
         <Link href="/sitemap.xml" className="hover:text-white">Sitemap</Link>
       </div>
       <p className="mt-3">

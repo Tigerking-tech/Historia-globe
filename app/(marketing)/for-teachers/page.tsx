@@ -9,7 +9,15 @@ import { stats } from "@/lib/content";
 export const metadata: Metadata = getSEOTags({
   title: "For teachers & homeschool · Historia Globe",
   description:
-    "A free, projector-friendly history tool: presentation large-type mode, CSV export with clickable source links, and an interactive 3D globe for any date. No account needed.",
+    "A free AI history tool with citations for students: projector-friendly presentation mode, CSV export with clickable sources, real primary source photos with credits, and a 3D globe for any date. No account, no student data.",
+  // L4 人群词显式落位：这些是教师在搜索框里真正会打的词。
+  keywords: [
+    "free primary source photos for students",
+    "AI history tool with citations for students",
+    "non-hallucinating AI history",
+    "free history globe for teachers and homeschool",
+    "history lesson with source links",
+  ],
   canonicalUrlRelative: "/for-teachers",
 });
 
@@ -35,7 +43,45 @@ export default function ForTeachersPage() {
       <PriceNote />
 
       <section className="mt-10">
-        <h2 className="editorial text-xl text-white">Three things that work today</h2>
+        <h2 className="editorial text-xl text-white">
+          How the citations are generated · 引用是怎么生成的
+        </h2>
+        <p className="mt-3 text-sm leading-[1.9] text-slate-300">
+          This is a concrete, checkable description rather than a promise. Each curated event in the
+          archive has a <code className="rounded bg-white/10 px-1 py-0.5 text-xs">sourceUrl</code>{" "}
+          that points to a <strong>Wikipedia search page</strong> for that event&apos;s title — we
+          label it as a search page, not as a single authoritative primary source. When Ask Historia
+          composes an answer, it is given a numbered SOURCES block built from the day&apos;s events
+          (up to 8) and instructed to append the matching marker like [1] or [2] whenever it
+          mentions a specific event, and never to invent a source number. The page then renders the
+          numbered list with clickable links.
+        </p>
+        <p className="mt-3 text-sm leading-[1.9] text-slate-300">
+          Supplemental entries from Wikipedia&apos;s On this day feed link to their real{" "}
+          <code className="rounded bg-white/10 px-1 py-0.5 text-xs">en.wikipedia.org</code> URL.
+          Every result from the public read-only API also carries a{" "}
+          <code className="rounded bg-white/10 px-1 py-0.5 text-xs">sourceUrl</code> and a{" "}
+          <code className="rounded bg-white/10 px-1 py-0.5 text-xs">sourceType</code> field.
+        </p>
+        <p className="mt-3 text-sm leading-[1.9] text-amber-200/90">
+          <strong>What we do not claim:</strong> citations are event-level, not per-sentence
+          academic footnotes. We do not claim zero fabrication — an AI model can still write an
+          unsupported sentence — which is exactly why every claim is paired with a link a student
+          can open and check. A useful classroom exercise is to find one sentence whose cited page
+          does not support it.
+        </p>
+        <p className="mt-3 text-xs leading-relaxed text-slate-500">
+          Verify the mechanism yourself:{" "}
+          <a href="/api/public/v1/on-this-day/07-20" className="text-sky-300 underline">open the 07-20 API response ↗</a>{" "}
+          to see the sourceUrl fields, or read the{" "}
+          <Link href="/facts/coverage-and-sources" className="text-sky-300 underline">coverage and source types fact page ↗</Link>.
+        </p>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="editorial text-xl text-white">
+          Three things that work today: free primary source photos, an AI history tool with citations, and a globe for any date
+        </h2>
         <ul className="mt-4 space-y-4">
           <li className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
             <h3 className="text-sm font-semibold text-white">1 · Presentation mode / 演示大字</h3>

@@ -27,7 +27,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // 公开只读 API 与 MCP 端点是给 AI 助手调用的，必须显式放行；
+        // 其余 /api/ 内部接口（检查登录态、结账、抓取上游）继续屏蔽。
+        // robots 规范按「最长匹配」判定，allow 比 disallow 更具体时优先生效。
+        allow: ["/", "/api/public/"],
         disallow: ["/api/", "/dashboard", "/account", "/signin", "/signup"],
       },
       // 逐条显式声明，避免某些解析器的通配符规则覆盖 AI agent

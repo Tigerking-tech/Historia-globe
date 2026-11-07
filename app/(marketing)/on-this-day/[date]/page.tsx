@@ -114,6 +114,38 @@ export default function OnThisDayPage({ params }: { params: { date: string } }) 
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-12 sm:px-8">
       <JsonLd data={{
         "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `What happened on ${label} around the world?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: total
+                ? `Historia Globe records ${total} historical events on ${label}: ${events.length} geolocated curated events and ${supplemental.length} entries from Wikipedia's On this day feed, each with a clickable source link. The list is a same-day cross-continental view, not a complete or regionally balanced record.`
+                : `Our curated archive currently has no geolocated event for ${label}. This is an honest gap in our data, not a claim that nothing happened on that date. Nearby dates and the live globe are linked on the page.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Is this a national timeline or a same-day global view?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "It is a same-day global view. Instead of following one country in chronological order, this page puts events that share a calendar date side by side across continents, so you can see what else was happening at the same time elsewhere.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Is this page free and do the events have sources?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes. This page, the 3D globe, source links, CSV export and the archival slideshow are free with no account or card. Every event links to a Wikipedia page; payment is not enabled on this site.",
+            },
+          },
+        ],
+      }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
         "@type": "ItemList",
         name: `On This Day: ${label} in history`,
         numberOfItems: total,
@@ -207,6 +239,40 @@ export default function OnThisDayPage({ params }: { params: { date: string } }) 
           <SourceNote count={0} />
         </section>
       )}
+
+      {/* 问句式 FAQ：与上面的 FAQPage JSON-LD 一一对应，服务端直出、无 JS 可读。
+          GEO 里最容易被 AI 引用的一类内容：完整问句 + 具体数字 + 诚实边界。 */}
+      <section className="mt-10">
+        <h2 className="editorial text-xl text-white">Questions about {label}</h2>
+        <div className="mt-4 space-y-4">
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <h3 className="text-sm font-semibold text-white">What happened on {label} around the world?</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              {total
+                ? `This page records ${total} historical events on ${label} — ${events.length} geolocated curated events and ${supplemental.length} entries from Wikipedia's On this day feed — each with a clickable source link. It is a same-day view across continents, not a complete or regionally balanced record.`
+                : `Our curated archive currently has no geolocated event for ${label}. This is an honest gap in our data, not a claim that nothing happened. Nearby dates and the live globe are linked above.`}
+            </p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <h3 className="text-sm font-semibold text-white">Is this a national timeline or a same-day global view?</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              A same-day global view. Instead of following one country in chronological order, this
+              page puts events sharing one calendar date side by side, so you can see what else was
+              happening at the same time elsewhere.{" "}
+              <Link href="/facts/same-day-vs-national-timelines" className="text-sky-300 underline">How the two differ ↗</Link>
+            </p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <h3 className="text-sm font-semibold text-white">Is this page free and do the events have sources?</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Yes. This page, the 3D globe, source links, CSV export and the archival slideshow are
+              free with no account or card. Every event links to a Wikipedia page; payment is not
+              enabled on this site. Exact coverage numbers are published in the{" "}
+              <Link href="/facts/coverage-and-sources" className="text-sky-300 underline">coverage fact page ↗</Link>.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <Cta />
       <SiteFooterLinks />

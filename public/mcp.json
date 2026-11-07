@@ -1,0 +1,62 @@
+{
+  "name": "historia-globe",
+  "version": "v1",
+  "description": "Public read-only history tools: what happened around the world on a given calendar date, every result with a source URL.",
+  "transport": {
+    "type": "json-rpc-http",
+    "endpoint": "/api/public/mcp",
+    "method": "POST",
+    "stateless": true,
+    "protocolVersion": "2024-11-05"
+  },
+  "authentication": "none",
+  "writeOperations": false,
+  "tools": [
+    {
+      "name": "get_events_on_date",
+      "description": "Return every event recorded for a calendar date (MM-DD), each with a sourceUrl.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "date": { "type": "string", "description": "Month-day, e.g. 07-20" } },
+        "required": ["date"]
+      }
+    },
+    {
+      "name": "search_events",
+      "description": "Search the hand-checked curated event archive by title, description or place.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string" },
+          "limit": { "type": "number" },
+          "category": { "type": "string" }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "get_event",
+      "description": "Fetch one curated event by slug, including coordinates and sourceUrl.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "slug": { "type": "string" } },
+        "required": ["slug"]
+      }
+    },
+    {
+      "name": "get_coverage_stats",
+      "description": "Exact build-time coverage statistics and an explicit statement of what cannot be measured.",
+      "inputSchema": { "type": "object", "properties": {} }
+    }
+  ],
+  "restEndpoints": {
+    "index": "/api/public/v1",
+    "onThisDay": "/api/public/v1/on-this-day/{MM-DD}",
+    "search": "/api/public/v1/events?q={text}&limit=20&category={slug}",
+    "event": "/api/public/v1/event/{slug}",
+    "place": "/api/public/v1/place/{slug}",
+    "coverage": "/api/public/v1/coverage"
+  },
+  "siteFacts": "/llms.txt",
+  "license": "Free to read, no key. Retain attribution; reuse subject to upstream licences. The dataset is a build-time snapshot, not a complete or regionally balanced historical record."
+}

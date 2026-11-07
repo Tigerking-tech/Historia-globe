@@ -24,7 +24,13 @@ export async function generateMetadata({
   if (!p) return getSEOTags({ title: "Historical places · Historia Globe" });
   return getSEOTags({
     title: `History of ${p.place} · Historia Globe`,
-    description: `${p.events.length} verified historical events recorded at ${p.place}, with dates, coordinates and source links. Explore them free on an interactive 3D globe.`,
+    description: `${p.events.length} verified historical events recorded at ${p.place}, with dates, coordinates and clickable source links. What else happened on those same days around the world? Explore free on an interactive 3D globe.`,
+    keywords: [
+      `history of ${p.place}`,
+      "what else happened that day",
+      "same day global history across continents",
+      "free interactive history globe with citations",
+    ],
     canonicalUrlRelative: `/place/${params.slug}`,
   });
 }
@@ -82,11 +88,32 @@ export default function PlacePage({ params }: { params: { slug: string } }) {
       </section>
 
       <section className="mt-8">
+        <h2 className="editorial text-lg text-white">What else happened on those same days?</h2>
+        <p className="mt-2 text-sm leading-relaxed text-slate-300">
+          A place page is a vertical slice — one location across time. To see the horizontal slice
+          instead, open the date page for any event above: it puts what was happening in different
+          parts of the world on that <em>same calendar day</em> side by side. That comparison is the
+          core of Historia Globe, and it is why we keep one page per month-day rather than only
+          national timelines.
+        </p>
+        <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <Link href={`/on-this-day/${p.events[0].dateSlug}`} className="text-sky-300 underline">
+            Example: {dateLabel(p.events[0].m, p.events[0].d)} around the world ↗
+          </Link>
+          <Link href="/facts/same-day-vs-national-timelines" className="text-sky-300 underline">
+            Read the comparison ↗
+          </Link>
+        </p>
+      </section>
+
+      <section className="mt-8">
         <h2 className="editorial text-lg text-white">Browse all dates</h2>
         <p className="mt-2 text-xs leading-relaxed text-slate-500">
           {everyDateSlug().length} date pages are indexed in the{" "}
           <Link href="/sitemap.xml" className="text-sky-300 underline">sitemap ↗</Link>, so any day can
-          be reached directly by search engines and AI assistants.
+          be reached directly by search engines and AI assistants. Structured results are also
+          available through the{" "}
+          <a href="/api/public/v1" className="text-sky-300 underline">public read-only API ↗</a>.
         </p>
       </section>
 

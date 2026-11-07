@@ -29,7 +29,15 @@ export async function generateMetadata({
   const year = e.year < 0 ? `${-e.year} BCE` : String(e.year);
   return getSEOTags({
     title: `${e.title} (${year}) · Historia Globe`,
-    description: `${e.description} Location: ${e.place}. Free interactive globe record with a clickable Wikipedia source link, coordinates and archival photo credits.`,
+    // L2 内链闭环词：从单条事件回到「这一天世界别处还发生了什么」，
+    // 避开 Wikipedia / NASA 垄断的 "on this day in history" 正面竞争。
+    description: `${e.description} Location: ${e.place}, ${year}. What else happened that day around the world? See ${dateLabel(e.m, e.d)} on our interactive 3D history globe — free, with clickable Wikipedia sources and per-image archival photo credits.`,
+    keywords: [
+      "what else happened that day",
+      `${dateLabel(e.m, e.d)} in history around the world`,
+      e.category ? `${e.category} history timeline` : "history timeline",
+      "free history globe with citations",
+    ],
     canonicalUrlRelative: `/event/${params.slug}`,
   });
 }
@@ -132,6 +140,26 @@ export default function EventPage({ params }: { params: { slug: string } }) {
       </section>
 
       <PhotoSection e={e} />
+
+      {/* 内链闭环：单条事件 → 同一天的全球横向视图（L2 主打词落位） */}
+      <section className="mt-8 rounded-xl border border-sky-400/20 bg-sky-400/[0.04] px-5 py-4">
+        <h2 className="editorial text-lg text-white">What else happened that day around the world?</h2>
+        <p className="mt-2 text-sm leading-relaxed text-slate-300">
+          {e.title} is one moment on {label}. Our same-day view places the events of that single
+          calendar date side by side across continents, instead of following one nation&apos;s
+          timeline in isolation. Each entry carries a clickable source link and the page states
+          exactly how many events it records.
+        </p>
+        <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <Link href={`/on-this-day/${e.dateSlug}`} className="text-sky-300 underline">
+            See all events on {label} ↗
+          </Link>
+          <Link href="/facts/same-day-vs-national-timelines" className="text-sky-300 underline">
+            Why a same-day global view differs from national timelines ↗
+          </Link>
+        </p>
+      </section>
+
       <Cta />
       <SiteFooterLinks />
     </main>

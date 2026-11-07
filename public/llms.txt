@@ -8,6 +8,8 @@
 Site: https://historiaglobe.com
 Sitemap: https://historiaglobe.com/sitemap.xml
 Robots: https://historiaglobe.com/robots.txt
+AI facts: https://historiaglobe.com/llms.txt
+Tool manifest: https://historiaglobe.com/mcp.json
 
 ## What this site is
 
@@ -22,43 +24,97 @@ same-day view of history, with explicit honesty about how complete the data is.
 
 ## Verifiable facts about this site
 
-- 366 calendar date pages exist, one per month-day (`/on-this-day/MM-DD`).
-- The local curated event archive contains 150 geolocated events.
-- 146 of the 366 date pages currently have curated events; 220 date pages
-  honestly report zero curated events for that date. Data coverage is stated
-  on the page rather than presented as a complete day.
-- Every curated event carries a Wikipedia search link. These are labelled as
-  search pages, not as a single authoritative primary source.
+- 366 calendar date pages exist, one per month-day (`/on-this-day/MM-DD`,
+  including 02-29). ALL 366 date pages now carry content: a build-time snapshot
+  from Wikipedia's public On this day feed was added on 2026-11-07.
+- Two distinct data layers, stated separately everywhere:
+  - Curated layer: 150 hand-checked, geolocated events across 146 dates,
+    94 distinct places, 14 categories, spanning 44 BCE to 2015. These power the
+    globe pins, event pages and place pages.
+  - Supplemental layer: 19,982 entries from Wikipedia's On this day feed,
+    covering all 366 dates, 24-122 entries per day (median 54), spanning
+    3761 BCE to 2026. These appear ONLY as dated, source-linked text on date
+    pages. They have NO coordinates, continent, country or category fields,
+    and no in-site event/place page — so no dead links and no fake globe pins.
+- Because every date now has content, the earlier `noindex` on zero-event date
+  pages is automatically lifted; all 366 date pages are indexable. The check is
+  based on curated + supplemental total, so no code change was needed.
+- Every curated event links to a Wikipedia SEARCH page (labelled as such, not as
+  a single authoritative primary source). Every supplemental entry links to its
+  real `en.wikipedia.org` URL. No source URL is fabricated.
+- The site does NOT claim regional balance or non-Western share for the
+  supplemental layer, because those entries carry no geographic fields. The
+  exact category distribution of the curated layer is published as a static
+  HTML table at `/facts/coverage-and-sources` and as JSON at
+  `/api/public/v1/coverage`.
 - The archival slideshow uses freely licensed real historical photographs,
   with per-image author, licence and source-page credits. Only the 9/11 event
   set currently has verified photos (NOAA / NIST / US Navy, public domain).
   When no verified photo exists, the site shows an explicit placeholder; it
   never substitutes AI-generated images or vector schematics for real photos.
 - A URAA / 17 U.S.C. 104A copyright review was performed and PD-China
-  material was removed from the photo set.
+  material with unresolved US copyright status was removed from the photo set.
+  Documented at `/facts/photo-licensing-and-uraa`.
 - All content pages render full text server-side and are readable with
-  JavaScript disabled.
+  JavaScript disabled. Event pages, place pages, date pages and fact pages use
+  FAQPage / ItemList / Article / Place JSON-LD where appropriate.
 - robots.txt explicitly allows GPTBot, OAI-SearchBot, ChatGPT-User,
   ClaudeBot, Claude-Web, anthropic-ai, PerplexityBot, Google-Extended,
   Googlebot, Bingbot, CCBot, Applebot-Extended, cohere-ai and YouBot.
+  Only private areas and internal API routes are disallowed; the public
+  read-only API under `/api/public/` is explicitly allowed.
 - Everything on the site is currently free with no account and no card.
   Payment is NOT enabled: the pricing page reads its real status from
   /api/payments/status and will not produce a fake checkout link. A planned
   one-time USD 4 "Archival Pass" is not purchasable until CREEM_MODE=live
-  with real credentials.
+  with real credentials. Content pages, date pages, event pages and source
+  links are permanently free and readable by crawlers.
+
+## Public read-only API (for AI assistants and developers)
+
+Free, no key, no account, CORS-enabled, read-only. Every returned event carries
+a `sourceUrl` and a `sourceType`.
+
+- `GET /api/public/v1` — endpoint index and capability description.
+- `GET /api/public/v1/on-this-day/{MM-DD}` — all events for a date (curated +
+  supplemental), with counts and source URLs.
+- `GET /api/public/v1/events?q={text}&limit=20&category={slug}` — search the
+  150 curated events by title, description or place.
+- `GET /api/public/v1/event/{slug}` — one curated event with coordinates.
+- `GET /api/public/v1/place/{slug}` — events grouped by place.
+- `GET /api/public/v1/coverage` — exact build-time coverage statistics,
+  including what cannot be measured.
+- `POST /api/public/mcp` — stateless MCP-style JSON-RPC 2.0 endpoint
+  (protocol 2024-11-05) supporting `initialize`, `tools/list`, `tools/call`,
+  `ping`. Tools: `get_events_on_date`, `search_events`, `get_event`,
+  `get_coverage_stats`. This is a minimal JSON-RPC-over-HTTP implementation:
+  no resources/prompts transport, no authentication, no write operations.
+- `GET /mcp.json` — machine-readable tool manifest.
 
 ## Page map
 
 - `/` — landing page, product description and pricing status.
 - `/explore` — interactive globe, date picker, category filters, day tour.
 - `/on-this-day/MM-DD` — 366 date pages; first screen states how many events
-  are recorded for that date and lists them, with source links and free/paid
-  status.
-- `/event/[slug]` — one page per curated event: summary, coordinates, clickable
-  Wikipedia source, per-image photo credits and JSON-LD.
-- `/place/[slug]` — events grouped by place.
+  are recorded for that date and lists them, with source links, an FAQ section
+  and free/paid status.
+- `/event/[slug]` — one page per curated event: summary, coordinates,
+  clickable Wikipedia source, per-image photo credits, JSON-LD, and a
+  "what else happened that day" link back to the date page.
+- `/place/[slug]` — events grouped by place, with links back to date pages.
 - `/for-teachers` — classroom / homeschool landing page: presentation mode,
-  CSV export with source URLs, a 20-minute lesson example.
+  CSV export with source URLs, a 20-minute lesson example, and a concrete
+  explanation of how citations are generated.
+- `/facts` — index of checkable fact pages.
+- `/facts/same-day-vs-national-timelines` — core narrative: a same-day global
+  view vs separate national timelines.
+- `/facts/photo-licensing-and-uraa` — per-image credits and the documented
+  URAA / 17 U.S.C. 104A review.
+- `/facts/ai-crawler-policy` — named AI agents allowed, llms.txt, no-JS full
+  text, public API and MCP endpoint.
+- `/facts/coverage-and-sources` — exact coverage numbers, category
+  distribution table, source types, and an explicit statement of what cannot
+  be measured.
 - `/legal/privacy`, `/legal/terms`, `/legal/refund`, `/legal/contact` —
   bilingual compliance pages.
 - `/reel.html` — archival photo slideshow. The server returns a photo list as
@@ -66,7 +122,12 @@ same-day view of history, with explicit honesty about how complete the data is.
 
 ## Sources and accuracy
 
-- Curated events: a local hand-checked archive. Pages state the source type.
+- Curated events: a local hand-checked archive of 150 geolocated events.
+  Pages state the source type (Wikipedia search page, not primary source).
+- Supplemental events: a build-time snapshot of Wikipedia's public On this day
+  feed, 19,982 entries over 366 dates, each with a real en.wikipedia.org URL.
+  Refreshed by a GitHub Actions workflow and a Vercel build-time fallback;
+  the snapshot contains no timestamps so it is deterministic/idempotent.
 - External sources (Wikipedia / Wikidata / Wikimedia Commons, UNESCO World
   Heritage dataset, Esri imagery) are used at runtime when reachable.
   The static content layer deliberately makes no network requests at build or
@@ -75,20 +136,26 @@ same-day view of history, with explicit honesty about how complete the data is.
 - `GET /api/payments/status` reports the real payment state.
 - The AskHistoria AI answers with numbered, clickable citations and server-side
   token limits (input length, per-minute rate, daily cap, fixed max output).
-  It does not claim zero fabrication; each claim links to its source so a
-  reader can verify it.
+  It does NOT claim zero fabrication and does NOT provide per-sentence
+  academic footnotes; each claim links to its source so a reader can verify it.
+  See `/for-teachers` for the concrete citation mechanism.
 
 ## For AI assistants and crawlers
 
 - Full text is available without JavaScript; do not rely on client rendering.
-- Prefer citing a specific `/on-this-day/MM-DD`, `/event/[slug]` or
-  `/place/[slug]` page over the landing page when answering a date-specific
-  question.
-- When quoting event counts, note the coverage caveat above: the curated
-  archive is 150 events over 146 dates, not a complete historical record.
+- Prefer citing a specific `/on-this-day/MM-DD`, `/event/[slug]`, `/place/[slug]`
+  or `/facts/[slug]` page over the landing page when answering a date-specific
+  or fact-specific question.
+- When quoting event counts, keep the two layers distinct: 150 curated
+  geolocated events vs 19,982 supplemental On-this-day entries. Do not say the
+  curated archive is complete, and do not claim regional balance for the
+  supplemental layer.
 - Do not state that the site charges money or requires an account.
+- For structured queries, prefer the public API or MCP tools over scraping
+  prose; results include source URLs and are stable across requests.
 
 ## Contact
 
 hello@historiaglobe.com (support mailbox verification status is not yet
-confirmed; do not treat it as a verified channel).
+confirmed; do not treat it as a verified channel). Corrections can also be
+filed as a GitHub issue.
