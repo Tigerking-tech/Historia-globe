@@ -29,8 +29,17 @@ import assert from "node:assert/strict";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DEFAULT_OUT = path.join(ROOT, "data", "generated-events.json");
-const FEED = "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all";
-const TIMEOUT_MS = 8000;
+// 多源自适应：不同网络对 Wikimedia 各域名的可达性不同。实测 GitHub Actions 境外
+// runner 上 api.wikimedia.org 探测超时，而 wikimedia.org 的 Pageviews 端点正常返回，
+// 因此启动时逐个探测，选第一个能返回合法 events 数组的源，绝不静默降级。
+// 逐源诊断原样写进 stdout 与 GitHub Step Summary，便于定位「哪个域可达、返回什么」。
+const FEEDS = [
+  { id: "wikimedia-gateway", base: "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all" },
+  { id: "wikipedia-restbase", base: "https://en.wikipedia.org/api/rest_v1/feed/onthisday/all" },
+  { id: "wikimedia-rest", base: "https://wikimedia.org/api/rest_v1/feed/onthisday/all" },
+];
+const PROBE_TIMEOUT_MS = 20000; // 探测给足时间；runner 上 Pageviews 15s 超时可成功
+const TIMEOUT_MS = 12000; // 单日抓取（原 8s 在这些网络上偏紧）
 const CONCURRENCY = 8;
 const RETRIES = 1;
 // 已尝试 >= 8 天且一天都没成功 → 判定上游整体不可达，提前熔断，别浪费 366 次超时。
@@ -95,10 +104,10 @@ export function normalizeEvent(raw, m, d) {
  * 仓库内快照的固定结构。刻意不含 generatedAt / daysSucceeded 等易变字段：
  * 只要事件数据不变，序列化结果就逐字节相同，CI 不会产生空提交。
  */
-export function buildPayload(events, status) {
+export function buildPayload(events, status, source = FEEDS[0].base) {
   return {
     schemaVersion: 1,
-    source: FEED,
+    source,
     status,
     caveat:
       "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
@@ -114,13 +123,17 @@ export function serialize(payload) {
 
 /** 纯函数单测：验证天数、非法输入、字段裁剪、来源 URL、快照结构与确定性。 */
 export function selfTest() {
-  assert.equal(calendarDays().length, 366, "必须覆盖 366 个日历日");
-  assert.equal(calendarDays().filter((x) => x.m === 2 && x.d === 29).length, 1, "含闰日");
-  assert.equal(normalizeEvent(null, 1, 1), null);
-  assert.equal(normalizeEvent({ text: "", year: 1969 }, 1, 1), null);
-  assert.equal(normalizeEvent({ text: "X", year: "not-a-year" }, 1, 1), null);
-  assert.equal(normalizeEvent({ text: "X", year: 1969 }, 1, 1), null, "无来源 URL 时丢弃");
-  const ok = normalizeEvent(
+  let n = 0;
+  const eq = (...args) => { n++; return assert.equal(...args); };
+  const ok = (...args) => { n++; return assert.ok(...args); };
+
+  eq(calendarDays().length, 366, "必须覆盖 366 个日历日");
+  eq(calendarDays().filter((x) => x.m === 2 && x.d === 29).length, 1, "含闰日");
+  eq(normalizeEvent(null, 1, 1), null);
+  eq(normalizeEvent({ text: "", year: 1969 }, 1, 1), null);
+  eq(normalizeEvent({ text: "X", year: "not-a-year" }, 1, 1), null);
+  eq(normalizeEvent({ text: "X", year: 1969 }, 1, 1), null, "无来源 URL 时丢弃");
+  const okEvent = normalizeEvent(
     {
       text: "Apollo 11 lands",
       description: "First crewed Moon landing.",
@@ -130,29 +143,35 @@ export function selfTest() {
     7,
     20,
   );
-  assert.ok(ok, "合法条目应保留");
-  assert.equal(ok.m, 7);
-  assert.equal(ok.d, 20);
-  assert.equal(ok.year, 1969);
-  assert.equal(ok.sourceUrl, "https://en.wikipedia.org/wiki/Apollo_11");
-  assert.ok(normalizeEvent({ text: "A".repeat(500), year: 1, pages: [{ titles: { normalized: "A B" } }] }, 1, 1));
+  ok(okEvent, "合法条目应保留");
+  eq(okEvent.m, 7);
+  eq(okEvent.d, 20);
+  eq(okEvent.year, 1969);
+  eq(okEvent.sourceUrl, "https://en.wikipedia.org/wiki/Apollo_11");
+  ok(normalizeEvent({ text: "A".repeat(500), year: 1, pages: [{ titles: { normalized: "A B" } }] }, 1, 1));
 
   const p = buildPayload(
     [{ m: 7, d: 20, year: 1969, title: "A", description: "", sourceUrl: "https://example.org/a" }],
     "ok",
   );
-  assert.equal(p.schemaVersion, 1);
-  assert.equal(p.eventCount, 1);
-  assert.equal(p.daysWithEvents, 1);
-  assert.ok(!("generatedAt" in p), "仓库快照不得含时间戳，否则每次 CI 都产生空 diff");
-  assert.equal(serialize(p), serialize(p), "序列化必须确定性");
-  console.log("self-test: 16 项断言全部通过");
+  eq(p.schemaVersion, 1);
+  eq(p.eventCount, 1);
+  eq(p.daysWithEvents, 1);
+  eq(p.source, FEEDS[0].base, "默认来源为第一个候选源");
+  ok(!("generatedAt" in p), "仓库快照不得含时间戳，否则每次 CI 都产生空 diff");
+  eq(serialize(p), serialize(p), "序列化必须确定性");
+
+  // 多源配置：保证探测链路本身不会因配置错误静默失效。
+  ok(Array.isArray(FEEDS) && FEEDS.length >= 2, "至少配置 2 个候选源");
+  for (const f of FEEDS) ok(/^https:\/\//.test(f.base) && typeof f.id === "string" && f.id.length > 0, "候选源格式合法");
+
+  console.log(`self-test: ${n} 项断言全部通过`);
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchDay({ mm, dd }, attempt = 0) {
-  const url = `${FEED}/${mm}/${dd}`;
+async function fetchDay({ mm, dd }, attempt = 0, base = FEEDS[0].base) {
+  const url = `${base}/${mm}/${dd}`;
   try {
     const res = await fetch(url, {
       headers: { "User-Agent": UA, Accept: "application/json" },
@@ -168,10 +187,39 @@ async function fetchDay({ mm, dd }, attempt = 0) {
       e.name === "TimeoutError" || /HTTP (429|5\d\d)/.test(e.message) || /fetch failed|network/i.test(e.message);
     if (retryable && attempt < RETRIES) {
       await sleep(400 * (attempt + 1));
-      return fetchDay({ mm, dd }, attempt + 1);
+      return fetchDay({ mm, dd }, attempt + 1, base);
     }
     throw e;
   }
+}
+
+/**
+ * 逐个探测候选上游源，返回第一个能给出合法 events 数组的源。
+ * 纯网络诊断：每个域的真实状态 / 耗时 / 返回条数原样写进日志与 Step Summary，
+ * 不做任何猜测式降级；全部失败时由调用方保留旧快照。
+ */
+async function probeSources() {
+  const report = [];
+  for (const src of FEEDS) {
+    const t0 = Date.now();
+    try {
+      const res = await fetch(`${src.base}/07/20`, {
+        headers: { "User-Agent": UA, Accept: "application/json" },
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      });
+      const ms = Date.now() - t0;
+      if (!res.ok) {
+        report.push({ ...src, ok: false, detail: `HTTP ${res.status} (${ms}ms)` });
+        continue;
+      }
+      const json = await res.json();
+      const count = Array.isArray(json?.events) ? json.events.length : -1;
+      report.push({ ...src, ok: count >= 0, count, detail: `HTTP ${res.status}, events=${count}, ${ms}ms` });
+    } catch (e) {
+      report.push({ ...src, ok: false, detail: `${e.name}: ${e.message} (${Date.now() - t0}ms)` });
+    }
+  }
+  return { chosen: report.find((r) => r.ok) || null, report };
 }
 
 /** 不联网的 fixture：造 366 天各 1 条合法 raw，用于验证写入/幂等逻辑。 */
@@ -240,22 +288,34 @@ async function main() {
     }
   })();
 
-  // 1) 先探一天：上游整体不可达时快速失败，避免 366 次超时空等。
+  // 1) 多源探测：选第一个能返回合法 events 的源；全失败则快速跳过，
+  //    并把每个域的真实失败原因写进日志，避免 366 次超时空等。
   //    关键：失败分支完全不写文件，保持仓库快照原样。
-  try {
-    if (FIXTURE === "fail") throw new Error("fixture: simulated upstream failure");
-    if (!FIXTURE) await fetchDay(days[0]);
-  } catch (e) {
+  let probe = { chosen: null, report: [] };
+  if (FIXTURE === "fail") {
+    probe.report.push({ id: "fixture", ok: false, detail: "fixture: simulated upstream failure" });
+  } else if (FIXTURE) {
+    probe = { chosen: FEEDS[0], report: [{ ...FEEDS[0], ok: true, detail: "fixture: 跳过联网探测" }] };
+  } else {
+    probe = await probeSources();
+  }
+  const probeLines = probe.report.map(
+    (r) => `探测 ${r.id} = ${r.ok ? "可用" : "不可用"}（${r.detail}）`,
+  );
+  if (!probe.chosen) {
     await ciSummary([
       `status = unavailable`,
-      `reason = 上游探测失败：${e.name}: ${e.message}`,
+      `reason = 全部 ${FEEDS.length} 个候选上游源均不可用`,
+      ...probeLines,
       `已有事件 = ${existingCount}（未改动，快照文件保持原样）`,
-      `结论 = 本次跳过；请在能访问 Wikimedia 的环境重跑`,
+      `结论 = 本次跳过；请依据上面的逐源诊断调整出口网络或镜像`,
     ]);
-    console.log(`[build-static-content] 上游不可达，保留已有 ${existingCount} 条，未写入任何文件。`);
-    if (CI) console.log("::warning::Wikimedia 上游不可达，本次未更新数据（旧快照已保留）");
+    console.log(`[build-static-content] 全部上游不可用，保留已有 ${existingCount} 条，未写入任何文件。`);
+    if (CI) console.log("::warning::Wikimedia 上游全部不可用，本次未更新数据（旧快照已保留）");
     return 1;
   }
+  const feedBase = probe.chosen.base;
+  await ciSummary([`选中源 = ${probe.chosen.id}（${feedBase}）`, ...probeLines]);
 
   // 2) 并发抓取 366 天；带熔断，避免 CI 分钟被整体失败吃掉。
   const results = new Array(days.length);
@@ -265,7 +325,7 @@ async function main() {
     while (!aborted && cursor < days.length) {
       const i = cursor++;
       try {
-        results[i] = FIXTURE ? fixtureDay(days[i]) : await fetchDay(days[i]);
+        results[i] = FIXTURE ? fixtureDay(days[i]) : await fetchDay(days[i], 0, feedBase);
       } catch {
         results[i] = null;
       }
@@ -308,7 +368,7 @@ async function main() {
   }
 
   // 4) 幂等写入：内容逐字节相同就完全不碰文件。
-  const payload = buildPayload(events, failed === 0 ? "ok" : "partial");
+  const payload = buildPayload(events, failed === 0 ? "ok" : "partial", feedBase);
   const text = serialize(payload);
   let wrote = false;
   if (text !== existingText) {
@@ -318,6 +378,7 @@ async function main() {
   }
 
   const lines = [
+    `选中源 = ${probe.chosen.id}`,
     `status = ${payload.status}`,
     `成功天数 = ${succeededResults.length}/366`,
     `失败天数 = ${failed}`,
