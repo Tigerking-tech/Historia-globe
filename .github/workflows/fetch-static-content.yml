@@ -1,0 +1,118 @@
+# 沙箱网络无法访问 Wikimedia（直连 / 抓取通道 / Wikidata SPARQL 均超时）。
+# GitHub Actions 的 runner 在境外：push 后在这里抓取，把快照 commit 回仓库，
+# Vercel 检测到 main 变化后自动重新构建 —— 366 个日期页从而拿到静态、可索引的全文。
+#
+# 防死循环三重保险：
+#  1) commit 用内置 GITHUB_TOKEN（官方规定其 push 不会再触发新 workflow run）；
+#  2) commit message 带 [skip ci]；
+#  3) push.paths-ignore 排除数据文件自身的回流。
+name: Fetch external data (Wikimedia)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/generated-events.json'
+      - 'data/market-pageviews.json'
+  schedule:
+    # 官方说明整点为高负载时段，可能延迟甚至丢弃 job，故避开整点；每周二 UTC 04:37。
+    - cron: '37 4 * * 2'
+  workflow_dispatch:
+
+concurrency:
+  group: fetch-external-data-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  content:
+    name: 366 天日期页内容快照
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 脚本零第三方依赖，不需要 npm install / npm ci。
+      - name: 纯函数自检（不联网）
+        run: node scripts/build-static-content.mjs --self-test
+
+      - name: 抓取 Wikimedia On this day（366 天）
+        id: fetch
+        shell: bash
+        run: |
+          set +e
+          node scripts/build-static-content.mjs --ci
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          case "$code" in
+            0) echo "::notice::数据快照已更新或本就一致" ;;
+            1) echo "::warning::上游不可达或无有效条目，本次跳过，旧快照已保留" ;;
+            2) echo "::warning::部分日期失败，已写入 partial 快照（含全部成功条目）" ;;
+            *) echo "::error::脚本异常退出 ($code)"; exit 1 ;;
+          esac
+
+      - name: 仅在数据变化时回写仓库
+        id: commit
+        shell: bash
+        run: |
+          if git diff --quiet -- data/generated-events.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::数据无变化，不产生提交，也不会触发 Vercel 无意义部署"
+          else
+            # 提交前校验：绝不允许把空快照写进 main。
+            node -e "const d=require('./data/generated-events.json'); if(!Array.isArray(d.events)||d.events.length===0){console.error('快照为空，拒绝提交');process.exit(1)} console.log('events='+d.events.length+' status='+d.status+' daysWithEvents='+d.daysWithEvents)"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/generated-events.json
+            git diff --cached --stat
+            git commit -m "chore(data): refresh Wikimedia on-this-day snapshot [skip ci]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::快照已回写 main；Vercel 将自动重新构建静态页"
+          fi
+
+      - name: 上传快照供核对
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-events
+          path: data/generated-events.json
+          retention-days: 7
+          if-no-files-found: warn
+
+  market-snapshot:
+    name: 研究用流量快照（可选）
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # 研究用途：失败不影响主流程，但结论仍会显示为失败/警告，不掩盖。
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 抓 Wikipedia 官方 Pageviews
+        run: node scripts/fetch-pageviews.mjs --ci
+
+      - name: 上传研究快照（不进仓库）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: market-pageviews
+          path: data/market-pageviews.json
+          retention-days: 7
+          if-no-files-found: warn
