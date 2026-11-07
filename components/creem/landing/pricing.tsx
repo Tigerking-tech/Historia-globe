@@ -1,9 +1,16 @@
 "use client";
 
 import clsx from "clsx";
+import { useEffect, useState } from "react";
 import { Container } from "./container";
-import { Check, Globe2, Clock3 } from "lucide-react";
+import { Check, Globe2, Clock3, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+
+type PaymentState = {
+  mode: "disabled" | "test" | "live";
+  reason: string;
+  canCheckout: boolean;
+};
 
 function Plan({
   name,
@@ -13,21 +20,23 @@ function Plan({
   features,
   planned = [],
   featured = false,
-  notLive = false,
+  status,
   href,
   ctaLabel,
+  trackStep,
 }: {
   name: string;
   price: string;
   period: string;
   description: string;
   features: string[];
-  /** 尚未实现的功能：必须明确标注「计划中」，不得与已上线权益混排。 */
   planned?: string[];
   featured?: boolean;
-  notLive?: boolean;
+  /** 结账状态标签：只有真实收款启用时才不显示 */
+  status?: string | null;
   href: string;
   ctaLabel: string;
+  trackStep?: string;
 }) {
   const { t } = useI18n();
   return (
@@ -44,10 +53,11 @@ function Plan({
           {t("pricing.mostPopular")}
         </span>
       )}
-      {notLive && (
-        <span className="absolute right-5 top-5 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[10px] font-medium text-amber-200">
+      {status && (
+        // 放在右上角偏下，避开 featured 卡片顶部居中的「ONE-TIME」徽章
+        <span className="absolute right-5 top-9 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[10px] font-medium text-amber-200">
           <Clock3 className="h-3 w-3" />
-          {t("pricing.notLive")}
+          {status}
         </span>
       )}
       <h3 className="editorial text-xl text-white">{name}</h3>
@@ -77,6 +87,7 @@ function Plan({
       </ul>
       <a
         href={href}
+        data-track={trackStep}
         className={clsx(
           "mt-8 block rounded-xl px-4 py-3 text-center text-sm font-semibold transition",
           featured
@@ -92,6 +103,18 @@ function Plan({
 
 export function Pricing() {
   const { t, tList } = useI18n();
+  const [pay, setPay] = useState<PaymentState | null>(null);
+
+  useEffect(() => {
+    fetch("/api/payments/status")
+      .then((r) => r.json())
+      .then((d) => setPay({ mode: d.mode, reason: d.reason, canCheckout: !!d.canCheckout }))
+      .catch(() => setPay({ mode: "disabled", reason: "status unavailable", canCheckout: false }));
+  }, []);
+
+  // 真实状态来自服务端：只有 live 模式才不显示「结账尚未启用」。
+  const checkoutStatus = pay?.canCheckout ? null : t("pricing.checkoutNotLive");
+
   return (
     <section id="pricing" aria-label="Pricing" className="relative py-20 sm:py-32">
       <Container>
@@ -116,36 +139,43 @@ export function Pricing() {
             href="/explore"
             features={tList("pricing.wandererFeatures")}
             ctaLabel={t("pricing.startFree")}
+            trackStep="checkout_click"
           />
           <Plan
             featured
-            name="Voyager"
-            price={t("pricing.tba")}
-            period=""
-            description={t("pricing.voyagerDesc")}
+            name={t("pricing.passName")}
+            price="$4"
+            period={t("pricing.oneTime")}
+            description={t("pricing.passDesc")}
             href="/explore"
-            notLive
-            features={tList("pricing.voyagerFeatures")}
-            planned={tList("pricing.voyagerPlanned")}
+            status={checkoutStatus}
+            features={tList("pricing.passFeatures")}
+            planned={tList("pricing.passPlanned")}
             ctaLabel={t("pricing.startFree")}
+            trackStep="checkout_click"
           />
           <Plan
-            name="Historian"
-            price={t("pricing.tba")}
+            name={t("pricing.classroomName")}
+            price={t("pricing.free")}
             period=""
-            description={t("pricing.historianDesc")}
-            href="/explore"
-            notLive
-            features={tList("pricing.historianFeatures")}
-            planned={tList("pricing.historianPlanned")}
-            ctaLabel={t("pricing.startFree")}
+            description={t("pricing.classroomDesc")}
+            href="/for-teachers"
+            features={tList("pricing.classroomFeatures")}
+            ctaLabel={t("pricing.teacherCta")}
+            trackStep="teacher_entry"
           />
         </div>
 
         <p className="mx-auto mt-8 max-w-3xl rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 text-center text-sm leading-relaxed text-slate-400">
           {t("pricing.honestNote")}
         </p>
-        <p className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
+        {/* 真实收款状态：从服务端读取，不写死、不假装 */}
+        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500" data-testid="payment-status">
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400/80" />
+          {pay ? t("pricing.paymentState", { mode: pay.mode }) : t("pricing.paymentChecking")}
+          {pay && !pay.canCheckout && <span> · {pay.reason}</span>}
+        </p>
+        <p className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500">
           <Globe2 className="h-4 w-4 text-brand" />
           {t("pricing.checkout")}
         </p>

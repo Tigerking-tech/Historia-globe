@@ -76,6 +76,8 @@ type Props = {
   onCityStatus?: (s: CityLayerStatus) => void;
   /** 首帧卫星影像瓦片加载完成时回调，用于消除切换后长时间黑屏却无反馈的问题 */
   onImageryReady?: () => void;
+  /** 影像加载进度（remaining = 待加载瓦片数），用于 UI 显示真实进度 */
+  onImageryProgress?: (p: { remaining: number; phase: "start" | "progress" | "ready" }) => void;
   /** 当 Cesium 渲染失败（如设备软件 WebGL 不兼容）时回调，便于上层优雅降级回经典地球 */
   onFatalError?: () => void;
   /** 相机移动结束后上报当前视角，供分享链接记录 */
@@ -135,6 +137,7 @@ export default function CesiumGlobe({
   buildings = true,
   onCityStatus,
   onImageryReady,
+  onImageryProgress,
   onFatalError,
   onCameraChange,
   onViewCenter,
@@ -149,6 +152,7 @@ export default function CesiumGlobe({
   const fatalRef = useRef(onFatalError);
   const cityStatusRef = useRef(onCityStatus);
   const imageryReadyRef = useRef(onImageryReady);
+  const imageryProgressRef = useRef(onImageryProgress);
   const langRef = useRef(lang);
   const buildingsRef = useRef(buildings);
   // 城市 label 实体引用（含中英名），语言切换时实时更新文本
@@ -168,6 +172,7 @@ export default function CesiumGlobe({
   fatalRef.current = onFatalError;
   cityStatusRef.current = onCityStatus;
   imageryReadyRef.current = onImageryReady;
+  imageryProgressRef.current = onImageryProgress;
   langRef.current = lang;
   buildingsRef.current = buildings;
   onCameraChangeRef.current = onCameraChange;
@@ -368,9 +373,23 @@ export default function CesiumGlobe({
           }
         }
 
-        // 唯一底图：同源代理的连续卫星影像（z0-z19 全覆盖）。
-        // 这是"满屏同一张图"的关键 —— 不再用自绘 MVT 矩形瓦片拼贴地面，
-        // 也不再叠单张全球贴图（它在近景会被拉伸成棕黄色块，正是拼图感的来源）。
+        // P2 首帧提速：先铺一层**本地**低清地球贴图作为即时底图（毫秒级，无需外网）。
+        // 这样切换「真实地球」后立刻能看到地球，而不是盯着黑色星空等 Esri 瓦片 20s+。
+        // 当 Esri 卫星瓦片（上层）逐块到位后会自然覆盖这张占位图；占位图只在
+        // 全球尺度短暂可见，放大后完全被连续影像取代，不产生近景拉伸色块/拼图感。
+        let base: any = null;
+        try {
+          const Single = Cesium.SingleTileImageryProvider;
+          const provider = Single.fromUrl
+            ? await Single.fromUrl("/earth-day.jpg")
+            : new Single({ url: "/earth-day.jpg" });
+          base = viewer.imageryLayers.addImageryProvider(provider);
+          base.alpha = 1;
+        } catch {
+          // 该版本 Cesium 不支持单图 provider 时静默跳过，主影像链路不受影响
+        }
+
+        // 上层：同源代理的连续卫星影像（z0-z19 全覆盖）。
         // 代理偶发失败时 Cesium 自动保留低级别瓦片放大显示，不会露出空白或色块。
         let sat: any = null;
         try {
@@ -381,24 +400,35 @@ export default function CesiumGlobe({
               credit: new Cesium.Credit("Imagery © Esri", false),
             })
           );
+          // 不手动调 alpha：Cesium 上层瓦片未加载时本就会透出下层本地底图，
+          // 瓦片逐块到位自然覆盖，实现「立即有地球 → 渐进变清晰」，无突兀跳变。
         } catch {}
-        imageryRef.current = { base: null, sat };
+        imageryRef.current = { base, sat };
 
-        // 首帧影像瓦片全部到位后通知上层撤掉 loading 态。
-        // 软件 WebGL / 慢网络下这一步可能要 20s 以上，期间由上层显示明确进度提示，
-        // 而不是让用户盯着一片黑色星空误以为坏了。
+        // 首个可见瓦片到位就撤销 loading（不再等 remaining === 0 的全部瓦片），
+        // 并把真实进度传给上层；本地底图已保证这期间不是黑屏。
         try {
           let fired = false;
+          let firstSeen = false;
           const fire = () => {
             if (fired || disposed) return;
             fired = true;
+            imageryProgressRef.current?.({ remaining: 0, phase: "ready" });
             imageryReadyRef.current?.();
           };
-          scene.globe.tileLoadProgressEvent.addEventListener((remaining: number) => {
+          imageryProgressRef.current?.({ remaining: -1, phase: "start" });
+          const handler = (remaining: number) => {
+            if (!firstSeen && remaining >= 0) {
+              firstSeen = true;
+              imageryProgressRef.current?.({ remaining, phase: "progress" });
+              // 首块瓦片一旦开始加载，本地底图已在显示；给瓦片一个短暂绘制窗口即可撤罩
+              setTimeout(fire, 1200);
+            }
             if (remaining === 0) fire();
-          });
-          // 兜底：上游极慢或事件未触发时也不能永远转圈。
-          setTimeout(fire, 30000);
+          };
+          scene.globe.tileLoadProgressEvent.addEventListener(handler);
+          // 兜底从 30s 缩短到 12s：上游极慢时也不能永远转圈
+          setTimeout(fire, 12000);
         } catch {}
 
         // 国界线：Natural Earth（公共领域），仅在 "countries" 视图显示

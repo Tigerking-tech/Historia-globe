@@ -85,12 +85,16 @@ export default function Hero() {
               </Link>
               <a
                 href="#pricing"
+                data-track="checkout_click"
+                data-track-label="hero-pricing"
                 className="rounded-xl border border-white/15 hover:border-white/30 text-white px-6 py-3 text-sm transition"
               >
                 {t("hero.ctaPricing")}
               </a>
               <a
                 href={`/reel.html?q=911&lang=${lang}`}
+                data-track="reel_start"
+                data-track-label="hero-reel"
                 className="rounded-xl border border-amber-400/40 bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 px-6 py-3 text-sm transition"
               >
                 ▤ {t("hero.ctaReel")}

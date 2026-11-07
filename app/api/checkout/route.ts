@@ -1,114 +1,63 @@
-/**
- * Checkout API Route
+/** 结账入口：只创建「一次性小额包」的真实结账会话。
  *
- * Handles creation of checkout sessions using the Creem SDK.
- * Requires authentication and integrates with Next.js Auth.js.
- *
- * @module api/checkout
- */
+ *  与模板遗留实现的差别：
+ *  - 不再无条件 new Creem({serverIdx:1})（那是 test 环境，且没 key 时 500）
+ *  - 收款未启用时返回明确的 503 + 原因码，绝不返回假的 checkout_url
+ *  - 结算逻辑统一收敛到 lib/payments.ts 的状态机 */
 
 import { NextRequest, NextResponse } from "next/server";
-import { Creem } from "creem";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { createOneTimeCheckout, getPaymentConfig } from "@/lib/payments";
+import { getProduct } from "@/lib/products";
 
-/**
- * Checkout Session Interface
- * Represents the structure of a Creem checkout session response
- */
-export interface CheckoutSession {
-  /** Unique identifier for the checkout session */
-  id: string;
-  /** Type of object (always "checkout_session") */
-  object: string;
-  /** ID of the product being purchased */
-  product: string;
-  /** Current status of the checkout session */
-  status: string;
-  /** URL where the customer completes the purchase */
-  checkout_url: string;
-  /** URL to redirect after successful payment */
-  success_url: string;
-  /** Payment mode (subscription or one-time) */
-  mode: string;
-}
+export const dynamic = "force-dynamic";
 
-/**
- * Initialize Creem SDK client
- * Server index 1 is used for test environment
- */
-const creem = new Creem({
-  serverIdx: 1,
-});
-
-/**
- * GET /api/checkout
- *
- * Creates a new checkout session for a specific product.
- * Requires authentication and product ID as query parameter.
- *
- * @async
- * @function
- * @param {NextRequest} req - Next.js request object containing:
- *   - product_id: Query parameter for the product to purchase
- *
- * @returns {Promise<NextResponse>} JSON response containing:
- * - On success: { success: true, checkoutUrl: string }
- * - On error: { error: string } with appropriate status code
- *
- * @example
- * // Request
- * GET /api/checkout?product_id=prod_123
- *
- * // Success Response
- * {
- *   "success": true,
- *   "checkoutUrl": "https://checkout.creem.io/cs_123..."
- * }
- */
 export async function GET(req: NextRequest) {
-  // Get authenticated session from Auth.js
-  const session = await auth.api.getSession({ headers: headers() });
-  const productId = req.nextUrl.searchParams.get("product_id");
+  const sku = req.nextUrl.searchParams.get("sku") || "archival-pass";
+  const cfg = getPaymentConfig();
 
-  // Verify authentication and product ID
-  if (!session?.user?.id || !productId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const apiKey = process.env.CREEM_API_KEY;
-  const successUrl = process.env.SUCCESS_URL;
-
-  try {
-    // Create checkout session using Creem SDK
-    // This initiates the payment process and returns a checkout URL
-    const checkoutSessionResponse = await creem.createCheckout({
-      xApiKey: apiKey!,
-      createCheckoutRequest: {
-        productId: productId as string,
-        successUrl: successUrl as string,
-        // Link checkout to user for tracking and fulfillment
-        requestId: session?.user.id as string,
-        // Additional metadata for order processing and customer info
-        metadata: {
-          email: session?.user.email as string,
-          name: session?.user.name as string,
-          userId: session?.user.id as string,
-          myCustomField: "myCustomValue",
-        },
-      },
-    });
-
-    // Return checkout URL for client-side redirect
-    return NextResponse.json({
-      success: true,
-      checkoutUrl: checkoutSessionResponse.checkoutUrl,
-    });
-  } catch (error) {
-    console.error("Error creating checkout session:", error);
+  // 先返回明确状态，避免用户拿到一个「看起来能付款」的死链。
+  if (!cfg.canCheckout) {
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
-      { status: 500 },
+      {
+        success: false,
+        code: cfg.mode === "test" ? "test_mode_only" : "payments_disabled",
+        message: cfg.reason,
+        mode: cfg.mode,
+      },
+      { status: 503 }
     );
   }
+
+  const product = getProduct(sku);
+  if (!product || product.kind !== "one-time") {
+    return NextResponse.json(
+      { success: false, code: "unknown_product", message: `Unknown one-time product: ${sku}` },
+      { status: 404 }
+    );
+  }
+
+  const session = await auth.api.getSession({ headers: headers() });
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { success: false, code: "unauthorized", message: "Sign in to complete a purchase." },
+      { status: 401 }
+    );
+  }
+
+  const result = await createOneTimeCheckout({
+    productSku: sku,
+    userId: session.user.id,
+    userEmail: session.user.email || undefined,
+    successUrl: process.env.SUCCESS_URL || `https://${process.env.NEXT_PUBLIC_DOMAIN || "historiaglobe.com"}/account`,
+  });
+
+  if (!result.ok) {
+    return NextResponse.json(
+      { success: false, code: result.code, message: result.message, mode: result.mode },
+      { status: result.code === "provider_error" ? 502 : 503 }
+    );
+  }
+  return NextResponse.json({ success: true, checkoutUrl: result.url, mode: "live" });
 }

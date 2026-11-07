@@ -26,7 +26,7 @@ export const getSEOTags = ({
 }: Metadata & {
   canonicalUrlRelative?: string;
   extraTags?: Record<string, any>;
-} = {}) => {
+} = {}): Metadata => {
   return {
     // up to 50 characters (what does your app do for the user?) > your main should be here
     title: title || config.appName,
@@ -46,7 +46,7 @@ export const getSEOTags = ({
       title: openGraph?.title || config.appName,
       description: openGraph?.description || config.appDescription,
       url: openGraph?.url || `https://${config.domainName}/`,
-      siteName: openGraph?.title || config.appName,
+      siteName: config.appName,
       // If you add an opengraph-image.(jpg|jpeg|png|gif) image to the /app folder, you don't need the code below
       // images: [
       //   {
@@ -110,16 +110,15 @@ export const renderSchemaTags = () => {
           },
           datePublished: "2023-08-01",
           applicationCategory: "EducationalApplication",
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.8",
-            ratingCount: "12",
-          },
+          // 不写虚构评分（aggregateRating）与不实价格：结构化数据里的假 rating
+          // 属于可被搜索引擎处罚的虚假信息，也与「权益对齐」原则冲突。
+          isAccessibleForFree: true,
           offers: [
             {
               "@type": "Offer",
-              price: "9.00",
+              price: "0",
               priceCurrency: "USD",
+              description: "Free tier — full globe, source links, slideshow, Right Now and CSV export. No account or card needed.",
             },
           ],
         }),

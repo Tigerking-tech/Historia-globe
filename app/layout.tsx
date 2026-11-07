@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { DisplayProvider } from "@/components/display-mode";
 import { LanguageProvider } from "@/lib/i18n";
 import { getSEOTags, renderSchemaTags } from "@/lib/seo";
+import { FunnelTracker } from "@/components/funnel";
 
 export const metadata = getSEOTags();
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <DisplayProvider>
+              <FunnelTracker />
               <main className="h-full">{children}</main>
             </DisplayProvider>
           </LanguageProvider>

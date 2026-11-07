@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05080e">
-<title>回到那一刻 · 历史照片幻灯片</title>
+<title>回到那一刻 · 真实史料照片幻灯片 | Historia Globe</title>
+<meta name="description" content="输入任意历史事件或日期，地球飞往事发地，把当年留下的自由授权真实照片一张张放给你看，逐张标注来源与许可。免费、无需账号。Enter any historical event or date to see freely licensed archival photos with per-image credits, free and no account needed.">
+<meta name="robots" content="index,follow,max-snippet:-1">
+<link rel="canonical" href="https://historiaglobe.com/reel.html">
+<meta property="og:title" content="回到那一刻 · 真实史料照片幻灯片">
+<meta property="og:description" content="Freely licensed archival photos with per-image credits, rotating as a slideshow on a globe. Free, no signup.">
+<meta property="og:type" content="website">
 <link rel="icon" href="data:,">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -310,6 +316,18 @@ let slides=[], slideMs=3600, idx=0, slideElapsed=0, lastTick=0, paused=true;
 let front="B";                    // 当前显示的图层：A 或 B
 let loadStatus=[];
 let flyT0=0;
+
+/* 最小转化漏斗：幻灯片开始 / 切张。静态页不走 React，用 sendBeacon 直接上报，
+   失败静默，绝不因埋点影响播放。显式 bot:null，避免被误记为爬虫流量。 */
+let _reelStartSent=false, _slideSentAt=0;
+function hgTrack(step){
+  try{
+    const body=JSON.stringify({step:step,path:location.pathname,lang:(new URLSearchParams(location.search).get("lang")||"zh"),
+      ref:document.referrer.slice(0,200),ua:navigator.userAgent.slice(0,400),bot:null});
+    if(navigator.sendBeacon)navigator.sendBeacon("/api/ingest",new Blob([body],{type:"application/json"}));
+    else fetch("/api/ingest",{method:"POST",headers:{"content-type":"application/json"},body:body,keepalive:true}).catch(()=>{});
+  }catch(e){}
+}
 /* 注：earth_block 已提供 $ / clamp / rnd / S / drawGlobe / 手势，此处不再重复声明 */
 function showMsg(t){const m=$("msg");m.textContent=t;m.classList.add("on");
   clearTimeout(showMsg._t);showMsg._t=setTimeout(()=>m.classList.remove("on"),3200);}
@@ -473,6 +491,9 @@ function showSlide(i,instant){
   }
   front=front==="A"?"B":"A";
   idx=i;
+  // 切张埋点节流：至少间隔 2s，避免自动轮换刷屏
+  const _now=performance.now();
+  if(_now-_slideSentAt>2000){_slideSentAt=_now;hgTrack("reel_slide");}
   $("shotT").textContent=s.title||"";
   $("shotD").textContent=s.note||"";
   $("credit").textContent=s.caption||"";
@@ -496,6 +517,7 @@ function setControls(on){
 
 function enterReel(){
   state="reel";
+  if(!_reelStartSent){_reelStartSent=true;hgTrack("reel_start");}
   $("reel").classList.add("on");
   $("gtag").style.opacity="0";
   const start=()=>{

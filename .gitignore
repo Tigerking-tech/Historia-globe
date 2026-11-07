@@ -37,3 +37,7 @@ next-env.d.ts
 
 dev.db
 .env
+
+# 运行时可观测性日志（漏斗 / AI 爬虫），本地产物，不入库
+.data/
+*.jsonl

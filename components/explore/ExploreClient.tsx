@@ -11,6 +11,10 @@ import { readShareState, replaceShareState, buildShareUrl, type ShareState } fro
 import { buildDayTour } from "@/lib/tour";
 import NowCard, { type NowTarget } from "@/components/explore/NowCard";
 import { useI18n } from "@/lib/i18n";
+import { track } from "@/components/funnel";
+
+/** AI 回答的逐条出处（对应 /api/ask 返回的 sources）。 */
+type AskSource = { n: number; title: string; year: number; place: string; url: string; source: string };
 
 // 一键飞到城市：低空斜视，直接把相机送到能看见 3D 建筑与街道的高度。
 const CITY_PRESETS: { id: string; en: string; zh: string; focus: GlobeFocus }[] = [
@@ -114,6 +118,8 @@ export default function ExploreClient() {
   const [detail, setDetail] = useState<HistoryEvent | null>(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [askSources, setAskSources] = useState<AskSource[]>([]);
+  const [askError, setAskError] = useState("");
   const [asking, setAsking] = useState(false);
   const [showHeritage, setShowHeritage] = useState(true);
   const [view, setView] = useState<"satellite" | "countries" | "night">("satellite");
@@ -134,6 +140,7 @@ export default function ExploreClient() {
   // P0/P1/P2 新增：数据密度诚实提示、真实地球加载态、类别筛选、收藏时间线、定位与导出反馈
   const [daySources, setDaySources] = useState<DaySources | null>(null);
   const [earthLoading, setEarthLoading] = useState(false);
+  const [earthProgress, setEarthProgress] = useState<{ remaining: number; phase: string } | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedPlace[]>([]);
   const [timelineOpen, setTimelineOpen] = useState(false);
@@ -261,6 +268,8 @@ export default function ExploreClient() {
     if (!today.m) return;
     setAsking(true);
     setAnswer("");
+    setAskSources([]);
+    setAskError("");
     try {
       const r = await fetch(`/api/ask`, {
         method: "POST",
@@ -277,9 +286,15 @@ export default function ExploreClient() {
         }),
       });
       const data = await r.json();
+      // 配额护栏拒绝时给出明确提示，而不是把错误信息当作回答显示
+      if (!r.ok || data.error) {
+        setAskError(data.message || "Historia is unavailable right now.");
+        return;
+      }
       setAnswer(data.answer || "No answer.");
+      setAskSources(Array.isArray(data.sources) ? data.sources : []);
     } catch {
-      setAnswer("Something went wrong reaching Historia.");
+      setAskError("Something went wrong reaching Historia.");
     } finally {
       setAsking(false);
     }
@@ -404,6 +419,7 @@ export default function ExploreClient() {
 
   /** CSV 导出：含可核查的出处链接，供教师做课件、研究者做引用。 */
   const exportCsv = () => {
+    track("export_csv", { label: `${today.m}-${today.d}` });
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const head = ["year", "title", "place", "category", "lat", "lon", "source", "sourceUrl", "month", "day"];
     const rows = visibleEvents.map((e) => [
@@ -568,7 +584,8 @@ export default function ExploreClient() {
             lang={lang}
             buildings={buildings}
             onCityStatus={setCityStatus}
-            onImageryReady={() => setEarthLoading(false)}
+            onImageryReady={() => { setEarthLoading(false); setEarthProgress(null); }}
+            onImageryProgress={(p) => setEarthProgress(p)}
             onCameraChange={(c) => { cameraRef.current = c; }}
             onViewCenter={(v) => { viewCenterRef.current = v; }}
             onFatalError={() => {
@@ -592,18 +609,23 @@ export default function ExploreClient() {
             真实地球在当前设备无法渲染，已切回经典地球
           </div>
         )}
-        {/* 首次切换真实地球时，Esri 影像瓦片可能要 20s 以上才铺满。
-            这里给出明确进度反馈，避免用户对着黑屏误判为故障。 */}
+        {/* 首次切换真实地球：本地地球贴图已即时铺底，这里只显示轻量进度条，
+            不再是全屏黑色遮罩。Esri 瓦片逐块覆盖，首个瓦片到位即撤掉。 */}
         {realEarth && earthLoading && (
-          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-[#04101f]/55 backdrop-blur-[2px]">
-            <div className="glass flex max-w-[80%] flex-col items-center gap-3 rounded-2xl px-6 py-5 text-center">
-              <span className="relative flex h-8 w-8 items-center justify-center">
+          <div className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center">
+            <div className="glass flex max-w-[86%] items-center gap-3 rounded-xl px-4 py-2.5 text-center">
+              <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-60" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-400" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-sky-400" />
               </span>
-              <div className="text-sm font-semibold text-white">{t("explore.earthLoading")}</div>
-              <div className="text-[10px] text-slate-400">
-                © Esri World Imagery · {lang === "zh" ? "经本站同源代理加载" : "via same-origin proxy"}
+              <div className="text-left">
+                <div className="text-xs font-semibold text-white">{t("explore.earthLoading")}</div>
+                <div className="text-[10px] text-slate-400">
+                  {earthProgress?.phase === "progress"
+                    ? (lang === "zh" ? "卫星影像正在覆盖占位地球…" : "Satellite imagery covering the placeholder globe…")
+                    : (lang === "zh" ? "已显示本地地球底图，正在连接 Esri 影像" : "Local globe shown, connecting to Esri imagery")}
+                  {" · © Esri"}
+                </div>
               </div>
             </div>
           </div>
@@ -901,6 +923,8 @@ export default function ExploreClient() {
             {reelTarget && (
               <a
                 href={reelHrefFor(reelTarget)}
+                data-track="reel_start"
+                data-track-label="explore-cta"
                 className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-3 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-400/25"
                 title={lang === "zh"
                   ? "播放该事件的自由授权史料照片幻灯片：真实照片自动轮换，逐张标注来源与许可"
@@ -1064,10 +1088,33 @@ export default function ExploreClient() {
           >
             {asking ? t("explore.weaving") : t("explore.askButton")}
           </button>
+          {askError && (
+            <div className="mt-3 rounded-lg bg-amber-400/10 border border-amber-400/30 p-3">
+              <p className="text-xs leading-relaxed text-amber-200">{askError}</p>
+            </div>
+          )}
           {answer && (
             <div className="mt-3 rounded-lg bg-amber-400/5 border border-amber-400/20 p-3">
               <div className="text-[10px] uppercase tracking-wider text-amber-300/70 mb-1">Historia</div>
               <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">{answer}</p>
+              {/* 逐条出处引用：回答里的 [n] 可一键跳到原始资料 */}
+              {askSources.length > 0 && (
+                <div className="mt-3 border-t border-amber-400/20 pt-2">
+                  <div className="text-[10px] uppercase tracking-wider text-amber-300/70 mb-1.5">
+                    {zh ? "资料来源" : "Sources"}
+                  </div>
+                  <ol className="space-y-1">
+                    {askSources.map((s) => (
+                      <li key={s.n} className="text-[11px] leading-relaxed text-slate-300">
+                        <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:underline">
+                          [{s.n}] {s.title}{s.year ? ` (${s.year})` : ""}
+                        </a>
+                        {s.place && <span className="text-slate-500"> · {s.place}</span>}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
           )}
         </div>

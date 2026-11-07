@@ -31,10 +31,11 @@ export function CTA() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/signup"
+                href="/for-teachers"
+                data-track="teacher_entry"
                 className="inline-flex rounded-xl border border-white/15 hover:border-white/30 text-white px-6 py-3 text-sm transition"
               >
-                {t("cta.createAccount")}
+                {t("cta.teacherGuide")}
               </Link>
             </div>
           </div>

@@ -30,6 +30,17 @@ export function Footer() {
       links: [
         { label: t("footer.wikipedia"), href: "https://www.wikipedia.org" },
         { label: t("footer.unesco"), href: "https://whc.unesco.org" },
+        { label: "On This Day", href: "/on-this-day/07-20" },
+        { label: t("footer.forTeachers"), href: "/for-teachers" },
+      ],
+    },
+    {
+      title: t("footer.legal"),
+      links: [
+        { label: t("footer.privacy"), href: "/legal/privacy" },
+        { label: t("footer.terms"), href: "/legal/terms" },
+        { label: t("footer.refund"), href: "/legal/refund" },
+        { label: t("footer.contact"), href: "/legal/contact" },
       ],
     },
   ];
@@ -37,7 +48,7 @@ export function Footer() {
   return (
     <footer className="relative border-t border-white/10 py-14">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
             <Link href="/" className="flex items-center space-x-2">
               <span className="grid place-items-center h-8 w-8 rounded-lg bg-sky-500/15 ring-1 ring-sky-400/30 text-brand">

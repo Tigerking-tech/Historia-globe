@@ -9,40 +9,44 @@ import {
   IconZoomIn,
 } from "@tabler/icons-react";
 
+// NOTE: legacy SaaS-template grid, not rendered by the marketing home page.
+// Descriptions were rewritten to reflect only features that actually exist,
+// so this file can never advertise "payments in seconds" or "built-in email"
+// if someone re-mounts it in the future.
 export const GridFeatures = () => {
   const features = [
     {
-      title: "Landing Page",
+      title: "Interactive globe",
       description:
-        "Get started with a fully optimized, SEO-friendly landing page, ready to drive traffic from day one. ",
+        "Pick any date and explore geolocated historical events on a 3D globe. Free, no account needed.",
       icon: <IconTerminal2 />,
     },
     {
-      title: "Payments",
+      title: "Real archival photos",
       description:
-        "Integrated payment solutions allow you to start accepting payments within seconds, with no setup hassle.",
+        "A slideshow of freely licensed photographs with per-image credits. No generated imagery, no video.",
       icon: <IconEaseInOut />,
     },
     {
-      title: "Email",
+      title: "Open, cited data",
       description:
-        "Built-in email support right out of the box, ensuring seamless communication with your users. (comming soon)",
+        "Every event links back to its Wikipedia source; World Heritage sites come from UNESCO open data.",
       icon: <IconBrandYoutube />,
     },
     {
-      title: "Waiting list",
-      description: "Capture leads from day one, even before your product is fully launched, with an easy-to-setup waiting list.",
+      title: "Right Now",
+      description: "See a street-level photo, local time and live weather for any place — then compare it with the past.",
       icon: <IconArrowsSplit2 />,
     },
     {
-      title: "Analytics",
+      title: "Built for classrooms",
       description:
-        "Track your growth and make data-driven decisions with integrated analytics, so you're never launching blind. (comming soon)",
+        "Presentation / large-type mode and CSV export with source links, ready for a projector.",
       icon: <IconBrandYoutube />,
     },
     {
-      title: "SSO (Single Sign-On)",
-      description: "Seamless SSO login forms powered by Auth.js, ready to use for secure and easy user authentication.",
+      title: "One small pass, no subscription",
+      description: "The planned $4 Archival Pass is a one-time purchase. Checkout is not enabled yet — no payment is collected today.",
       icon: <IconZoomIn />,
     }
   ];
