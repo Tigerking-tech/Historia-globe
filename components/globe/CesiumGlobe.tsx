@@ -74,6 +74,8 @@ type Props = {
   buildings?: boolean;
   /** 3D 街区加载状态，用于 UI 反馈（避免"放大后一片空白却不知道原因"） */
   onCityStatus?: (s: CityLayerStatus) => void;
+  /** 首帧卫星影像瓦片加载完成时回调，用于消除切换后长时间黑屏却无反馈的问题 */
+  onImageryReady?: () => void;
   /** 当 Cesium 渲染失败（如设备软件 WebGL 不兼容）时回调，便于上层优雅降级回经典地球 */
   onFatalError?: () => void;
   /** 相机移动结束后上报当前视角，供分享链接记录 */
@@ -132,6 +134,7 @@ export default function CesiumGlobe({
   lang = "en",
   buildings = true,
   onCityStatus,
+  onImageryReady,
   onFatalError,
   onCameraChange,
   onViewCenter,
@@ -145,6 +148,7 @@ export default function CesiumGlobe({
   const onSelectRef = useRef(onSelect);
   const fatalRef = useRef(onFatalError);
   const cityStatusRef = useRef(onCityStatus);
+  const imageryReadyRef = useRef(onImageryReady);
   const langRef = useRef(lang);
   const buildingsRef = useRef(buildings);
   // 城市 label 实体引用（含中英名），语言切换时实时更新文本
@@ -163,6 +167,7 @@ export default function CesiumGlobe({
   onSelectRef.current = onSelect;
   fatalRef.current = onFatalError;
   cityStatusRef.current = onCityStatus;
+  imageryReadyRef.current = onImageryReady;
   langRef.current = lang;
   buildingsRef.current = buildings;
   onCameraChangeRef.current = onCameraChange;
@@ -378,6 +383,23 @@ export default function CesiumGlobe({
           );
         } catch {}
         imageryRef.current = { base: null, sat };
+
+        // 首帧影像瓦片全部到位后通知上层撤掉 loading 态。
+        // 软件 WebGL / 慢网络下这一步可能要 20s 以上，期间由上层显示明确进度提示，
+        // 而不是让用户盯着一片黑色星空误以为坏了。
+        try {
+          let fired = false;
+          const fire = () => {
+            if (fired || disposed) return;
+            fired = true;
+            imageryReadyRef.current?.();
+          };
+          scene.globe.tileLoadProgressEvent.addEventListener((remaining: number) => {
+            if (remaining === 0) fire();
+          });
+          // 兜底：上游极慢或事件未触发时也不能永远转圈。
+          setTimeout(fire, 30000);
+        } catch {}
 
         // 国界线：Natural Earth（公共领域），仅在 "countries" 视图显示
         Cesium.GeoJsonDataSource.load("/countries.geojson")

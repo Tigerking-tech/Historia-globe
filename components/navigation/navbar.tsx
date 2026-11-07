@@ -6,6 +6,7 @@ import { Container } from "@/components/creem/landing/container";
 import { Globe2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LangToggle } from "@/components/i18n/LangToggle";
+import { DisplayToggle } from "@/components/display-mode";
 
 export function MainNav() {
   const { t } = useI18n();
@@ -49,16 +50,19 @@ export function MainNav() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <DisplayToggle />
             <LangToggle />
             <div className="hidden sm:block">
               <Button variant="ghost" asChild className="text-slate-300 hover:text-white hover:bg-white/5">
                 <Link href="/signin">{t("nav.signin")}</Link>
               </Button>
             </div>
-            <Button asChild className="bg-sky-500 hover:bg-sky-400 text-[#04101f] font-semibold border-0">
-              <Link href="/signup">{t("nav.getStarted")}</Link>
-            </Button>
+            <div className="hidden sm:block">
+              <Button asChild className="bg-sky-500 hover:bg-sky-400 text-[#04101f] font-semibold border-0">
+                <Link href="/signup">{t("nav.getStarted")}</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </Container>

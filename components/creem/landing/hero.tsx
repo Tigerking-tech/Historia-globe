@@ -33,7 +33,7 @@ const fadeInUp = {
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   useEffect(() => setMounted(true), []);
 
   return (
@@ -90,7 +90,7 @@ export default function Hero() {
                 {t("hero.ctaPricing")}
               </a>
               <a
-                href="/reel.html"
+                href={`/reel.html?q=911&lang=${lang}`}
                 className="rounded-xl border border-amber-400/40 bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 px-6 py-3 text-sm transition"
               >
                 ▤ {t("hero.ctaReel")}

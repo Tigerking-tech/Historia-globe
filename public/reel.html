@@ -596,12 +596,17 @@ function loop(now){
 }
 requestAnimationFrame(loop);
 
-/* 从产品内带 ?q= / ?e= 进入时自动飞往事发地并开始轮换 */
+/* 从产品内带 ?q= / ?e= 进入时自动飞往事发地并开始轮换，不再要求多点一次「出发」。
+   注意：普通事件卡片只有 ?e= 没有 ?q=，此时不能用 "10.1" 兜底当查询词，
+   否则会把相机误飞北京并触发 URAA 占位（历史事件应只靠自身元数据检索）。 */
 (function autoStart(){
   const p=new URLSearchParams(location.search);
   const ev=eventFromUrl();
   const q=p.get("q");
-  if(q||ev)setTimeout(()=>{if(state==="idle")go(q||"10.1",ev);},420);
+  if(q||ev)setTimeout(()=>{
+    if(state!=="idle")return;
+    go(q||(ev&&ev.q)||"", ev);
+  },420);
 })();
 
 /* ---------- 自检接口（供真实浏览器验证脚本逐项核对） ---------- */

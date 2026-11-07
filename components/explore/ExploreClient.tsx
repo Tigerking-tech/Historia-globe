@@ -34,8 +34,42 @@ type HistoryEvent = {
   lon: number | null;
   place: string;
   category: string;
-  source: "curated" | "wikipedia";
+  source: "curated" | "wikipedia" | "wikidata" | "domain";
+  /** 可点击的权威出处，来自服务端；任何事件都应当能一键溯源。 */
+  sourceUrl?: string;
 };
+
+type DaySources = {
+  curated: number;
+  wikipedia: number;
+  wikidata: number;
+  domain: number;
+  live: boolean;
+};
+
+type SavedPlace = {
+  id: string;
+  title: string;
+  year: number;
+  place: string;
+  lat: number | null;
+  lon: number | null;
+  sourceUrl?: string;
+  month: number;
+  day: number;
+};
+
+const SAVED_KEY = "hg-saved-places";
+
+function readSaved(): SavedPlace[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const v = JSON.parse(window.localStorage.getItem(SAVED_KEY) || "[]");
+    return Array.isArray(v) ? v.slice(0, 200) : [];
+  } catch {
+    return [];
+  }
+}
 
 type HeritageSite = {
   id: string;
@@ -97,6 +131,14 @@ export default function ExploreClient() {
   // 「此刻此地 / Right Now」：现在的照片 + 此刻实时信息，与历史事件古今同框
   const [nowOpen, setNowOpen] = useState(false);
   const [nowTarget, setNowTarget] = useState<NowTarget>({ lat: 40.7128, lon: -74.006 });
+  // P0/P1/P2 新增：数据密度诚实提示、真实地球加载态、类别筛选、收藏时间线、定位与导出反馈
+  const [daySources, setDaySources] = useState<DaySources | null>(null);
+  const [earthLoading, setEarthLoading] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [saved, setSaved] = useState<SavedPlace[]>([]);
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [flash, setFlash] = useState("");
 
   const params = useSearchParams();
   const pendingEvRef = useRef<string | null>(null);
@@ -106,9 +148,19 @@ export default function ExploreClient() {
   const viewCenterRef = useRef<{ lat: number; lon: number; alt: number } | null>(null);
 
   // ---- 派生数据 ----
+  // 类别筛选是定价页宣称、此前未落地的功能：同时作用于事件列表与地球点位。
+  const visibleEvents = useMemo(
+    () => (categoryFilter ? events.filter((e) => e.category === categoryFilter) : events),
+    [events, categoryFilter]
+  );
+  const availableCategories = useMemo(
+    () => Array.from(new Set(events.map((e) => e.category))).filter((c) => !!CATEGORIES[c]),
+    [events]
+  );
+
   const placedEvents: GlobeEvent[] = useMemo(
     () =>
-      events
+      visibleEvents
         .filter((e) => e.lat != null && e.lon != null)
         .map((e) => ({
           id: e.id,
@@ -119,7 +171,7 @@ export default function ExploreClient() {
           category: e.category,
           place: e.place,
         })),
-    [events]
+    [visibleEvents]
   );
 
   const heritagePts: GlobeHeritage[] = useMemo(
@@ -147,7 +199,7 @@ export default function ExploreClient() {
       view,
       realEarth,
       selectedEventId: detail?.id ?? null,
-      events: events.slice(0, 40).map((e) => ({
+      events: visibleEvents.slice(0, 40).map((e) => ({
         id: e.id,
         year: e.year,
         title: e.title,
@@ -157,21 +209,34 @@ export default function ExploreClient() {
         lon: e.lon,
       })),
     }),
-    [today, lang, view, realEarth, detail, events]
+    [today, lang, view, realEarth, detail, visibleEvents]
   );
 
   // ---- 回调 ----
+  const showFlash = useCallback((msg: string) => {
+    setFlash(msg);
+    setTimeout(() => setFlash(""), 3200);
+  }, []);
+
+  const eventsReqRef = useRef(0);
   const fetchEvents = useCallback(async (m: number, d: number) => {
+    // 日期快速切换时，旧请求（Wikipedia 上游可能 6s+）会晚于新请求返回并覆盖结果，
+    // 导致"日期显示 7/20、事件却是 11/7"的错乱。只接受最新一次请求的数据。
+    const seq = ++eventsReqRef.current;
     setLoading(true);
     try {
       const r = await fetch(`/api/events?month=${m}&day=${d}`);
       const data = await r.json();
+      if (seq !== eventsReqRef.current) return;
       setEvents(data.events || []);
+      setDaySources(data.sources || null);
       setDetail(null);
     } catch {
+      if (seq !== eventsReqRef.current) return;
       setEvents([]);
+      setDaySources(null);
     } finally {
-      setLoading(false);
+      if (seq === eventsReqRef.current) setLoading(false);
     }
   }, []);
 
@@ -272,7 +337,7 @@ export default function ExploreClient() {
 
   // 未选中事件时，用「这一天第一个带坐标的事件」作为此刻的地点与古今对照锚点。
   // 例如只把日期切到 10/1、不点任何事件，也应落在天安门，而不是默认城市。
-  const dayAnchor = detail ?? events.find((e) => e.lat != null && e.lon != null) ?? null;
+  const dayAnchor = detail ?? visibleEvents.find((e) => e.lat != null && e.lon != null) ?? null;
 
   // 「回到那一刻」：任意事件都播放同一套「真实照片幻灯片」。
   // 只传事件元数据 —— 服务端按需返回自由授权史料照片清单，不预生成 / 预存任何视频。
@@ -292,7 +357,7 @@ export default function ExploreClient() {
     else if (/\b9\/?11\b|\b911\b|世贸|双塔|双子塔|world trade center|\bwtc\b|ground zero/i.test(`${e.title} ${e.place}`)) p.set("q", "911");
     return "/reel.html?" + p.toString();
   };
-  const reelTarget = detail ?? dayAnchor ?? events[0] ?? null;
+  const reelTarget = detail ?? dayAnchor ?? visibleEvents[0] ?? null;
 
   // 「此刻此地」：确定要拍哪一处的"现在"。
   // 优先选中事件 → 当天代表事件 → 用户真正看到的地表点 → 城市 → 默认坐标。
@@ -310,6 +375,83 @@ export default function ExploreClient() {
     setNowTarget(t);
     setNowOpen(true);
   };
+
+  /** 旅行者的真实需求：不是「事件发生地此刻」，而是「我脚下此刻」。 */
+  const locateMe = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      showFlash(t("explore.locateFail"));
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        setNowTarget({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+          label: lang === "zh" ? "我的位置" : "My location",
+        });
+        setNowOpen(true);
+        showFlash(t("explore.locateOk"));
+      },
+      () => {
+        setLocating(false);
+        showFlash(t("explore.locateFail"));
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+    );
+  };
+
+  /** CSV 导出：含可核查的出处链接，供教师做课件、研究者做引用。 */
+  const exportCsv = () => {
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const head = ["year", "title", "place", "category", "lat", "lon", "source", "sourceUrl", "month", "day"];
+    const rows = visibleEvents.map((e) => [
+      e.year, e.title, e.place, e.category, e.lat, e.lon, e.source, e.sourceUrl, today.m, today.d,
+    ]);
+    const csv = "\uFEFF" + [head.join(","), ...rows.map((r) => r.map(esc).join(","))].join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `historia-${today.m}-${today.d}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showFlash(t("explore.exportDone", { n: rows.length }));
+  };
+
+  /** 收藏地点 → 跨日期的个人时间线（localStorage，无需账号）。 */
+  const toggleSave = (e: HistoryEvent) => {
+    setSaved((prev) => {
+      const exists = prev.some((s) => s.id === e.id);
+      const next = exists
+        ? prev.filter((s) => s.id !== e.id)
+        : [
+            {
+              id: e.id, title: e.title, year: e.year, place: e.place,
+              lat: e.lat, lon: e.lon, sourceUrl: e.sourceUrl,
+              month: today.m, day: today.d,
+            },
+            ...prev,
+          ].slice(0, 200);
+      try { window.localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+  const removeSaved = (id: string) => {
+    setSaved((prev) => {
+      const next = prev.filter((s) => s.id !== id);
+      try { window.localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const sourceLabel = (s: HistoryEvent["source"]) =>
+    s === "wikipedia" ? t("explore.sourceWikipedia")
+      : s === "wikidata" ? t("explore.sourceWikidata")
+      : s === "domain" ? t("explore.sourceDomain")
+      : t("explore.sourceCurated");
 
   // ---- effects ----
   // 分享链接恢复：日期、语言、视图、真实地球、选中事件、相机、自动巡游。
@@ -342,7 +484,13 @@ export default function ExploreClient() {
 
   useEffect(() => {
     fetchHeritage();
+    setSaved(readSaved());
   }, [fetchHeritage]);
+
+  // 切到真实地球时先显示明确加载态，等 Cesium 首帧影像瓦片到位再撤掉。
+  useEffect(() => {
+    setEarthLoading(realEarth);
+  }, [realEarth]);
 
   useEffect(() => {
     if (dateReady && today.m && today.d) fetchEvents(today.m, today.d);
@@ -410,7 +558,7 @@ export default function ExploreClient() {
   return (
     <div className="flex h-[calc(100vh-56px)] flex-col lg:flex-row">
       {/* Globe */}
-      <div className="relative shrink-0 h-[44vh] min-h-[260px] lg:h-auto lg:flex-1 bg-[radial-gradient(1200px_700px_at_70%_-10%,rgba(56,189,248,0.08),transparent_55%)]">
+      <div className="hg-globe-area relative shrink-0 h-[44vh] min-h-[260px] lg:h-auto lg:flex-1 bg-[radial-gradient(1200px_700px_at_70%_-10%,rgba(56,189,248,0.08),transparent_55%)]">
         {realEarth ? (
           <CesiumGlobe
             events={placedEvents}
@@ -420,6 +568,7 @@ export default function ExploreClient() {
             lang={lang}
             buildings={buildings}
             onCityStatus={setCityStatus}
+            onImageryReady={() => setEarthLoading(false)}
             onCameraChange={(c) => { cameraRef.current = c; }}
             onViewCenter={(v) => { viewCenterRef.current = v; }}
             onFatalError={() => {
@@ -441,6 +590,22 @@ export default function ExploreClient() {
         {realEarthFailed && (
           <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2 rounded-lg bg-amber-500/90 px-3 py-1.5 text-xs font-medium text-[#04101f] shadow-lg">
             真实地球在当前设备无法渲染，已切回经典地球
+          </div>
+        )}
+        {/* 首次切换真实地球时，Esri 影像瓦片可能要 20s 以上才铺满。
+            这里给出明确进度反馈，避免用户对着黑屏误判为故障。 */}
+        {realEarth && earthLoading && (
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-[#04101f]/55 backdrop-blur-[2px]">
+            <div className="glass flex max-w-[80%] flex-col items-center gap-3 rounded-2xl px-6 py-5 text-center">
+              <span className="relative flex h-8 w-8 items-center justify-center">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-60" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-400" />
+              </span>
+              <div className="text-sm font-semibold text-white">{t("explore.earthLoading")}</div>
+              <div className="text-[10px] text-slate-400">
+                © Esri World Imagery · {lang === "zh" ? "经本站同源代理加载" : "via same-origin proxy"}
+              </div>
+            </div>
           </div>
         )}
         {realEarth && (
@@ -591,9 +756,107 @@ export default function ExploreClient() {
           <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{t("explore.exploring")}</div>
           <h2 className="editorial text-2xl text-white mt-1">{fmtDate(today.m, today.d, zh)}</h2>
           <p className="text-xs text-slate-400 mt-1">
-            {t("explore.eventsRecorded", { n: events.length, m: placedEvents.length })}
+            {t("explore.eventsRecorded", { n: visibleEvents.length, m: placedEvents.length })}
           </p>
         </div>
+
+        {/* 数据密度诚实提示：外部实时源不可达时，不把稀疏结果伪装成"完整的一天" */}
+        {daySources && !daySources.live && events.length > 0 && (
+          <div className="mx-3 mt-3 rounded-lg border border-amber-400/25 bg-amber-400/[0.07] px-3 py-2 text-[11px] leading-relaxed text-amber-200/90">
+            {t("explore.sourcesOffline", { n: daySources.curated })}
+          </div>
+        )}
+        {flash && (
+          <div className="mx-3 mt-3 rounded-lg border border-emerald-400/25 bg-emerald-400/[0.07] px-3 py-2 text-[11px] text-emerald-200">
+            {flash}
+          </div>
+        )}
+
+        {/* 类别筛选（此前只在定价页文案里出现，现在真实作用于列表与地球点位） */}
+        {availableCategories.length > 0 && (
+          <div className="px-3 pt-3">
+            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-500">
+              {t("explore.categoryFilter")}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setCategoryFilter(null)}
+                className={`rounded-full border px-2.5 py-1 text-[11px] transition ${
+                  categoryFilter === null
+                    ? "border-sky-400/60 bg-sky-500/20 text-sky-200"
+                    : "border-white/10 text-slate-400 hover:text-white"
+                }`}
+              >
+                {t("explore.categoryAll")} · {events.length}
+              </button>
+              {availableCategories.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCategoryFilter(categoryFilter === c ? null : c)}
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition ${
+                    categoryFilter === c
+                      ? "border-sky-400/60 bg-sky-500/20 text-sky-200"
+                      : "border-white/10 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: categoryColor(c) }} />
+                  {t(`category.${c}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 教师 / 研究者工具条：导出可引用数据、跨日期个人时间线、GPS 定位 */}
+        <div className="flex flex-wrap items-center gap-2 px-3 pt-3">
+          <button
+            onClick={exportCsv}
+            disabled={!visibleEvents.length}
+            className="glass rounded-lg px-3 py-1.5 text-[11px] text-slate-200 transition hover:text-white disabled:opacity-40"
+            title={lang === "zh" ? "导出当天事件（含出处链接与坐标）为 CSV" : "Export this day's events with source URLs as CSV"}
+          >
+            ⇩ {t("explore.exportCsv")}
+          </button>
+          <button
+            onClick={() => setTimelineOpen((v) => !v)}
+            className="glass rounded-lg px-3 py-1.5 text-[11px] text-slate-200 transition hover:text-white"
+          >
+            ☆ {t("explore.timeline")} · {saved.length}
+          </button>
+          <button
+            onClick={locateMe}
+            disabled={locating}
+            className="rounded-lg border border-emerald-400/35 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-200 transition hover:bg-emerald-400/20 disabled:opacity-50"
+            title={lang === "zh" ? "用 GPS 定位到我当前所在位置，看看我脚下此刻" : "Use GPS to see where I am, right now"}
+          >
+            ⌖ {locating ? t("explore.locating") : t("explore.locateMe")}
+          </button>
+        </div>
+        {timelineOpen && (
+          <div className="mx-3 mt-2 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            {saved.length === 0 ? (
+              <p className="text-[11px] leading-relaxed text-slate-400">{t("explore.timelineEmpty")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {[...saved].sort((a, b) => a.year - b.year).map((s) => (
+                  <li key={s.id} className="flex items-start gap-2 text-[11px]">
+                    <span className="shrink-0 font-semibold text-sky-300">{s.year}</span>
+                    <span className="min-w-0 flex-1 text-slate-300">
+                      <span className="block truncate">{s.title}</span>
+                      <span className="text-slate-500">{s.place} · {s.month}/{s.day}</span>
+                    </span>
+                    {s.sourceUrl && (
+                      <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer"
+                         className="shrink-0 text-sky-400 hover:text-sky-300" title={t("explore.sourceLink")}>↗</a>
+                    )}
+                    <button onClick={() => removeSaved(s.id)} className="shrink-0 text-slate-500 hover:text-rose-300"
+                            title={t("explore.timelineRemove")}>×</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* 镜头巡游 + 分享链接 */}
         <div className="px-5 py-3 border-b border-white/10">
@@ -661,20 +924,20 @@ export default function ExploreClient() {
           )}
           <div className="mt-2 text-[10px] leading-snug text-slate-500">
             {lang === "zh"
-              ? `对话已注入场景：${fmtDate(today.m, today.d, true)} · ${events.length} 条事件 · ${view} · 12 个白名单工具 · $5 会话硬顶`
-              : `Scene grounded: ${fmtDate(today.m, today.d, false)} · ${events.length} events · ${view} · 12 whitelisted tools · $5 session cap`}
+              ? `对话已注入场景：${fmtDate(today.m, today.d, true)} · ${visibleEvents.length} 条事件 · ${view} · 12 个白名单工具 · $5 会话硬顶`
+              : `Scene grounded: ${fmtDate(today.m, today.d, false)} · ${visibleEvents.length} events · ${view} · 12 whitelisted tools · $5 session cap`}
           </div>
         </div>
 
         {/* Event list */}
         <div className="px-3 py-2 space-y-1">
           {loading && <div className="text-xs text-slate-400 px-2 py-4">{t("explore.loading")}</div>}
-          {!loading && events.length === 0 && (
+          {!loading && visibleEvents.length === 0 && (
             <div className="text-xs text-slate-400 px-2 py-6 leading-relaxed">
               {t("explore.empty")}
             </div>
           )}
-          {events.map((e) => (
+          {visibleEvents.map((e) => (
             <div
               key={e.id}
               className={`relative rounded-xl border transition ${
@@ -715,16 +978,34 @@ export default function ExploreClient() {
         {/* Detail */}
         {detail && (
           <div className="mx-3 mb-3 rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: categoryColor(detail.category) }} />
               <span className="text-[11px] uppercase tracking-wider text-slate-400">{t(`category.${detail.category}`)}</span>
-              {detail.source === "wikipedia" && (
-                <span className="text-[10px] text-slate-500 border border-white/10 rounded px-1.5 py-0.5">{t("explore.wikipediaTag")}</span>
-              )}
+              <span className="text-[10px] text-slate-500 border border-white/10 rounded px-1.5 py-0.5">
+                {sourceLabel(detail.source)}
+              </span>
+              <button
+                onClick={() => toggleSave(detail)}
+                className="ml-auto rounded-lg border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-[10px] text-amber-200 transition hover:bg-amber-400/20"
+                title={lang === "zh" ? "收藏到我的时间线" : "Save to my timeline"}
+              >
+                {saved.some((s) => s.id === detail.id) ? t("explore.savedPlace") : t("explore.savePlace")}
+              </button>
             </div>
             <h3 className="editorial text-lg text-white leading-snug">{detail.title}</h3>
             <div className="text-xs text-sky-300 font-semibold mt-1">{fmtYear(detail.year, zh)} · {detail.place || t("explore.locationNotPinned")}</div>
             <p className="text-sm text-slate-300 leading-relaxed mt-2">{detail.description}</p>
+            {/* 研究者/教师刚需：每个事件都能一键跳到可核查的原始出处 */}
+            {detail.sourceUrl && (
+              <a
+                href={detail.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-sky-400/30 bg-sky-400/10 px-3 py-1.5 text-[11px] font-semibold text-sky-200 transition hover:bg-sky-400/20"
+              >
+                {t("explore.sourceLink")}
+              </a>
+            )}
           </div>
         )}
 
@@ -749,6 +1030,19 @@ export default function ExploreClient() {
           </span>
           <span className="shrink-0 text-emerald-300/80">→</span>
         </button>
+        {/* 旅行者：原按钮看的是「事件地点此刻」，这里补上「我脚下此刻」 */}
+        <div className="mx-3 mb-4 -mt-2 flex items-center gap-2">
+          <button
+            onClick={locateMe}
+            disabled={locating}
+            className="rounded-lg border border-emerald-400/30 px-2.5 py-1 text-[10px] text-emerald-200 transition hover:bg-emerald-400/10 disabled:opacity-50"
+          >
+            ⌖ {locating ? t("explore.locating") : t("explore.locateMe")}
+          </button>
+          <span className="text-[10px] text-slate-500">
+            {lang === "zh" ? "用 GPS 看我当前所在位置此刻的样子" : "Use GPS to see where I am right now"}
+          </span>
+        </div>
 
         {/* Ask Historia */}
         <div className="mx-3 mb-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">

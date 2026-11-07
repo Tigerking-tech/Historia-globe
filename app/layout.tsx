@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { DisplayProvider } from "@/components/display-mode";
 import { LanguageProvider } from "@/lib/i18n";
 import { getSEOTags, renderSchemaTags } from "@/lib/seo";
 
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body className="bg-background h-full antialiased">
         <ThemeProvider>
           <LanguageProvider>
-            <main className="h-full">{children}</main>
+            <DisplayProvider>
+              <main className="h-full">{children}</main>
+            </DisplayProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

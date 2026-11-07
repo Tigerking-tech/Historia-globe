@@ -22,6 +22,18 @@ export type HistoryEvent = {
   category: string;
   source: "curated" | "wikipedia" | "wikidata" | "domain";
   wiki?: string;
+  /** 可点击的权威出处链接，详情页与研究引用使用。 */
+  sourceUrl?: string;
+};
+
+/** 每一天的实时数据源状态，用于向用户诚实说明数据密度。 */
+export type DaySources = {
+  curated: number;
+  wikipedia: number;
+  wikidata: number;
+  domain: number;
+  /** 是否至少有一个外部实时源成功返回；false 表示当前仅有本地策展兜底。 */
+  live: boolean;
 };
 
 export type HeritageSite = {
@@ -67,9 +79,14 @@ export function countryOf(place: string): string {
   return parts[parts.length - 1] || "";
 }
 
-const DAY_CACHE = new Map<string, { ts: number; events: HistoryEvent[] }>();
+const DAY_CACHE = new Map<string, { ts: number; events: HistoryEvent[]; sources: DaySources }>();
 let HERITAGE_CACHE: { ts: number; sites: HeritageSite[] } | null = null;
 const TTL = 1000 * 60 * 60 * 24; // 24h
+
+/** 把事件标题变成可核查的维基百科检索链接（策展条目没有精确页面名，用搜索最稳妥）。 */
+function wikiSearchUrl(title: string): string {
+  return "https://en.wikipedia.org/w/index.php?search=" + encodeURIComponent(title);
+}
 
 // ---- Curated (always available, geolocated) ----
 function curatedForDate(m: number, d: number): HistoryEvent[] {
@@ -83,6 +100,7 @@ function curatedForDate(m: number, d: number): HistoryEvent[] {
     place: e.place,
     category: e.category,
     source: "curated" as const,
+    sourceUrl: wikiSearchUrl(e.title),
   }));
 }
 
@@ -121,6 +139,10 @@ async function fetchWikipedia(m: number, d: number): Promise<HistoryEvent[]> {
       category: "history",
       source: "wikipedia" as const,
       wiki: e.pages?.[0]?.title,
+      sourceUrl: e.pages?.[0]?.title
+        ? "https://en.wikipedia.org/wiki/" +
+          encodeURIComponent(String(e.pages[0].title).replace(/ /g, "_"))
+        : wikiSearchUrl(String(e.text || "").slice(0, 60)),
     }));
     return await geocodeWikipedia(raw);
   } catch {
@@ -228,6 +250,7 @@ async function fetchWikidataEvents(m: number, d: number): Promise<HistoryEvent[]
         category: row.isTerror ? "terrorism" : "history",
         source: "wikidata" as const,
         wiki: qid,
+        sourceUrl: qid ? `https://www.wikidata.org/wiki/${encodeURIComponent(qid)}` : undefined,
       });
     }
     return out;
@@ -243,10 +266,16 @@ function parseYear(s: string): number {
 }
 
 // ---- Merge for a date ----
-export async function getEventsForDate(m: number, d: number): Promise<HistoryEvent[]> {
+/** 返回事件 + 实时数据源状态，供 API 向前端诚实说明「今天到底有多少数据、来自哪里」。 */
+export async function getEventsForDateDetailed(
+  m: number,
+  d: number
+): Promise<{ events: HistoryEvent[]; sources: DaySources }> {
   const key = `${m}-${d}`;
   const cached = DAY_CACHE.get(key);
-  if (cached && Date.now() - cached.ts < TTL) return cached.events;
+  if (cached && Date.now() - cached.ts < TTL) {
+    return { events: cached.events, sources: cached.sources };
+  }
 
   const curated = curatedForDate(m, d);
   const [wiki, wd, domain] = await Promise.all([
@@ -254,12 +283,23 @@ export async function getEventsForDate(m: number, d: number): Promise<HistoryEve
     fetchWikidataEvents(m, d),
     loadDomainEventsForDate({ m, d }),
   ]);
+  // 补齐外部源缺失的出处链接：任何事件都应当可以一键溯源。
+  const withSource = (e: HistoryEvent) =>
+    e.sourceUrl ? e : { ...e, sourceUrl: wikiSearchUrl(e.title) };
+  const external = [wiki, wd, domain].flat().map(withSource);
+  const sources: DaySources = {
+    curated: curated.length,
+    wikipedia: wiki.length,
+    wikidata: wd.length,
+    domain: domain.length,
+    live: wiki.length > 0 || wd.length > 0 || domain.length > 0,
+  };
   // Merge with dedupe by normalized title. Order is wiki → wikidata → domain, so on a
   // title collision the earlier (coordinate-bearing, traceable) source wins. Wikidata is
   // also the authoritative source for terrorism events (CC0), so it takes priority there.
   const byTitle = new Map<string, HistoryEvent>();
   const keyOf = (t: string) => t.toLowerCase().trim();
-  for (const e of [...wiki, ...wd, ...domain]) {
+  for (const e of external) {
     const k = keyOf(e.title);
     const existing = byTitle.get(k);
     if (!existing || (existing.lat == null && e.lat != null)) byTitle.set(k, e);
@@ -273,8 +313,13 @@ export async function getEventsForDate(m: number, d: number): Promise<HistoryEve
     }
   }
   merged.sort((a, b) => b.year - a.year);
-  DAY_CACHE.set(key, { ts: Date.now(), events: merged });
-  return merged;
+  DAY_CACHE.set(key, { ts: Date.now(), events: merged, sources });
+  return { events: merged, sources };
+}
+
+/** 兼容既有调用方：只要事件列表。 */
+export async function getEventsForDate(m: number, d: number): Promise<HistoryEvent[]> {
+  return (await getEventsForDateDetailed(m, d)).events;
 }
 
 // ---- UNESCO World Heritage (authoritative, geolocated) ----

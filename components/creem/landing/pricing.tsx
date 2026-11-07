@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { Container } from "./container";
-import { Check, Globe2 } from "lucide-react";
+import { Check, Globe2, Clock3 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 function Plan({
@@ -11,7 +11,9 @@ function Plan({
   period,
   description,
   features,
+  planned = [],
   featured = false,
+  notLive = false,
   href,
   ctaLabel,
 }: {
@@ -19,8 +21,11 @@ function Plan({
   price: string;
   period: string;
   description: string;
-  features: Array<string>;
+  features: string[];
+  /** 尚未实现的功能：必须明确标注「计划中」，不得与已上线权益混排。 */
+  planned?: string[];
   featured?: boolean;
+  notLive?: boolean;
   href: string;
   ctaLabel: string;
 }) {
@@ -39,17 +44,34 @@ function Plan({
           {t("pricing.mostPopular")}
         </span>
       )}
+      {notLive && (
+        <span className="absolute right-5 top-5 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[10px] font-medium text-amber-200">
+          <Clock3 className="h-3 w-3" />
+          {t("pricing.notLive")}
+        </span>
+      )}
       <h3 className="editorial text-xl text-white">{name}</h3>
       <p className="mt-2 text-sm text-slate-400 min-h-[40px]">{description}</p>
       <p className="mt-5 flex items-baseline gap-1">
         <span className="editorial text-5xl font-light text-white">{price}</span>
-        <span className="text-sm text-slate-400">{period}</span>
+        {period && <span className="text-sm text-slate-400">{period}</span>}
       </p>
       <ul role="list" className="mt-7 flex flex-col gap-y-3 text-sm text-slate-300 flex-1">
         {features.map((feature) => (
           <li key={feature} className="flex items-start gap-3">
             <Check className={clsx("mt-0.5 h-4 w-4 flex-none", featured ? "text-brand" : "text-slate-500")} />
             <span>{feature}</span>
+          </li>
+        ))}
+        {planned.map((feature) => (
+          <li key={feature} className="flex items-start gap-3 text-slate-500">
+            <Clock3 className="mt-0.5 h-4 w-4 flex-none text-slate-600" />
+            <span>
+              {feature}
+              <span className="ml-2 inline-block rounded border border-slate-600/60 px-1.5 py-0.5 align-middle text-[10px] text-slate-500">
+                {t("pricing.planned")}
+              </span>
+            </span>
           </li>
         ))}
       </ul>
@@ -91,32 +113,39 @@ export function Pricing() {
             price={t("pricing.free")}
             period=""
             description={t("pricing.wandererDesc")}
-            href="/signup"
+            href="/explore"
             features={tList("pricing.wandererFeatures")}
             ctaLabel={t("pricing.startFree")}
           />
           <Plan
             featured
             name="Voyager"
-            price="$5"
-            period={t("pricing.perMonth")}
+            price={t("pricing.tba")}
+            period=""
             description={t("pricing.voyagerDesc")}
-            href="/signup"
+            href="/explore"
+            notLive
             features={tList("pricing.voyagerFeatures")}
-            ctaLabel={t("pricing.subscribe")}
+            planned={tList("pricing.voyagerPlanned")}
+            ctaLabel={t("pricing.startFree")}
           />
           <Plan
             name="Historian"
-            price="$12"
-            period={t("pricing.perMonth")}
+            price={t("pricing.tba")}
+            period=""
             description={t("pricing.historianDesc")}
-            href="/signup"
+            href="/explore"
+            notLive
             features={tList("pricing.historianFeatures")}
-            ctaLabel={t("pricing.subscribe")}
+            planned={tList("pricing.historianPlanned")}
+            ctaLabel={t("pricing.startFree")}
           />
         </div>
 
-        <p className="mt-10 flex items-center justify-center gap-2 text-sm text-slate-500">
+        <p className="mx-auto mt-8 max-w-3xl rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 text-center text-sm leading-relaxed text-slate-400">
+          {t("pricing.honestNote")}
+        </p>
+        <p className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
           <Globe2 className="h-4 w-4 text-brand" />
           {t("pricing.checkout")}
         </p>

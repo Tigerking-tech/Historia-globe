@@ -128,3 +128,131 @@
 .cesium-credit-lightbox {
   display: none !important;
 }
+
+/* ===== 显示模式：浅色高对比 / 教室演示大字 =====
+   组件里大量使用硬编码深色类（text-white / bg-[#04101f] / glass ...），
+   单纯切 next-themes 的 dark class 会让文字在白底上直接消失。
+   因此在 <html data-hg-mode> 作用域内做集中覆盖：UI 面板变浅、文字加深，
+   地球画布区域 (.hg-globe-area) 刻意保留深色宇宙背景，符合真实卫星观感。 */
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) {
+  --hg-ink: #0b1a2b;
+  --hg-ink-2: #1f344c;
+  --hg-ink-3: #42586f;
+  --hg-surface: #ffffff;
+  --hg-surface-2: #eef3f9;
+  --hg-line: rgba(11, 26, 43, 0.16);
+}
+
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) body {
+  background-color: var(--hg-surface-2) !important;
+  background-image: none !important;
+  color: var(--hg-ink) !important;
+}
+
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-white,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-slate-100,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-slate-200 {
+  color: var(--hg-ink) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-slate-300,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-slate-400 {
+  color: var(--hg-ink-2) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-slate-500 {
+  color: var(--hg-ink-3) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-brand,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-sky-300,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-sky-400 {
+  color: #0369a1 !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-amber-200,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-amber-300 {
+  color: #92400e !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-emerald-100,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-emerald-200,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-emerald-300 {
+  color: #065f46 !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .text-heritage {
+  color: #92400e !important;
+}
+/* 带透明度后缀的类名（text-amber-200/90、bg-emerald-400/10 等）不会命中上面的精确类选择器，
+   用属性选择器一并覆盖，否则浅底上会出现几乎看不见的浅色提示条。 */
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="text-amber-"] {
+  color: #92400e !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="text-emerald-"] {
+  color: #065f46 !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="text-sky-"] {
+  color: #0369a1 !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-amber-400/"] {
+  background-color: rgba(251, 191, 36, 0.16) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-emerald-400/"] {
+  background-color: rgba(16, 185, 129, 0.14) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-sky-400/"],
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-sky-500/"] {
+  background-color: rgba(14, 165, 233, 0.16) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="border-amber-400/"],
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="border-emerald-400/"] {
+  border-color: rgba(11, 26, 43, 0.25) !important;
+}
+
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .glass {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: var(--hg-line) !important;
+  color: var(--hg-ink) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-[#04101f]"],
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-[#06121f]"],
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-[#0b1524]"] {
+  background-color: var(--hg-surface) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-card"] {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="bg-black/"] {
+  background-color: #f5f9fd !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) [class*="border-white/"] {
+  border-color: var(--hg-line) !important;
+}
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) input,
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) textarea {
+  color: var(--hg-ink) !important;
+}
+/* 地球画布保持深色宇宙背景，不随 UI 一起变白 */
+:is(html[data-hg-mode="light"], html[data-hg-mode="present"]) .hg-globe-area {
+  background: #07101f !important;
+}
+
+/* 演示模式：教室投屏需要更大字号，只放大信息面板与控件，不动地球几何 */
+html[data-hg-mode="present"] aside {
+  font-size: 1.12em;
+}
+html[data-hg-mode="present"] aside [class*="text-[10px]"],
+html[data-hg-mode="present"] aside [class*="text-[11px]"] {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+html[data-hg-mode="present"] aside .text-xs {
+  font-size: 15px !important;
+}
+html[data-hg-mode="present"] aside .text-sm {
+  font-size: 17px !important;
+}
+html[data-hg-mode="present"] aside .text-lg {
+  font-size: 23px !important;
+}
+html[data-hg-mode="present"] .glass {
+  font-size: 14px;
+}
