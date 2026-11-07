@@ -3,7 +3,7 @@
   "source": "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all",
   "status": "ok",
   "caveat": "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
-  "eventCount": 19982,
+  "eventCount": 19983,
   "daysWithEvents": 366,
   "events": [
     {
@@ -11852,7 +11852,7 @@
       "year": 2001,
       "title": "Thousands of student protesters in Indonesia storm parliament and demand that President Abdurrahman Wahid resign due to alleged involvement in corruption scandals.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/President_of_Indonesia"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Indonesia"
     },
     {
       "m": 1,
@@ -136429,6 +136429,14 @@
       "title": "A powerful earthquake destroys large portions of the Walls of Constantinople, including 57 towers.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Walls_of_Constantinople"
+    },
+    {
+      "m": 11,
+      "d": 7,
+      "year": 2026,
+      "title": "A shooting took place in the Main Market Square in Kraków. At least 5 people were killed, and 15 were injured.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2026_Krak%C3%B3w_shooting"
     },
     {
       "m": 11,
