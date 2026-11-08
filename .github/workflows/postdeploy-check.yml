@@ -1,0 +1,94 @@
+# 沙箱做不到、也不该由人肉做的部分，交给境外 runner 自动跑：
+#   1) 部署后巡检：定时调用「已部署的公网站点」，校验 366 天覆盖、公开 API/MCP、
+#      sitemap、robots、llms.txt 口径，并从部署出口实测外部数据源可达性。
+#      沙箱只能测 127.0.0.1，测不到公网部署、境外 DNS 与 Vercel 出口。
+#   2) 外部源探测：把「沙箱连不上的源」变成可持续复核的境外事实，顺带核对
+#      历史边界候选数据源到底有没有，避免凭沙箱一次超时就下「改不掉」的结论。
+#
+# 零凭据、零密钥、只读。不写仓库、不回写快照、不触发 Vercel 无意义部署。
+# 上线后无需任何配置：正式域名解析生效即自动开始真实巡检；未绑定域名时
+# 可用 workflow_dispatch 填 Vercel 预览 URL 立即跑一次。
+
+name: Post-deploy health & external source probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: '站点根 URL（如 https://xxx.vercel.app）；留空则用仓库变量 SITE_BASE_URL，再留空则用正式域名'
+        required: false
+        type: string
+  schedule:
+    # 避开整点高负载，且与抓数 workflow（周二 UTC 04:37）错开。
+    - cron: '43 6 * * *'
+  repository_dispatch:
+    types: [vercel-deployment]
+
+concurrency:
+  group: postdeploy-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    name: 部署后巡检（公网 + 境外出口）
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 解析站点 URL
+        id: site
+        shell: bash
+        env:
+          INPUT_URL: ${{ inputs.site_url }}
+          VAR_URL: ${{ vars.SITE_BASE_URL }}
+        run: |
+          U="${INPUT_URL:-${VAR_URL:-}}"
+          echo "url=$U" >> "$GITHUB_OUTPUT"
+          if [ -n "$U" ]; then
+            echo "::notice::巡检目标：$U"
+          else
+            echo "::notice::未指定站点 URL，使用 llms.txt 声明的正式域名 https://historiaglobe.com；若尚未解析，结果会明确标注 NOT_DEPLOYED 而不是伪装通过"
+          fi
+
+      - name: 部署后自动巡检
+        shell: bash
+        env:
+          SITE_BASE_URL: ${{ steps.site.outputs.url }}
+        run: |
+          if [ -n "$SITE_BASE_URL" ]; then
+            node scripts/postdeploy-check.mjs --base "$SITE_BASE_URL"
+          else
+            node scripts/postdeploy-check.mjs
+          fi
+
+      - name: 上线后如何改为自动巡检
+        if: always()
+        run: |
+          echo "::notice::已上线但用的是 *.vercel.app 预览域名时，在 Settings → Secrets and variables → Actions → Variables 添加 SITE_BASE_URL，或用 workflow_dispatch 的 site_url 传一次即可；绑定正式域名后无需任何配置。失败项见上方 Step Summary。"
+
+  probe:
+    name: 外部数据源境外可达性探测
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 只观测、不判成败、不改数据。沙箱网络与 runner 出口不同，这张表是事实依据。
+      - name: 探测抓数源与历史边界候选源
+        run: node scripts/probe-external-sources.mjs

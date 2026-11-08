@@ -32,9 +32,13 @@ export async function GET(req: NextRequest, { params }: { params: { path?: strin
   const [head, value] = seg;
 
   switch (head) {
-    case "on-this-day":
+    case "on-this-day": {
       if (!value) return publicJson({ ok: false, error: "Missing date. Use /on-this-day/{MM-DD}." }, 400);
-      return publicJson(queryDate(value));
+      const result = queryDate(value);
+      // 非法日期此前返回 200 + ok:false，调用方（含 AI 助手）容易误判为成功。
+      // 改为 400，保留同样的结构化错误体，不改变成功路径。
+      return publicJson(result, result.ok ? 200 : 400);
+    }
 
     case "events": {
       const q = req.nextUrl.searchParams.get("q") ?? "";
