@@ -7,7 +7,17 @@
 <title>回到那一刻 · 真实史料照片幻灯片 | Historia Globe</title>
 <meta name="description" content="输入任意历史事件或日期，地球飞往事发地，把当年留下的自由授权真实照片一张张放给你看，逐张标注来源与许可。免费、无需账号。Enter any historical event or date to see freely licensed archival photos with per-image credits, free and no account needed.">
 <meta name="robots" content="index,follow,max-snippet:-1">
-<link rel="canonical" href="https://historiaglobe.com/reel.html">
+<!-- canonical 使用域无关写法：静态值为相对路径（不会指向未绑定的域名），
+     运行时再由脚本升级为当前部署域的绝对 URL（含后续绑定的自定义域）。 -->
+<link id="canonical-link" rel="canonical" href="/reel.html">
+<script>
+  (function () {
+    try {
+      var el = document.getElementById('canonical-link');
+      if (el) el.href = location.origin + '/reel.html';
+    } catch (e) {}
+  })();
+</script>
 <meta property="og:title" content="回到那一刻 · 真实史料照片幻灯片">
 <meta property="og:description" content="Freely licensed archival photos with per-image credits, rotating as a slideshow on a globe. Free, no signup.">
 <meta property="og:type" content="website">

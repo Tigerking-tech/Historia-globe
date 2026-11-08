@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createOneTimeCheckout, getPaymentConfig } from "@/lib/payments";
 import { getProduct } from "@/lib/products";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     productSku: sku,
     userId: session.user.id,
     userEmail: session.user.email || undefined,
-    successUrl: process.env.SUCCESS_URL || `https://${process.env.NEXT_PUBLIC_DOMAIN || "historiaglobe.com"}/account`,
+    successUrl: process.env.SUCCESS_URL || getSiteUrl("/account"),
   });
 
   if (!result.ok) {

@@ -18,6 +18,7 @@ import {
   type ContentEvent,
 } from "./content";
 import { coverageStats, FACT_SLUGS, FACT_INDEX_PATH } from "./facts";
+import { getSiteOrigin } from "./site-url";
 import {
   boundaryStats,
   getBoundaryLayers,
@@ -205,7 +206,7 @@ export function queryBoundaries(year?: number) {
 }
 
 export function apiIndex() {
-  const base = "https://historiaglobe.com";
+  const base = getSiteOrigin();
   return {
     ok: true as const,
     name: "Historia Globe public read-only API",

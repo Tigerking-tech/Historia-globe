@@ -792,9 +792,10 @@ export default function ExploreClient() {
           </p>
         </div>
 
-        {/* 数据密度诚实提示：外部实时源不可达时，不把稀疏结果伪装成"完整的一天" */}
+        {/* 数据口径说明：地球点位来自策展层，完整文字记录在日期页。
+            用低调中性样式，避免被误读成"站点故障"警告。 */}
         {daySources && !daySources.live && events.length > 0 && (
-          <div className="mx-3 mt-3 rounded-lg border border-amber-400/25 bg-amber-400/[0.07] px-3 py-2 text-[11px] leading-relaxed text-amber-200/90">
+          <div className="mx-3 mt-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-slate-400">
             {t("explore.sourcesOffline", { n: daySources.curated })}
           </div>
         )}

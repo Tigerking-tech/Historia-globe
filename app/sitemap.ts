@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import config from "@/config";
+import { getSiteOrigin } from "@/lib/site-url";
 import {
   everyDateSlug,
   allDateSlugs,
@@ -11,7 +11,7 @@ import {
 } from "@/lib/content";
 import { FACT_SLUGS } from "@/lib/facts";
 
-const base = `https://${config.domainName}`;
+const base = getSiteOrigin();
 
 /** 全量 URL 清单：核心页 + 366 个日期页 + 全部事件页 + 地点页 + 法务页。
  *  有策展事件的日期优先级更高（lastModified 与 changeFrequency 区分）。 */

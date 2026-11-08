@@ -1,5 +1,6 @@
 import config from "@/config";
 import type { Metadata } from "next";
+import { getSiteOrigin, getSiteUrl } from "@/lib/site-url";
 
 /**
  * SEO Tag Generator
@@ -42,22 +43,19 @@ export const getSEOTags = ({
       "AI history with citations",
     ],
     applicationName: config.appName,
-    // set a base URL prefix for other fields that require a fully qualified URL (.e.g og:image: og:image: 'https://yourdomain.com/share.png' => '/share.png')
-    metadataBase: new URL(
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/"
-        : `https://${config.domainName}/`
-    ),
+    // 运行时解析 origin：未绑自定义域时自动用 Vercel 生产域（*.vercel.app），
+    // 绑了自定义域时走 NEXT_PUBLIC_DOMAIN。解析逻辑统一在 lib/site-url.ts。
+    metadataBase: new URL(getSiteOrigin()),
 
     openGraph: {
       title: openGraph?.title || config.appName,
       description: openGraph?.description || config.appDescription,
-      url: openGraph?.url || `https://${config.domainName}/`,
+      url: openGraph?.url || getSiteUrl("/"),
       siteName: config.appName,
       // If you add an opengraph-image.(jpg|jpeg|png|gif) image to the /app folder, you don't need the code below
       // images: [
       //   {
-      //     url: `https://${config.domainName}/share.png`,
+      //     url: getSiteUrl("/share.png"),
       //     width: 1200,
       //     height: 660,
       //   },
@@ -109,8 +107,8 @@ export const renderSchemaTags = () => {
           "@type": "SoftwareApplication",
           name: config.appName,
           description: config.appDescription,
-          image: `https://${config.domainName}/icon.png`,
-          url: `https://${config.domainName}/`,
+          image: getSiteUrl("/icon.png"),
+          url: getSiteUrl("/"),
           author: {
             "@type": "Organization",
             name: "Historia Globe",

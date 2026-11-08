@@ -21,8 +21,8 @@ export function Footer() {
       title: t("footer.company"),
       links: [
         { label: t("footer.about"), href: "#" },
-        { label: t("nav.signin"), href: "/signin" },
-        { label: t("nav.getStarted"), href: "/signup" },
+        { label: t("nav.signin"), href: "/account" },
+        { label: t("nav.getStarted"), href: "/explore" },
       ],
     },
     {

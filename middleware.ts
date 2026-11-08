@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest, NextFetchEvent } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 
-// 两件事：
-//  1) 保留模板原有的 /dashboard 会话保护。
-//  2) 记录 AI / 搜索爬虫命中（哥飞分享：GA 抓不到 AI 爬虫，要自己记），
-//     转发到同源 /api/ingest 落盘 + 内存，供 /api/ingest?window=... 查询。
+// 记录 AI / 搜索爬虫命中（哥飞分享：GA 抓不到 AI 爬虫，要自己记），
+// 转发到同源 /api/ingest 落盘 + 内存，供 /api/ingest?window=... 查询。
 // middleware 跑在 Edge runtime，不能依赖 node:fs，因此 UA 表内联在此，
 // 不 import observability.ts（那个文件顶部有 node:fs）。
+//
+// 注：原模板的 "/dashboard 无会话就跳 /signin" 保护已移除——账户体系未启用，
+// 所有 (session) 路由统一为公开的"账户即将开放"说明页，不再做会话重定向。
 
 const BOTS: [RegExp, string][] = [
   [/GPTBot/i, "GPTBot"],
@@ -32,16 +32,8 @@ function botOf(ua: string | null): string | null {
 }
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
-  // (1) dashboard 保护：仅对该路径生效，不影响全站免费浏览。
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    const sessionCookie = getSessionCookie(request);
-    if (!sessionCookie) {
-      return NextResponse.redirect(new URL("/signin", request.url));
-    }
-  }
-
   const res = NextResponse.next();
-  // (2) 爬虫命中记录，不阻塞响应。
+  // 爬虫命中记录，不阻塞响应。
   const ua = request.headers.get("user-agent");
   const bot = botOf(ua);
   if (bot) {

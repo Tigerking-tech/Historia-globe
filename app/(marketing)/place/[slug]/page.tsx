@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPlaceContent, allPlaceSlugs, dateLabel, everyDateSlug } from "@/lib/content";
 import { getSEOTags } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 import {
   Breadcrumbs, AnswerBox, PriceNote, SourceNote, Cta, SiteFooterLinks, JsonLd,
 } from "@/components/content/ContentFrame";
@@ -56,7 +57,7 @@ export default function PlacePage({ params }: { params: { slug: string } }) {
           itemListElement: p.events.map((e, i) => ({
             "@type": "ListItem", position: i + 1,
             name: `${e.title} (${e.year})`,
-            url: `https://historiaglobe.com/event/${e.slug}`,
+            url: getSiteUrl(`/event/${e.slug}`),
           })),
         },
       }} />

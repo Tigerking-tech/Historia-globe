@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import config from "@/config";
+import { getSiteOrigin } from "@/lib/site-url";
 
-const base = `https://${config.domainName}`;
+const base = getSiteOrigin();
 
 /** 明确放行主流搜索与 AI 爬虫。
  *  哥飞分享的关键点之一：不要误把 AI 爬虫挡在 Cloudflare / robots 之外，

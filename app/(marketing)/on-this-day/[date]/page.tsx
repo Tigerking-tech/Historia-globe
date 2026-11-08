@@ -12,6 +12,7 @@ import {
   type ContentEvent,
 } from "@/lib/content";
 import { getSEOTags } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 import {
   Breadcrumbs, AnswerBox, PriceNote, SourceNote, Cta, SiteFooterLinks, JsonLd,
 } from "@/components/content/ContentFrame";
@@ -154,7 +155,7 @@ export default function OnThisDayPage({ params }: { params: { date: string } }) 
           ...events.map((e) => ({
             "@type": "ListItem",
             name: `${e.title} (${e.year})`,
-            url: `https://historiaglobe.com/event/${e.slug}`,
+            url: getSiteUrl(`/event/${e.slug}`),
           })),
           // 补充条目没有站内事件页，直接指向真实 Wikipedia 出处，绝不造死链。
           ...supplemental.map((e) => ({

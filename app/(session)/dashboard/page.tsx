@@ -1,26 +1,6 @@
-"use client";
+import { AccountSoon } from "@/components/AccountSoon";
 
-import { ShoppingCart, Package, Users, BarChart } from "lucide-react";
-import { useEffect, useState } from "react";
-import { ProductsGrid } from "./products-grid";
-import { TerminalTutorial } from "./terminal-tutorial";
-import { useRouter } from "next/navigation";
-
+// 原为 Creem 模板的终端教程 / 商品网格，账户体系未启用，收敛为统一说明页。
 export default function DashboardPage() {
-  const [showProducts, setShowProducts] = useState(false);
-  const router = useRouter();
-
-  const handleTutorialComplete = () => {
-    router.push("/products");
-  };
-
-  return (
-    <div className="h-full space-y-6">
-      {!showProducts ? (
-        <TerminalTutorial onComplete={handleTutorialComplete} />
-      ) : (
-        <ProductsGrid />
-      )}
-    </div>
-  );
+  return <AccountSoon />;
 }

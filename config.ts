@@ -1,9 +1,13 @@
 // 全局配置：品牌、SEO、Creem 支付、UNESCO 数据、LLM 问达
+import { getSiteHost } from "@/lib/site-url";
+
 const config = {
   appName: "Historia Globe",
   appDescription:
     "See what happened around the world on any date: global events of the same day on a 3D history globe, with real archival photos and clickable sources.",
-  domainName: "historiaglobe.com",
+  // 运行时解析：绑定自定义域后由 NEXT_PUBLIC_DOMAIN 指定；未绑定则自动用
+  // Vercel 注入的生产域。所有绝对 URL 一律走 lib/site-url.ts，勿再写死域名。
+  domainName: getSiteHost(),
 
   // Creem 支付（模板已接好；填入你的 Creem 测试/正式密钥即可启用结账）
   creem: {

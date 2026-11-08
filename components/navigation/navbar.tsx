@@ -55,12 +55,12 @@ export function MainNav() {
             <LangToggle />
             <div className="hidden sm:block">
               <Button variant="ghost" asChild className="text-slate-300 hover:text-white hover:bg-white/5">
-                <Link href="/signin">{t("nav.signin")}</Link>
+                <Link href="/account">{t("nav.signin")}</Link>
               </Button>
             </div>
             <div className="hidden sm:block">
               <Button asChild className="bg-sky-500 hover:bg-sky-400 text-[#04101f] font-semibold border-0">
-                <Link href="/signup">{t("nav.getStarted")}</Link>
+                <Link href="/explore">{t("nav.getStarted")}</Link>
               </Button>
             </div>
           </div>

@@ -1,10 +1,6 @@
-import { ProductsGrid } from "../dashboard/products-grid";
+import { AccountSoon } from "@/components/AccountSoon";
 
+// 原为 Creem 模板商品页，收款未启用，收敛为统一说明页。
 export default function ProductsPage() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-mono text-neutral-200">Products</h1>
-      <ProductsGrid />
-    </div>
-  );
-} 
+  return <AccountSoon />;
+}

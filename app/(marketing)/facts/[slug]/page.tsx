@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSEOTags } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 import {
   Breadcrumbs, AnswerBox, PriceNote, Cta, SiteFooterLinks, JsonLd,
 } from "@/components/content/ContentFrame";
@@ -44,8 +45,8 @@ export default function FactPage({ params }: { params: { slug: string } }) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://historiaglobe.com/" },
-          { "@type": "ListItem", position: 2, name: "Facts", item: "https://historiaglobe.com/facts" },
+          { "@type": "ListItem", position: 1, name: "Home", item: getSiteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Facts", item: getSiteUrl("/facts") },
           { "@type": "ListItem", position: 3, name: p.title },
         ],
       }} />

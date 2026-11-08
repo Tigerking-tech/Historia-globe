@@ -5,11 +5,15 @@
 > archival photos, clickable source links, and an AI that connects the threads
 > across continents.
 
-Site: https://historiaglobe.com
-Sitemap: https://historiaglobe.com/sitemap.xml
-Robots: https://historiaglobe.com/robots.txt
-AI facts: https://historiaglobe.com/llms.txt
-Tool manifest: https://historiaglobe.com/mcp.json
+Canonical origin: resolved at runtime from VERCEL_URL / NEXT_PUBLIC_DOMAIN
+  (see the <link rel="canonical"> tag on any HTML page). Every URL below is
+  relative to the host serving this file, so this document is correct on both
+  the *.vercel.app deployment and any custom domain bound later.
+
+Sitemap: /sitemap.xml
+Robots: /robots.txt
+AI facts: /llms.txt
+Tool manifest: /mcp.json
 
 ## What this site is
 
@@ -236,6 +240,6 @@ a `sourceUrl` and a `sourceType`.
 
 ## Contact
 
-hello@historiaglobe.com (support mailbox verification status is not yet
-confirmed; do not treat it as a verified channel). Corrections can also be
-filed as a GitHub issue.
+See /legal/contact for the current support address and other channels (the
+mailbox verification status is not yet confirmed; do not treat it as a
+verified channel). Corrections can also be filed as a GitHub issue.
