@@ -1,0 +1,119 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "year": -3400,
+    "dataset": "cliopatria-aligned-v1.1",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://services2.arcgis.com/wx8u046p68e0iGuj/arcgis/rest/services/Aligned_Cliopatria_v1.1_WGS84/FeatureServer/0",
+    "citation": "Bennett, J. S., Mutch, E., Tollefson, A., et al. (2025). Cliopatria – A geospatial database of world-wide political entities from 3400BCE to 2024CE. Scientific Data 12, 247.",
+    "accuracyNote": "Source states coverage 3400 BCE–1000 CE is reviewed and corrected; CE 1000–2024 will be appended after review and attribute values may still change. Boundaries are scholarly approximations of polity extent, not precise legal borders.",
+    "modifications": "Geometry simplified for web rendering (ring thinning and 4-decimal coordinate rounding); original Name, Type, Wikipedia and AreaSqKM values are preserved. No boundary was invented or interpolated.",
+    "note": "Dataset-level provenance plus a per-polity Wikipedia link. These are scholarly approximations, not precise legal borders or primary historical sources."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Sumerian City-States",
+        "ADMIN": "Sumerian City-States",
+        "name": "Sumerian City-States",
+        "year": -3400,
+        "type": "POLITY",
+        "areaSqKm": 21223,
+        "wikipedia": "History of Sumer",
+        "sourceUrl": "https://en.wikipedia.org/wiki/History_of_Sumer",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              46.8107,
+              31.1625
+            ],
+            [
+              46.8363,
+              31.1224
+            ],
+            [
+              47.1654,
+              31.1417
+            ],
+            [
+              47.1131,
+              30.748
+            ],
+            [
+              46.6509,
+              30.6032
+            ],
+            [
+              46.4397,
+              30.4328
+            ],
+            [
+              45.9715,
+              30.649
+            ],
+            [
+              45.6399,
+              31.0241
+            ],
+            [
+              45.3257,
+              31.7539
+            ],
+            [
+              44.9725,
+              32.2561
+            ],
+            [
+              44.842,
+              32.278
+            ],
+            [
+              44.6264,
+              32.5034
+            ],
+            [
+              44.5082,
+              32.5074
+            ],
+            [
+              44.6337,
+              32.806
+            ],
+            [
+              45.1584,
+              32.6585
+            ],
+            [
+              45.6915,
+              32.2211
+            ],
+            [
+              45.85,
+              31.9459
+            ],
+            [
+              46.4916,
+              31.353
+            ],
+            [
+              46.7249,
+              31.2707
+            ],
+            [
+              46.8107,
+              31.1625
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

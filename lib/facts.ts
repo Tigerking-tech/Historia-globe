@@ -7,6 +7,7 @@
 
 import { stats, supplementalStats } from "./content";
 import { SEED_EVENTS } from "./seed-events";
+import { boundaryStats, BOUNDARY_SOURCES } from "./historical-boundaries";
 import generated from "../data/generated-events.json";
 
 export type FactSection = { heading: string; body: string };
@@ -109,6 +110,13 @@ export function coverageStats() {
 }
 
 const num = (n: number) => n.toLocaleString("en-US");
+
+// 历史边界层：同样从构建期真实快照统计，不写推断值。
+const hb = boundaryStats();
+const hbSourceRows: [string, string][] = BOUNDARY_SOURCES.map((s) => [
+  `${s.name} · ${s.licence}`,
+  `${s.kind === "bundled" ? "Bundled" : s.kind === "competitor" ? "Competitor" : "Not bundled / reference"} — ${s.coverage}`,
+]);
 
 export const FACT_PAGES: FactPage[] = [
   {
@@ -252,6 +260,44 @@ export const FACT_PAGES: FactPage[] = [
       caption: `Curated events by category (${num(s.events)} total, ${categoryCounts.size} categories)`,
       head: ["Category", "Events"],
       rows: categoryRows,
+    },
+  },
+  {
+    slug: "historical-boundaries-and-licences",
+    title: "Historical borders: where the data comes from and why not GPL",
+    question: "Which datasets power the historical border time slider, and why is the most popular one excluded?",
+    answer: `The time slider uses Aligned Cliopatria v1.1 (UC Merced GIS Center), CC BY 4.0, with ${num(hb.layers)} real year layers, ${num(hb.totalPolities)} polity features and ${num(hb.withWikipedia)} per-polity Wikipedia links (${hb.wikiCoverage}%). The present-day baseline is Natural Earth (public domain). The widely used aourednik/historical-basemaps dataset (GPL-3.0) is deliberately NOT bundled because its licence is incompatible with a proprietary commercial site and its README calls the data work-in-progress. No boundary is interpolated for years without data; coverage ends at ${hb.lastYear} because that is the last reviewed year in the source.`,
+    zhAnswer: `时间滑块使用 Aligned Cliopatria v1.1（加州大学默塞德分校 GIS 中心，CC BY 4.0），含 ${num(hb.layers)} 个真实年份图层、${num(hb.totalPolities)} 个政体要素、${num(hb.withWikipedia)} 条逐要素维基出处链接（${hb.wikiCoverage}%）；现代基线为 Natural Earth（公有领域）。被广泛使用的 aourednik/historical-basemaps（GPL-3.0）**刻意不内置**：其许可与专有商业站点不兼容，且 README 自述数据仍在进行中。无数据的年份一律不插值；历史覆盖止于 ${hb.lastYear}，因为这是源数据最后一个已审阅年份。`,
+    description:
+      "Which open datasets power Historia Globe's historical border time slider, their exact licences (CC BY 4.0, public domain, GPL-3.0, ODbL), why the GPL-3.0 dataset is excluded, per-polity source links, and the honest accuracy limits of scholarly boundary reconstruction.",
+    keywords: [
+      "historical country boundaries open dataset",
+      "historical borders CC BY data licence",
+      "Cliopatria vs historical-basemaps GPL",
+      "time slider historical map data source",
+    ],
+    sections: [
+      {
+        heading: "Two bundled sources, both clearly licensed",
+        body: `Historical layers come from Aligned Cliopatria v1.1 (CC BY 4.0), derived from Cliopatria v0.0.1 (Zenodo DOI 10.5281/zenodo.13363121) and cited as Bennett et al. (2025), Scientific Data 12, 247. The source exposes ${hb.panelYearsInSource} panel years from 3400 BCE; this site bundles ${hb.layers} representative real years spanning ${yearText(hb.firstYear ?? 0)} to ${hb.lastYear ?? 0}. The modern baseline is Natural Earth 1:110m Admin-0 Countries (public domain), already used for the globe's country outlines. ${num(hb.totalPolities)} bundled polity features carry ${num(hb.withWikipedia)} Wikipedia links (${hb.wikiCoverage}%), so every layer has both dataset-level provenance and per-polity links.`,
+      },
+      {
+        heading: "Why the most popular dataset is excluded",
+        body: "aourednik/historical-basemaps has 876 stars and 37 world_<year>.geojson files (100-2010) that would extend coverage to modern times. It is licensed GPL-3.0, and its README states the collection is a work in progress that should be verified against other sources before use. Bundling GPL-3.0 data into a proprietary commercial site raises derivative-work and redistribution questions, so it is registered for comparison but not shipped. OpenHistoricalMap data (ODbL) is likewise not bundled pending an attribution/share-alike review; its CC0 maplibre-gl-dates plugin only inspired the date-filtering approach.",
+      },
+      {
+        heading: "Accuracy limits, stated up front",
+        body: "These boundaries are scholarly approximations of polity extent, not precise legal borders, and the Wikipedia links are secondary encyclopedic entries, not primary historical sources. The source states 3400 BCE-1000 CE is reviewed and corrected while 1000-2024 CE will be appended after review and attribute values may still change. Geometry is simplified for web rendering (ring thinning and 4-decimal rounding) with original attributes preserved. Years without data are never interpolated: the slider snaps to the nearest real panel year and says so.",
+      },
+      {
+        heading: "How this competes with commercial atlases",
+        body: "Commercial atlases such as GeaCron advertise a timeline from 3000 BC, but their boundary polygons are not extractable for GIS use and the underlying data is proprietary. This site does not copy that data; it competes by using openly licensed datasets, publishing exact licence and citation metadata, exposing the layers through a free public read-only API and MCP endpoint, and keeping every layer checkable. The trade-off is honest: reviewed historical coverage currently ends at 1497 rather than the present day.",
+      },
+    ],
+    table: {
+      caption: "Open datasets evaluated on 2026-11-08 (stars and licence verified via GitHub API)",
+      head: ["Dataset / licence", "Use"],
+      rows: hbSourceRows,
     },
   },
 ];

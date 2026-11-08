@@ -33,6 +33,8 @@ type Props = {
   focus?: { lat: number; lon: number } | null;
   /** UI language — drives country-name label text (en / zh). */
   lang?: "en" | "zh";
+  /** 历史边界时间滑块：指向某个年份的 GeoJSON；不传则用现代 Natural Earth 基线。 */
+  boundaryUrl?: string;
 };
 
 const R = 100;
@@ -102,6 +104,7 @@ export default function Globe({
   view = "satellite",
   focus = null,
   lang = "en",
+  boundaryUrl,
 }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const onSelectRef = useRef(onSelect);
@@ -481,7 +484,7 @@ export default function Globe({
     globe.add(grp);
     bordersGroupRef.current = grp;
     let cancelled = false;
-    fetch("/countries.geojson")
+    fetch(boundaryUrl ?? "/countries.geojson")
       .then((r) => (r.ok ? r.json() : null))
       .then((gj: any) => {
         if (!gj || cancelled) return;
@@ -515,7 +518,9 @@ export default function Globe({
       cancelled = true;
       globe.remove(grp);
     };
-  }, []);
+    // 年份变化时重建边界组；历史图层没有 LABELRANK/LABEL_X/LABEL_Y，
+    // buildLabels 会自动跳过，不会画出错误的国家标注。
+  }, [boundaryUrl]);
 
   // build (or rebuild) the country-name labels from cached Natural Earth features
   const buildLabels = () => {

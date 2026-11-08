@@ -1,0 +1,95 @@
+# 历史边界图层刷新：延续「沙箱拿不到的数据，交给 GitHub Actions 自动跑」的约定。
+#
+# 与 fetch-static-content.yml 的区别：
+#  - 本 workflow 只由 schedule（每月）+ workflow_dispatch 触发，**不监听 push**，
+#    因此不会与 fetch-static-content.yml 互相触发、不会死循环。
+#  - 回写同样用内置 GITHUB_TOKEN（官方规定其 push 不再触发新 run）+ [skip ci] 双保险。
+#  - 只在内容真的变化时提交；上游失败时保留仓库里已有的 ok 图层，绝不写空/退化数据。
+#
+# 数据源：Aligned Cliopatria v1.1 (CC BY 4.0)，按真实面板年抓取，逐要素带维基出处。
+name: Refresh historical border layers (Cliopatria)
+
+on:
+  schedule:
+    # 避开整点；每月 1 号 UTC 05:23（与抓数 workflow 的周二 04:37 错开）。
+    - cron: '23 5 1 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-boundaries
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  boundaries:
+    name: 14 个真实年份边界图层
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 脚本零第三方依赖，纯函数自检不联网。
+      - name: 纯函数自检
+        run: node scripts/build-historical-boundaries.mjs --self-test
+
+      - name: 抓取 Cliopatria 历史边界（按真实面板年）
+        id: fetch
+        shell: bash
+        run: |
+          set +e
+          node scripts/build-historical-boundaries.mjs --ci
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          case "$code" in
+            0) echo "::notice::边界图层已更新或本就一致" ;;
+            1) echo "::error::上游失败且无旧数据可保留"; exit 1 ;;
+            2) echo "::warning::上游部分失败，已保留仓库现有 ok 图层，不写入退化数据" ;;
+            *) echo "::error::脚本异常退出 ($code)"; exit 1 ;;
+          esac
+
+      - name: 仅在内容变化时回写仓库
+        shell: bash
+        run: |
+          # 提交前校验：status 必须为 ok、14 个图层齐全、每个 GeoJSON 真实存在且非空。
+          node -e "
+            const fs=require('fs');
+            const d=require('./data/historical-boundaries.json');
+            if(d.status!=='ok'){console.error('status='+d.status+' 非 ok，拒绝提交');process.exit(1)}
+            if(!Array.isArray(d.layers)||d.layers.length!==14){console.error('图层数='+(d.layers||[]).length+' 不为 14，拒绝提交');process.exit(1)}
+            for(const l of d.layers){
+              const p='public'+l.file;
+              if(!fs.existsSync(p)||fs.statSync(p).size<100){console.error('图层文件异常: '+p);process.exit(1)}
+              const gj=JSON.parse(fs.readFileSync(p,'utf8'));
+              if(!Array.isArray(gj.features)||gj.features.length!==l.polityCount){console.error('要素数与清单不符: '+p);process.exit(1)}
+              if(gj.properties.licence!=='CC BY 4.0'){console.error('许可标注缺失: '+p);process.exit(1)}
+            }
+            console.log('校验通过 layers='+d.layers.length+' polities='+d.layers.reduce((n,l)=>n+l.polityCount,0));
+          " || exit 1
+          git add data/historical-boundaries.json public/boundaries/
+          if git diff --cached --quiet; then
+            echo "::notice::边界数据无变化，不产生提交，也不会触发 Vercel 无意义部署"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git diff --cached --stat
+            git commit -m "chore(data): refresh Cliopatria historical border layers [skip ci]"
+            git push
+            echo "::notice::边界图层已回写 main；Vercel 将自动重新构建静态页"
+          fi
+
+      - name: 上传清单供核对
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-boundaries-manifest
+          path: data/historical-boundaries.json
+          retention-days: 7
+          if-no-files-found: warn

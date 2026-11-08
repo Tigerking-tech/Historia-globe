@@ -172,6 +172,27 @@ const checks = [
     },
   },
   {
+    name: "历史边界 API（真实年份 + 出处 + 图层可达）",
+    run: async () => {
+      const r = await request("/api/public/v1/boundaries");
+      must(r.status === 200, `HTTP ${r.status}`);
+      const j = jsonOf(r);
+      must(j.ok === true && j.status === "ok", `status=${j.status}`);
+      must(j.dataset?.licence === "CC BY 4.0", "数据集许可标注异常");
+      must(Array.isArray(j.bundledYears) && j.bundledYears.length >= 14, "真实年份图层不足 14");
+      // 1200 不是真实面板年，必须标注对齐到最近的真实年（不插值）。
+      const q = await request("/api/public/v1/boundaries/1200");
+      must(q.status === 200, `年份查询 HTTP ${q.status}`);
+      const qj = jsonOf(q);
+      must(qj.query?.snappedTo && qj.query?.exactPanelYear === false, "非面板年应如实标注对齐");
+      const f = await request(qj.query.file, { timeout: 30000 });
+      must(f.ok, `静态图层 ${qj.query.file} HTTP ${f.status}`);
+      const gj = jsonOf(f);
+      must(gj.properties?.licence === "CC BY 4.0" && Array.isArray(gj.features) && gj.features.length > 0, "图层缺许可或无要素");
+      return `ok / ${j.layers} 层 / ${j.totalPolities} 政体 / 1200→${qj.query.snappedTo} 不插值 / 图层可达`;
+    },
+  },
+  {
     name: "非法日期返回 400（不伪装成功）",
     run: async () => {
       const r = await request("/api/public/v1/on-this-day/99-99");

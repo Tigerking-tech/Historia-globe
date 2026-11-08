@@ -10,6 +10,7 @@ import {
   getEventBySlug,
   getPlaceBySlug,
   publicCoverage,
+  queryBoundaries,
   publicJson,
   publicOptions,
 } from "@/lib/public-api";
@@ -57,6 +58,16 @@ export async function GET(req: NextRequest, { params }: { params: { path?: strin
 
     case "coverage":
       return publicJson(publicCoverage());
+
+    case "boundaries": {
+      // /boundaries 列出全部真实年份图层；/boundaries/{year} 对齐到最近的真实面板年。
+      if (!value) return publicJson(queryBoundaries());
+      const y = Number(value);
+      if (!Number.isFinite(y)) {
+        return publicJson({ ok: false, error: "Year must be a number, e.g. /boundaries/-44 or /boundaries/1210." }, 400);
+      }
+      return publicJson(queryBoundaries(y));
+    }
 
     default:
       return publicJson(

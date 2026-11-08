@@ -18,6 +18,16 @@ import {
   type ContentEvent,
 } from "./content";
 import { coverageStats, FACT_SLUGS, FACT_INDEX_PATH } from "./facts";
+import {
+  boundaryStats,
+  getBoundaryLayers,
+  nearestBoundaryYear,
+  sliderYears,
+  BOUNDARY_DATASET,
+  BOUNDARY_STATUS,
+  MODERN_LAYER,
+  PANEL_YEARS_IN_SOURCE,
+} from "./historical-boundaries";
 
 export const API_VERSION = "v1";
 export const API_BASE = `/api/public/${API_VERSION}`;
@@ -141,6 +151,59 @@ export function publicCoverage() {
   return { ok: true as const, ...coverageStats(), sources: LICENSE_NOTE };
 }
 
+/**
+ * 历史边界图层查询（REST 与 MCP 共用）。
+ * 只返回真实存在的面板年，不插值；每个图层带数据集级出处与逐要素维基链接占比。
+ */
+export function queryBoundaries(year?: number) {
+  const s = boundaryStats();
+  const layers = getBoundaryLayers();
+  const base = {
+    ok: true as const,
+    status: BOUNDARY_STATUS,
+    dataset: {
+      id: BOUNDARY_DATASET.id,
+      name: BOUNDARY_DATASET.name,
+      licence: BOUNDARY_DATASET.licence,
+      licenceUrl: BOUNDARY_DATASET.licenceUrl,
+      sourceUrl: BOUNDARY_DATASET.sourceUrl,
+      repository: BOUNDARY_DATASET.repository,
+      doi: BOUNDARY_DATASET.doi,
+      citation: BOUNDARY_DATASET.citation,
+      coverage: BOUNDARY_DATASET.coverage,
+      accuracyNote: BOUNDARY_DATASET.accuracyNote,
+      modifications: BOUNDARY_DATASET.modifications,
+    },
+    modern: MODERN_LAYER,
+    layers: layers.length,
+    totalPolities: s.totalPolities,
+    withWikipedia: s.withWikipedia,
+    wikiCoveragePercent: s.wikiCoverage,
+    panelYearsInSource: PANEL_YEARS_IN_SOURCE,
+    bundledYears: layers.map((l) => l.year),
+    sliderYears: sliderYears(),
+    layerFiles: layers.map((l) => ({ year: l.year, file: l.file, polityCount: l.polityCount, withWikipedia: l.withWikipedia })),
+    note:
+      "Only real panel years from the source are offered; no boundary is invented or interpolated. Boundaries are scholarly approximations of polity extent, not precise legal borders. Wikipedia links are secondary, not primary sources. Coverage ends at 1497 (last reviewed year in Aligned Cliopatria v1.1). The GPL-3.0 historical-basemaps dataset is deliberately not bundled.",
+    factPage: "/facts/historical-boundaries-and-licences",
+    interactive: "/historical-boundaries",
+  };
+  if (typeof year === "number" && Number.isFinite(year)) {
+    const snapped = nearestBoundaryYear(year);
+    return {
+      ...base,
+      query: {
+        requestedYear: year,
+        snappedTo: snapped.year,
+        exactPanelYear: snapped.exact,
+        layer: snapped.layer,
+        file: snapped.layer?.file ?? String(MODERN_LAYER.file),
+      },
+    };
+  }
+  return base;
+}
+
 export function apiIndex() {
   const base = "https://historiaglobe.com";
   return {
@@ -156,6 +219,8 @@ export function apiIndex() {
       { method: "GET", path: `${API_BASE}/event/{slug}`, description: "One curated event." },
       { method: "GET", path: `${API_BASE}/place/{slug}`, description: "Events grouped by place." },
       { method: "GET", path: `${API_BASE}/coverage`, description: "Exact coverage and category statistics." },
+      { method: "GET", path: `${API_BASE}/boundaries`, description: "Historical border layers: real panel years, licences, per-polity source links and accuracy limits." },
+      { method: "GET", path: `${API_BASE}/boundaries/{year}`, description: "Snap a year to the nearest real historical boundary layer (no interpolation). E.g. -44, 1210, 1497." },
       { method: "POST", path: MCP_ENDPOINT, description: "MCP-style JSON-RPC tools (initialize / tools/list / tools/call)." },
       { method: "GET", path: "/mcp.json", description: "Machine-readable capability manifest." },
       { method: "GET", path: "/llms.txt", description: "Site facts for AI assistants." },
@@ -206,6 +271,15 @@ export function listMcpTools() {
         "Return exact, build-time coverage statistics: curated event count, category distribution, distinct places, year ranges, and the supplemental snapshot size. States explicitly what cannot be measured.",
       inputSchema: { type: "object", properties: {} },
     },
+    {
+      name: "get_historical_boundaries",
+      description:
+        "List real historical border layers by year (CC BY 4.0 Cliopatria data) with dataset licence, academic citation, per-polity Wikipedia source links and accuracy limits. Pass a year to snap to the nearest real panel year. Never interpolates or invents borders; coverage ends at 1497.",
+      inputSchema: {
+        type: "object",
+        properties: { year: { type: "number", description: "Optional year, e.g. -44, 1210, 1497" } },
+      },
+    },
   ];
 }
 
@@ -219,6 +293,13 @@ export function callMcpTool(name: string, args: Record<string, unknown>) {
       return getEventBySlug(String(args?.slug ?? ""));
     case "get_coverage_stats":
       return publicCoverage();
+    case "get_historical_boundaries": {
+      const raw = args?.year;
+      if (raw === undefined || raw === null || raw === "") return queryBoundaries();
+      const y = Number(raw);
+      if (!Number.isFinite(y)) return { ok: false, error: "year must be a number, e.g. -44 or 1210." };
+      return queryBoundaries(y);
+    }
     default:
       return { ok: false, error: `Unknown tool '${name}'. Use tools/list to see available tools.` };
   }

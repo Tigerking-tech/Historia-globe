@@ -1,0 +1,2429 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "year": -1000,
+    "dataset": "cliopatria-aligned-v1.1",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://services2.arcgis.com/wx8u046p68e0iGuj/arcgis/rest/services/Aligned_Cliopatria_v1.1_WGS84/FeatureServer/0",
+    "citation": "Bennett, J. S., Mutch, E., Tollefson, A., et al. (2025). Cliopatria – A geospatial database of world-wide political entities from 3400BCE to 2024CE. Scientific Data 12, 247.",
+    "accuracyNote": "Source states coverage 3400 BCE–1000 CE is reviewed and corrected; CE 1000–2024 will be appended after review and attribute values may still change. Boundaries are scholarly approximations of polity extent, not precise legal borders.",
+    "modifications": "Geometry simplified for web rendering (ring thinning and 4-decimal coordinate rounding); original Name, Type, Wikipedia and AreaSqKM values are preserved. No boundary was invented or interpolated.",
+    "note": "Dataset-level provenance plus a per-polity Wikipedia link. These are scholarly approximations, not precise legal borders or primary historical sources."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Assyria",
+        "ADMIN": "Assyria",
+        "name": "Assyria",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 22995,
+        "wikipedia": "Assyria",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Assyria",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              43.3512,
+              35.1828
+            ],
+            [
+              43.012,
+              35.0937
+            ],
+            [
+              42.8757,
+              35.1323
+            ],
+            [
+              42.83,
+              35.4262
+            ],
+            [
+              43.0564,
+              35.6603
+            ],
+            [
+              43.4173,
+              35.7582
+            ],
+            [
+              43.4708,
+              36.1631
+            ],
+            [
+              43.688,
+              36.4188
+            ],
+            [
+              44.256,
+              36.7001
+            ],
+            [
+              44.738,
+              36.1033
+            ],
+            [
+              44.9049,
+              36.0099
+            ],
+            [
+              44.654,
+              35.8953
+            ],
+            [
+              44.7018,
+              35.5677
+            ],
+            [
+              44.5176,
+              35.1963
+            ],
+            [
+              44.669,
+              35.0982
+            ],
+            [
+              44.8754,
+              35.0811
+            ],
+            [
+              44.569,
+              34.5733
+            ],
+            [
+              44.3916,
+              34.6339
+            ],
+            [
+              44.1687,
+              34.8866
+            ],
+            [
+              43.3512,
+              35.1828
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Babylonia",
+        "ADMIN": "Babylonia",
+        "name": "Babylonia",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 23171,
+        "wikipedia": "Babylonia",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Babylonia",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              45.8226,
+              31.7904
+            ],
+            [
+              45.8412,
+              31.6002
+            ],
+            [
+              45.5463,
+              31.7108
+            ],
+            [
+              45.2567,
+              31.7616
+            ],
+            [
+              45.0256,
+              31.736
+            ],
+            [
+              45.0637,
+              31.5957
+            ],
+            [
+              45.0256,
+              31.3193
+            ],
+            [
+              44.9521,
+              31.2149
+            ],
+            [
+              44.8314,
+              31.3229
+            ],
+            [
+              44.6422,
+              31.4009
+            ],
+            [
+              43.3373,
+              32.6069
+            ],
+            [
+              43.8072,
+              32.8383
+            ],
+            [
+              44.0666,
+              32.8176
+            ],
+            [
+              44.1461,
+              32.861
+            ],
+            [
+              44.1168,
+              32.9991
+            ],
+            [
+              44.3031,
+              33.2053
+            ],
+            [
+              44.4893,
+              33.2296
+            ],
+            [
+              44.4866,
+              32.9607
+            ],
+            [
+              44.6298,
+              32.7967
+            ],
+            [
+              44.9756,
+              32.7099
+            ],
+            [
+              45.1881,
+              32.587
+            ],
+            [
+              45.4186,
+              32.3573
+            ],
+            [
+              45.5517,
+              32.306
+            ],
+            [
+              45.6941,
+              32.1275
+            ],
+            [
+              45.8226,
+              31.7904
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Elam",
+        "ADMIN": "Elam",
+        "name": "Elam",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 17268,
+        "wikipedia": "Elam",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Elam",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              48.8055,
+              32.9452
+            ],
+            [
+              49.1136,
+              32.8093
+            ],
+            [
+              49.0223,
+              32.2296
+            ],
+            [
+              48.7969,
+              32.0084
+            ],
+            [
+              48.7616,
+              31.8043
+            ],
+            [
+              48.5812,
+              31.6937
+            ],
+            [
+              47.7297,
+              31.4802
+            ],
+            [
+              47.8667,
+              31.7989
+            ],
+            [
+              47.5841,
+              32.1457
+            ],
+            [
+              47.868,
+              32.833
+            ],
+            [
+              48.0727,
+              33.1186
+            ],
+            [
+              48.1871,
+              33.1042
+            ],
+            [
+              48.8055,
+              32.9452
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 8256,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              23.979,
+              35.5168
+            ],
+            [
+              24.1241,
+              35.6009
+            ],
+            [
+              24.1762,
+              35.5893
+            ],
+            [
+              24.1854,
+              35.5096
+            ],
+            [
+              24.1069,
+              35.4927
+            ],
+            [
+              24.327,
+              35.352
+            ],
+            [
+              24.7888,
+              35.4094
+            ],
+            [
+              25.3794,
+              35.3345
+            ],
+            [
+              25.4542,
+              35.2927
+            ],
+            [
+              25.7579,
+              35.3315
+            ],
+            [
+              25.7106,
+              35.1735
+            ],
+            [
+              25.8124,
+              35.1123
+            ],
+            [
+              26.031,
+              35.2256
+            ],
+            [
+              26.1119,
+              35.206
+            ],
+            [
+              26.3011,
+              35.2837
+            ],
+            [
+              26.2906,
+              35.1318
+            ],
+            [
+              26.2398,
+              35.0375
+            ],
+            [
+              26.1359,
+              34.9981
+            ],
+            [
+              25.9876,
+              35.0339
+            ],
+            [
+              24.9282,
+              34.9313
+            ],
+            [
+              24.7545,
+              34.947
+            ],
+            [
+              24.7231,
+              35.0913
+            ],
+            [
+              24.5632,
+              35.1014
+            ],
+            [
+              24.3925,
+              35.1896
+            ],
+            [
+              23.5942,
+              35.2329
+            ],
+            [
+              23.5205,
+              35.2956
+            ],
+            [
+              23.6083,
+              35.6091
+            ],
+            [
+              23.6152,
+              35.5235
+            ],
+            [
+              23.7188,
+              35.5093
+            ],
+            [
+              23.7416,
+              35.6867
+            ],
+            [
+              23.7908,
+              35.547
+            ],
+            [
+              23.979,
+              35.5168
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 1330,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.1381,
+              36.2077
+            ],
+            [
+              27.8065,
+              35.9001
+            ],
+            [
+              27.7215,
+              35.9299
+            ],
+            [
+              27.7192,
+              36.1661
+            ],
+            [
+              27.8948,
+              36.3321
+            ],
+            [
+              28.2135,
+              36.4539
+            ],
+            [
+              28.1381,
+              36.2077
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 881,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              26.1589,
+              38.3028
+            ],
+            [
+              26.0129,
+              38.1488
+            ],
+            [
+              25.8615,
+              38.2393
+            ],
+            [
+              25.9899,
+              38.3433
+            ],
+            [
+              25.9409,
+              38.4568
+            ],
+            [
+              25.824,
+              38.5402
+            ],
+            [
+              25.8641,
+              38.5845
+            ],
+            [
+              25.9997,
+              38.6009
+            ],
+            [
+              26.1578,
+              38.5416
+            ],
+            [
+              26.1589,
+              38.3028
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 267,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              26.9731,
+              36.7413
+            ],
+            [
+              26.9703,
+              36.6719
+            ],
+            [
+              26.9187,
+              36.7579
+            ],
+            [
+              27.1715,
+              36.8877
+            ],
+            [
+              27.3423,
+              36.8828
+            ],
+            [
+              27.3282,
+              36.8424
+            ],
+            [
+              26.9731,
+              36.7413
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 724,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              27.5136,
+              36.9924
+            ],
+            [
+              27.4225,
+              37.0273
+            ],
+            [
+              27.2537,
+              36.9645
+            ],
+            [
+              27.2316,
+              37.0692
+            ],
+            [
+              27.3188,
+              37.1489
+            ],
+            [
+              27.4504,
+              37.1072
+            ],
+            [
+              27.5525,
+              37.1401
+            ],
+            [
+              27.5818,
+              37.2057
+            ],
+            [
+              27.7426,
+              37.1501
+            ],
+            [
+              27.7368,
+              37.0588
+            ],
+            [
+              27.7947,
+              37.0081
+            ],
+            [
+              27.5136,
+              36.9924
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 9259,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              33.9994,
+              35.335
+            ],
+            [
+              33.9022,
+              35.1641
+            ],
+            [
+              34.0849,
+              34.9625
+            ],
+            [
+              33.9771,
+              34.9822
+            ],
+            [
+              33.8651,
+              34.938
+            ],
+            [
+              33.6816,
+              34.9676
+            ],
+            [
+              33.5981,
+              34.8175
+            ],
+            [
+              33.0307,
+              34.6583
+            ],
+            [
+              32.7016,
+              34.6429
+            ],
+            [
+              32.4064,
+              34.7505
+            ],
+            [
+              32.2758,
+              35.0487
+            ],
+            [
+              32.2786,
+              35.094
+            ],
+            [
+              32.3897,
+              35.0417
+            ],
+            [
+              32.4538,
+              35.063
+            ],
+            [
+              32.5514,
+              35.1742
+            ],
+            [
+              32.8584,
+              35.1513
+            ],
+            [
+              32.9391,
+              35.3281
+            ],
+            [
+              33.0043,
+              35.366
+            ],
+            [
+              33.472,
+              35.3292
+            ],
+            [
+              33.6519,
+              35.3546
+            ],
+            [
+              34.5826,
+              35.688
+            ],
+            [
+              34.5489,
+              35.6329
+            ],
+            [
+              33.9994,
+              35.335
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 413,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              25.4469,
+              36.9244
+            ],
+            [
+              25.3406,
+              37.073
+            ],
+            [
+              25.5404,
+              37.1971
+            ],
+            [
+              25.5992,
+              37.1166
+            ],
+            [
+              25.579,
+              37.0151
+            ],
+            [
+              25.552,
+              36.9542
+            ],
+            [
+              25.4469,
+              36.9244
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 3686,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              23.5905,
+              38.7643
+            ],
+            [
+              24.1523,
+              38.6458
+            ],
+            [
+              24.2566,
+              38.2167
+            ],
+            [
+              24.3351,
+              38.1588
+            ],
+            [
+              24.5595,
+              38.1437
+            ],
+            [
+              24.5836,
+              38.0466
+            ],
+            [
+              24.5112,
+              37.9543
+            ],
+            [
+              24.3855,
+              37.993
+            ],
+            [
+              24.1469,
+              38.2147
+            ],
+            [
+              24.0537,
+              38.381
+            ],
+            [
+              23.6406,
+              38.4184
+            ],
+            [
+              23.6034,
+              38.5577
+            ],
+            [
+              23.1463,
+              38.8489
+            ],
+            [
+              22.8314,
+              38.8288
+            ],
+            [
+              23.1211,
+              38.999
+            ],
+            [
+              23.286,
+              39.0336
+            ],
+            [
+              23.3722,
+              38.9989
+            ],
+            [
+              23.4598,
+              38.8563
+            ],
+            [
+              23.5905,
+              38.7643
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Greek Dark Ages",
+        "ADMIN": "Greek Dark Ages",
+        "name": "Greek Dark Ages",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 36439,
+        "wikipedia": "Greek Dark Ages",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Greek_Dark_Ages",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              22.9506,
+              39.5703
+            ],
+            [
+              23.3425,
+              39.1817
+            ],
+            [
+              23.0536,
+              39.0978
+            ],
+            [
+              23.1029,
+              39.107
+            ],
+            [
+              23.1202,
+              39.3053
+            ],
+            [
+              22.8263,
+              39.2661
+            ],
+            [
+              22.9684,
+              39.1129
+            ],
+            [
+              23.0715,
+              39.0368
+            ],
+            [
+              22.7488,
+              38.8703
+            ],
+            [
+              22.5253,
+              38.8635
+            ],
+            [
+              23.1031,
+              38.6371
+            ],
+            [
+              23.3077,
+              38.5652
+            ],
+            [
+              23.5267,
+              38.4989
+            ],
+            [
+              23.9364,
+              38.2871
+            ],
+            [
+              24.0039,
+              38.0672
+            ],
+            [
+              24.032,
+              37.6523
+            ],
+            [
+              23.8829,
+              37.7842
+            ],
+            [
+              23.5805,
+              38.0338
+            ],
+            [
+              23.0086,
+              37.8461
+            ],
+            [
+              23.1645,
+              37.6144
+            ],
+            [
+              23.3264,
+              37.6049
+            ],
+            [
+              23.5157,
+              37.432
+            ],
+            [
+              23.1783,
+              37.2905
+            ],
+            [
+              23.1269,
+              37.4477
+            ],
+            [
+              22.7241,
+              37.5628
+            ],
+            [
+              22.9558,
+              37.1154
+            ],
+            [
+              23.0295,
+              36.724
+            ],
+            [
+              23.2007,
+              36.44
+            ],
+            [
+              22.9855,
+              36.5104
+            ],
+            [
+              22.6517,
+              36.8021
+            ],
+            [
+              22.4803,
+              36.5995
+            ],
+            [
+              22.3969,
+              36.4765
+            ],
+            [
+              22.1454,
+              36.9508
+            ],
+            [
+              21.9296,
+              36.9742
+            ],
+            [
+              21.873,
+              36.7249
+            ],
+            [
+              21.7042,
+              36.8227
+            ],
+            [
+              21.5855,
+              37.0604
+            ],
+            [
+              21.6841,
+              37.2958
+            ],
+            [
+              21.2838,
+              37.783
+            ],
+            [
+              21.1295,
+              37.9364
+            ],
+            [
+              21.2955,
+              38.0144
+            ],
+            [
+              21.646,
+              38.1636
+            ],
+            [
+              21.9572,
+              38.3289
+            ],
+            [
+              22.6582,
+              38.0706
+            ],
+            [
+              22.972,
+              37.9795
+            ],
+            [
+              22.9484,
+              38.076
+            ],
+            [
+              23.2211,
+              38.144
+            ],
+            [
+              22.9428,
+              38.1866
+            ],
+            [
+              22.6934,
+              38.3171
+            ],
+            [
+              22.407,
+              38.4453
+            ],
+            [
+              21.9463,
+              38.4089
+            ],
+            [
+              21.3747,
+              38.4157
+            ],
+            [
+              21.9861,
+              38.6214
+            ],
+            [
+              22.4344,
+              38.7361
+            ],
+            [
+              22.6499,
+              38.9629
+            ],
+            [
+              22.5323,
+              39.4287
+            ],
+            [
+              22.6702,
+              39.6464
+            ],
+            [
+              22.6232,
+              39.9945
+            ],
+            [
+              22.9506,
+              39.5703
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Kingdom of Israel",
+        "ADMIN": "Kingdom of Israel",
+        "name": "Kingdom of Israel",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 19479,
+        "wikipedia": "Kingdom of Israel (united monarchy)",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Kingdom_of_Israel_(united_monarchy)",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              34.8937,
+              31.4602
+            ],
+            [
+              34.8987,
+              31.5553
+            ],
+            [
+              34.7423,
+              31.7108
+            ],
+            [
+              34.988,
+              32.122
+            ],
+            [
+              34.9754,
+              32.4182
+            ],
+            [
+              35.451,
+              33.082
+            ],
+            [
+              35.5183,
+              33.1262
+            ],
+            [
+              35.5386,
+              33.1772
+            ],
+            [
+              35.6526,
+              33.364
+            ],
+            [
+              35.7209,
+              33.4296
+            ],
+            [
+              35.9471,
+              33.2849
+            ],
+            [
+              35.881,
+              32.8294
+            ],
+            [
+              36.1899,
+              32.6378
+            ],
+            [
+              36.0324,
+              32.4422
+            ],
+            [
+              35.7891,
+              32.3231
+            ],
+            [
+              35.9836,
+              32.0677
+            ],
+            [
+              36.4406,
+              31.9232
+            ],
+            [
+              36.5914,
+              31.7661
+            ],
+            [
+              36.4865,
+              31.5364
+            ],
+            [
+              35.9671,
+              31.5786
+            ],
+            [
+              35.7229,
+              31.5193
+            ],
+            [
+              35.4815,
+              31.5391
+            ],
+            [
+              35.4795,
+              31.4976
+            ],
+            [
+              35.3799,
+              31.4845
+            ],
+            [
+              35.2216,
+              31.3771
+            ],
+            [
+              34.9388,
+              31.351
+            ],
+            [
+              34.8937,
+              31.4602
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Kingdom of Kush",
+        "ADMIN": "Kingdom of Kush",
+        "name": "Kingdom of Kush",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 331667,
+        "wikipedia": "Kingdom of Kush",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Kingdom_of_Kush",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30.4217,
+              23.4148
+            ],
+            [
+              31.6419,
+              23.7898
+            ],
+            [
+              32.6468,
+              23.8191
+            ],
+            [
+              33.2341,
+              23.9422
+            ],
+            [
+              33.5211,
+              23.7179
+            ],
+            [
+              33.7102,
+              23.4751
+            ],
+            [
+              33.7275,
+              23.076
+            ],
+            [
+              33.657,
+              21.7277
+            ],
+            [
+              34.145,
+              19.7856
+            ],
+            [
+              34.4574,
+              19.036
+            ],
+            [
+              34.6598,
+              18.6781
+            ],
+            [
+              34.7351,
+              18.4325
+            ],
+            [
+              35.0531,
+              18.1636
+            ],
+            [
+              35.3103,
+              17.7877
+            ],
+            [
+              35.8908,
+              17.1815
+            ],
+            [
+              35.7944,
+              16.7323
+            ],
+            [
+              35.4599,
+              16.4985
+            ],
+            [
+              34.6595,
+              16.5129
+            ],
+            [
+              34.5744,
+              16.4706
+            ],
+            [
+              34.4384,
+              16.3087
+            ],
+            [
+              34.4565,
+              16.1001
+            ],
+            [
+              34.5639,
+              15.8195
+            ],
+            [
+              34.1324,
+              15.8995
+            ],
+            [
+              33.5831,
+              15.4336
+            ],
+            [
+              32.7083,
+              15.2875
+            ],
+            [
+              32.4699,
+              15.2835
+            ],
+            [
+              31.6101,
+              15.5339
+            ],
+            [
+              31.4889,
+              16.0245
+            ],
+            [
+              31.111,
+              18.1413
+            ],
+            [
+              31.0363,
+              18.1243
+            ],
+            [
+              30.5246,
+              22.1571
+            ],
+            [
+              30.6755,
+              22.6971
+            ],
+            [
+              30.4217,
+              23.4148
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "New Kingdom of Egypt",
+        "ADMIN": "New Kingdom of Egypt",
+        "name": "New Kingdom of Egypt",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 334540,
+        "wikipedia": "New Kingdom of Egypt",
+        "sourceUrl": "https://en.wikipedia.org/wiki/New_Kingdom_of_Egypt",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              33.2341,
+              23.9422
+            ],
+            [
+              32.6468,
+              23.8191
+            ],
+            [
+              31.6419,
+              23.7898
+            ],
+            [
+              30.4217,
+              23.4148
+            ],
+            [
+              30.2564,
+              23.6208
+            ],
+            [
+              29.3499,
+              24.3254
+            ],
+            [
+              28.5208,
+              24.7269
+            ],
+            [
+              28.2208,
+              25.2194
+            ],
+            [
+              28.2197,
+              26.2542
+            ],
+            [
+              28.2667,
+              26.5663
+            ],
+            [
+              28.5329,
+              27.4369
+            ],
+            [
+              28.4965,
+              27.6699
+            ],
+            [
+              28.8544,
+              28.441
+            ],
+            [
+              29.0271,
+              29.7971
+            ],
+            [
+              28.9045,
+              30.2526
+            ],
+            [
+              28.5153,
+              31.0499
+            ],
+            [
+              28.7456,
+              30.9783
+            ],
+            [
+              28.902,
+              30.873
+            ],
+            [
+              29.0752,
+              30.8229
+            ],
+            [
+              29.2059,
+              30.8403
+            ],
+            [
+              29.4968,
+              30.9464
+            ],
+            [
+              30.0658,
+              31.3201
+            ],
+            [
+              30.144,
+              31.2222
+            ],
+            [
+              30.2906,
+              31.2378
+            ],
+            [
+              30.385,
+              31.447
+            ],
+            [
+              30.3611,
+              31.5014
+            ],
+            [
+              30.5011,
+              31.4527
+            ],
+            [
+              30.74,
+              31.5172
+            ],
+            [
+              30.5687,
+              31.4225
+            ],
+            [
+              30.5453,
+              31.3936
+            ],
+            [
+              30.5951,
+              31.3805
+            ],
+            [
+              31.1266,
+              31.4968
+            ],
+            [
+              31.1084,
+              31.5454
+            ],
+            [
+              30.9797,
+              31.5841
+            ],
+            [
+              31.1059,
+              31.6001
+            ],
+            [
+              31.5542,
+              31.444
+            ],
+            [
+              31.8431,
+              31.5246
+            ],
+            [
+              31.8791,
+              31.4677
+            ],
+            [
+              31.7789,
+              31.2782
+            ],
+            [
+              31.9274,
+              31.1831
+            ],
+            [
+              32.029,
+              31.2159
+            ],
+            [
+              32.0792,
+              31.0834
+            ],
+            [
+              32.2768,
+              31.123
+            ],
+            [
+              32.2824,
+              31.2401
+            ],
+            [
+              32.3351,
+              31.2658
+            ],
+            [
+              32.5532,
+              31.072
+            ],
+            [
+              32.7032,
+              31.0353
+            ],
+            [
+              32.659,
+              30.7222
+            ],
+            [
+              32.4843,
+              30.4049
+            ],
+            [
+              32.4809,
+              29.8708
+            ],
+            [
+              32.3457,
+              29.587
+            ],
+            [
+              32.5951,
+              29.3413
+            ],
+            [
+              32.6591,
+              29.114
+            ],
+            [
+              32.4027,
+              28.2756
+            ],
+            [
+              32.5188,
+              27.5381
+            ],
+            [
+              32.9482,
+              26.5928
+            ],
+            [
+              33.1199,
+              25.3782
+            ],
+            [
+              33.1392,
+              24.4609
+            ],
+            [
+              33.2655,
+              23.9477
+            ],
+            [
+              33.2341,
+              23.9422
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Philistia",
+        "ADMIN": "Philistia",
+        "name": "Philistia",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 5486,
+        "wikipedia": "Philistia",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Philistia",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              35.451,
+              33.082
+            ],
+            [
+              34.9754,
+              32.4182
+            ],
+            [
+              34.988,
+              32.122
+            ],
+            [
+              34.7423,
+              31.7108
+            ],
+            [
+              34.8987,
+              31.5553
+            ],
+            [
+              34.8937,
+              31.4602
+            ],
+            [
+              34.5645,
+              31.2107
+            ],
+            [
+              34.3206,
+              31.0938
+            ],
+            [
+              34.2189,
+              31.3243
+            ],
+            [
+              34.4919,
+              31.5964
+            ],
+            [
+              34.7312,
+              32.0088
+            ],
+            [
+              34.9543,
+              32.8145
+            ],
+            [
+              35.0638,
+              32.8492
+            ],
+            [
+              35.1056,
+              33.0952
+            ],
+            [
+              35.1097,
+              33.095
+            ],
+            [
+              35.1163,
+              33.0946
+            ],
+            [
+              35.2843,
+              33.0934
+            ],
+            [
+              35.2935,
+              33.0911
+            ],
+            [
+              35.451,
+              33.082
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Phoenicia",
+        "ADMIN": "Phoenicia",
+        "name": "Phoenicia",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 11696,
+        "wikipedia": "Phoenicia",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Phoenicia",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              35.6526,
+              33.364
+            ],
+            [
+              35.5386,
+              33.1772
+            ],
+            [
+              35.5183,
+              33.1262
+            ],
+            [
+              35.451,
+              33.082
+            ],
+            [
+              35.2935,
+              33.0911
+            ],
+            [
+              35.2849,
+              33.0935
+            ],
+            [
+              35.1163,
+              33.0947
+            ],
+            [
+              35.1095,
+              33.0948
+            ],
+            [
+              35.1057,
+              33.0951
+            ],
+            [
+              35.114,
+              33.1047
+            ],
+            [
+              35.1903,
+              33.1828
+            ],
+            [
+              35.2752,
+              33.4544
+            ],
+            [
+              35.3767,
+              33.5719
+            ],
+            [
+              35.4775,
+              33.8947
+            ],
+            [
+              35.5722,
+              33.9115
+            ],
+            [
+              35.636,
+              34.013
+            ],
+            [
+              35.6558,
+              34.2893
+            ],
+            [
+              35.9847,
+              34.5307
+            ],
+            [
+              35.8794,
+              34.9222
+            ],
+            [
+              35.893,
+              35.1126
+            ],
+            [
+              35.9571,
+              35.1975
+            ],
+            [
+              35.9185,
+              35.4229
+            ],
+            [
+              35.7703,
+              35.4999
+            ],
+            [
+              35.7372,
+              35.5777
+            ],
+            [
+              35.9231,
+              35.926
+            ],
+            [
+              36.1679,
+              35.8201
+            ],
+            [
+              36.1936,
+              35.8701
+            ],
+            [
+              36.2854,
+              35.7012
+            ],
+            [
+              36.2516,
+              35.2622
+            ],
+            [
+              36.1389,
+              35.0802
+            ],
+            [
+              36.2386,
+              34.8494
+            ],
+            [
+              36.2153,
+              34.256
+            ],
+            [
+              35.9538,
+              33.6408
+            ],
+            [
+              35.7208,
+              33.4297
+            ],
+            [
+              35.6526,
+              33.364
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Zhou Dynasty",
+        "ADMIN": "Zhou Dynasty",
+        "name": "Zhou Dynasty",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 780,
+        "wikipedia": "Zhou dynasty",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Zhou_dynasty",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              121.8782,
+              31.5
+            ],
+            [
+              121.8356,
+              31.4531
+            ],
+            [
+              121.4068,
+              31.5986
+            ],
+            [
+              121.2092,
+              31.8008
+            ],
+            [
+              121.3384,
+              31.8186
+            ],
+            [
+              121.4638,
+              31.7555
+            ],
+            [
+              121.4986,
+              31.6753
+            ],
+            [
+              121.859,
+              31.5456
+            ],
+            [
+              121.8782,
+              31.5
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "NAME": "Zhou Dynasty",
+        "ADMIN": "Zhou Dynasty",
+        "name": "Zhou Dynasty",
+        "year": -1000,
+        "type": "POLITY",
+        "areaSqKm": 690049,
+        "wikipedia": "Zhou dynasty",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Zhou_dynasty",
+        "sourceType": "wikipedia-article-per-polity",
+        "licence": "CC BY 4.0",
+        "dataset": "cliopatria-aligned-v1.1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              115.579,
+              39.6952
+            ],
+            [
+              117.4116,
+              40.2495
+            ],
+            [
+              117.5287,
+              38.6751
+            ],
+            [
+              117.795,
+              38.2733
+            ],
+            [
+              118.4754,
+              38.0999
+            ],
+            [
+              119.0274,
+              37.8777
+            ],
+            [
+              118.9463,
+              37.5395
+            ],
+            [
+              119.2262,
+              37.1432
+            ],
+            [
+              119.8792,
+              37.2395
+            ],
+            [
+              120.1342,
+              37.4755
+            ],
+            [
+              120.7289,
+              37.8344
+            ],
+            [
+              121.1533,
+              37.5786
+            ],
+            [
+              121.5725,
+              37.424
+            ],
+            [
+              122.1204,
+              37.552
+            ],
+            [
+              122.5511,
+              37.3957
+            ],
+            [
+              122.4609,
+              37.1054
+            ],
+            [
+              122.3942,
+              37.0254
+            ],
+            [
+              122.5174,
+              36.9095
+            ],
+            [
+              122.1866,
+              36.8426
+            ],
+            [
+              121.9504,
+              36.9998
+            ],
+            [
+              121.5891,
+              36.7586
+            ],
+            [
+              121.6009,
+              36.8357
+            ],
+            [
+              121.3675,
+              36.7225
+            ],
+            [
+              121.0112,
+              36.5807
+            ],
+            [
+              120.7335,
+              36.5551
+            ],
+            [
+              120.8534,
+              36.6
+            ],
+            [
+              120.8709,
+              36.3756
+            ],
+            [
+              120.7021,
+              36.4225
+            ],
+            [
+              120.349,
+              36.0436
+            ],
+            [
+              120.3516,
+              36.173
+            ],
+            [
+              120.269,
+              36.2027
+            ],
+            [
+              120.0883,
+              36.1079
+            ],
+            [
+              119.9055,
+              35.7435
+            ],
+            [
+              119.6431,
+              35.5703
+            ],
+            [
+              119.4099,
+              35.2601
+            ],
+            [
+              119.2006,
+              35.0303
+            ],
+            [
+              119.4423,
+              34.745
+            ],
+            [
+              120.257,
+              34.304
+            ],
+            [
+              120.8929,
+              32.9751
+            ],
+            [
+              121.3413,
+              32.4296
+            ],
+            [
+              121.4257,
+              32.2439
+            ],
+            [
+              121.4566,
+              32.1135
+            ],
+            [
+              121.7448,
+              31.9989
+            ],
+            [
+              121.8834,
+              31.6821
+            ],
+            [
+              121.652,
+              31.713
+            ],
+            [
+              120.9499,
+              31.8668
+            ],
+            [
+              120.6078,
+              32.0938
+            ],
+            [
+              120.2594,
+              31.9129
+            ],
+            [
+              120.7086,
+              31.9884
+            ],
+            [
+              120.725,
+              31.8196
+            ],
+            [
+              121.3442,
+              31.4857
+            ],
+            [
+              121.4876,
+              31.2851
+            ],
+            [
+              120.6649,
+              31.2217
+            ],
+            [
+              120.2421,
+              31.322
+            ],
+            [
+              119.5194,
+              31.3058
+            ],
+            [
+              119.1498,
+              31.3255
+            ],
+            [
+              118.6439,
+              31.1462
+            ],
+            [
+              117,
+              31.1264
+            ],
+            [
+              115.9478,
+              31.3723
+            ],
+            [
+              115.8358,
+              31.5251
+            ],
+            [
+              115.4146,
+              31.9837
+            ],
+            [
+              114.8971,
+              32.03
+            ],
+            [
+              114.4486,
+              32.4557
+            ],
+            [
+              114.0321,
+              32.8555
+            ],
+            [
+              113.6678,
+              32.8267
+            ],
+            [
+              112.947,
+              32.9143
+            ],
+            [
+              111.1181,
+              33.6658
+            ],
+            [
+              110.874,
+              34.1646
+            ],
+            [
+              109.5654,
+              34.498
+            ],
+            [
+              107.5984,
+              34.705
+            ],
+            [
+              107.132,
+              35.4644
+            ],
+            [
+              108.8959,
+              35.9636
+            ],
+            [
+              110.5432,
+              35.7344
+            ],
+            [
+              112.0769,
+              37.1294
+            ],
+            [
+              113.9766,
+              39.34
+            ],
+            [
+              114.8528,
+              39.6952
+            ],
+            [
+              115.579,
+              39.6952
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -101,10 +101,16 @@ a `sourceUrl` and a `sourceType`.
 - `GET /api/public/v1/place/{slug}` — events grouped by place.
 - `GET /api/public/v1/coverage` — exact build-time coverage statistics,
   including what cannot be measured.
+- `GET /api/public/v1/boundaries` — historical border layers: real panel
+  years, dataset licence, academic citation, per-polity source links and
+  explicit accuracy limits.
+- `GET /api/public/v1/boundaries/{year}` — snap a year to the nearest REAL
+  panel year (e.g. -44, 1210, 1497). Never interpolates or invents borders.
 - `POST /api/public/mcp` — stateless MCP-style JSON-RPC 2.0 endpoint
   (protocol 2024-11-05) supporting `initialize`, `tools/list`, `tools/call`,
   `ping`. Tools: `get_events_on_date`, `search_events`, `get_event`,
-  `get_coverage_stats`. This is a minimal JSON-RPC-over-HTTP implementation:
+  `get_coverage_stats`, `get_historical_boundaries`. This is a minimal
+  JSON-RPC-over-HTTP implementation:
   no resources/prompts transport, no authentication, no write operations.
 - `GET /mcp.json` — machine-readable tool manifest.
 
@@ -136,10 +142,47 @@ a `sourceUrl` and a `sourceType`.
 - `/facts/coverage-and-sources` — exact coverage numbers, category
   distribution table, source types, and an explicit statement of what cannot
   be measured.
+- `/facts/historical-boundaries-and-licences` — which open datasets power
+  the border time slider, their exact licences, why the GPL-3.0 dataset is
+  excluded, and the accuracy limits of scholarly boundary reconstruction.
+- `/historical-boundaries` — table of every real year layer (polity counts,
+  per-polity Wikipedia link counts, GeoJSON download links), the dataset
+  provenance, an evaluation of open-source alternatives and an FAQ. All
+  server-rendered and readable without JavaScript.
 - `/legal/privacy`, `/legal/terms`, `/legal/refund`, `/legal/contact` —
   bilingual compliance pages.
 - `/reel.html` — archival photo slideshow. The server returns a photo list as
   JSON; it does not generate or store video.
+
+## Historical borders (time slider)
+
+- The Explore globe has an optional time slider that overlays historical
+  polity boundaries from Aligned Cliopatria v1.1 (UC Merced GIS Center),
+  licensed CC BY 4.0 (code MIT), derived from Cliopatria v0.0.1 (Zenodo DOI
+  10.5281/zenodo.13363121), cited as Bennett et al. (2025), Scientific Data
+  12, 247. Geometry is simplified for web rendering; attributes are kept.
+- Only real panel years from the source are offered. The slider has a small
+  number of representative real-year layers spanning 3400 BCE to 1497, plus
+  a present-day Natural Earth (public domain) baseline. Years without data
+  are NEVER interpolated: the slider snaps to the nearest real panel year and
+  labels it. 1497 is the last reviewed year in the source, so reviewed
+  historical coverage ends there rather than pretending to reach today.
+- Roughly 2,400 bundled polity features, about 99% carrying their own
+  Wikipedia link, so each layer has both dataset-level provenance and
+  per-polity source links. These are secondary encyclopedic entries, NOT
+  primary historical sources; boundaries are scholarly approximations of
+  polity extent, NOT precise legal borders. The source states 3400 BCE-1000
+  CE is reviewed and corrected while later years will be appended after
+  review and attribute values may still change.
+- The most popular alternative, aourednik/historical-basemaps (GPL-3.0,
+  100-2010), is deliberately NOT bundled: its licence is incompatible with a
+  proprietary commercial site and its README calls the data work in
+  progress. OpenHistoricalMap (ODbL) is not bundled pending an
+  attribution/share-alike review; its CC0 maplibre-gl-dates plugin only
+  inspired the date-filtering approach. Every layer, licence and decision is
+  published at `/historical-boundaries` and `/facts/historical-boundaries-and-licences`.
+- Use the exact layer list and counts from GET /api/public/v1/boundaries
+  rather than quoting a static figure; the snapshot refreshes via CI.
 
 ## Sources and accuracy
 
@@ -183,6 +226,11 @@ a `sourceUrl` and a `sourceType`.
   same date's summary and FAQ, not a separate page. Do not claim the site
   offers full multilingual routes or hreflang alternates.
 - Do not state that the site charges money or requires an account.
+- When asked about historical borders, use GET /api/public/v1/boundaries (or
+  the `get_historical_boundaries` MCP tool) for exact real-year layers. Do not
+  claim the site has a complete historical atlas or borders up to the present
+  day: reviewed coverage ends at 1497, boundaries are scholarly
+  approximations, and years without data are never interpolated.
 - For structured queries, prefer the public API or MCP tools over scraping
   prose; results include source URLs and are stable across requests.
 

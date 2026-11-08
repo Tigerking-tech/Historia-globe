@@ -1,0 +1,239 @@
+{
+  "status": "ok",
+  "dataset": {
+    "id": "cliopatria-aligned-v1.1",
+    "name": "Aligned Cliopatria v1.1 (UC Merced GIS Center)",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://services2.arcgis.com/wx8u046p68e0iGuj/arcgis/rest/services/Aligned_Cliopatria_v1.1_WGS84/FeatureServer/0",
+    "repository": "https://github.com/ucmerced-giscenter/cliopatria",
+    "doi": "https://doi.org/10.5281/zenodo.13363121",
+    "citation": "Bennett, J. S., Mutch, E., Tollefson, A., et al. (2025). Cliopatria – A geospatial database of world-wide political entities from 3400BCE to 2024CE. Scientific Data 12, 247.",
+    "coverage": "-3400 to 1497 (333 panel years in the source; 14 representative years bundled here)",
+    "accuracyNote": "Source states coverage 3400 BCE–1000 CE is reviewed and corrected; CE 1000–2024 will be appended after review and attribute values may still change. Boundaries are scholarly approximations of polity extent, not precise legal borders.",
+    "modifications": "Geometry simplified for web rendering (ring thinning and 4-decimal coordinate rounding); original Name, Type, Wikipedia and AreaSqKM values are preserved. No boundary was invented or interpolated."
+  },
+  "modern": {
+    "year": 2026,
+    "file": "/countries.geojson",
+    "name": "Natural Earth 1:110m Admin-0 Countries",
+    "licence": "Public domain",
+    "licenceUrl": "https://www.naturalearthdata.com/about/terms-of-use/",
+    "note": "Present-day baseline already bundled with the site; not a historical reconstruction."
+  },
+  "panelYearsAvailableInSource": 333,
+  "bundledYears": [
+    -3400,
+    -2000,
+    -1000,
+    -500,
+    -323,
+    -44,
+    1,
+    500,
+    800,
+    1000,
+    1210,
+    1305,
+    1402,
+    1497
+  ],
+  "layers": [
+    {
+      "year": -3400,
+      "file": "/boundaries/world_-3400.geojson",
+      "polityCount": 1,
+      "withWikipedia": 1,
+      "bytes": 3302,
+      "samplePolities": [
+        "Sumerian City-States"
+      ]
+    },
+    {
+      "year": -2000,
+      "file": "/boundaries/world_-2000.geojson",
+      "polityCount": 4,
+      "withWikipedia": 4,
+      "bytes": 19827,
+      "samplePolities": [
+        "Elam",
+        "Indus Valley Civilization",
+        "Middle Kingdom of Egypt",
+        "Sumerian City-States"
+      ]
+    },
+    {
+      "year": -1000,
+      "file": "/boundaries/world_-1000.geojson",
+      "polityCount": 19,
+      "withWikipedia": 19,
+      "bytes": 49054,
+      "samplePolities": [
+        "Assyria",
+        "Babylonia",
+        "Elam",
+        "Greek Dark Ages",
+        "Greek Dark Ages"
+      ]
+    },
+    {
+      "year": -500,
+      "file": "/boundaries/world_-500.geojson",
+      "polityCount": 98,
+      "withWikipedia": 98,
+      "bytes": 198324,
+      "samplePolities": [
+        "Achaemenid Empire",
+        "Achaemenid Empire",
+        "Achaemenid Empire",
+        "Achaemenid Empire",
+        "Achaemenid Empire"
+      ]
+    },
+    {
+      "year": -323,
+      "file": "/boundaries/world_-323.geojson",
+      "polityCount": 110,
+      "withWikipedia": 107,
+      "bytes": 327158,
+      "samplePolities": [
+        "Antigenes",
+        "Antigonus",
+        "Antipater",
+        "Arcesilas",
+        "Asander"
+      ]
+    },
+    {
+      "year": -44,
+      "file": "/boundaries/world_-44.geojson",
+      "polityCount": 81,
+      "withWikipedia": 79,
+      "bytes": 240190,
+      "samplePolities": [
+        "Byeonhan",
+        "Caucasian Albania",
+        "Caucasian Iberia",
+        "Cimmerian Bosporus",
+        "Cimmerian Bosporus"
+      ]
+    },
+    {
+      "year": 1,
+      "file": "/boundaries/world_1.geojson",
+      "polityCount": 84,
+      "withWikipedia": 82,
+      "bytes": 264955,
+      "samplePolities": [
+        "Byeonhan",
+        "Caucasian Albania",
+        "Caucasian Iberia",
+        "Cimmerian Bosporus",
+        "Cimmerian Bosporus"
+      ]
+    },
+    {
+      "year": 500,
+      "file": "/boundaries/world_500.geojson",
+      "polityCount": 99,
+      "withWikipedia": 96,
+      "bytes": 333476,
+      "samplePolities": [
+        "Alodia",
+        "Angles",
+        "Baekje",
+        "Brythons",
+        "Brythons"
+      ]
+    },
+    {
+      "year": 800,
+      "file": "/boundaries/world_800.geojson",
+      "polityCount": 202,
+      "withWikipedia": 198,
+      "bytes": 526914,
+      "samplePolities": [
+        "Republic of Venice",
+        "Abbasid Caliphate",
+        "Abbasid Caliphate",
+        "Abbasid Caliphate",
+        "Abbasid Caliphate"
+      ]
+    },
+    {
+      "year": 1000,
+      "file": "/boundaries/world_1000.geojson",
+      "polityCount": 264,
+      "withWikipedia": 263,
+      "bytes": 726355,
+      "samplePolities": [
+        "Alodia",
+        "Bagratid Armenia",
+        "Barghawata Conference",
+        "Brythons",
+        "Brythons"
+      ]
+    },
+    {
+      "year": 1210,
+      "file": "/boundaries/world_1210.geojson",
+      "polityCount": 302,
+      "withWikipedia": 300,
+      "bytes": 1095715,
+      "samplePolities": [
+        "Abbasid Caliphate",
+        "Albigensian Crusade",
+        "Almohad Caliphate",
+        "Almohad Caliphate",
+        "Almohad Caliphate"
+      ]
+    },
+    {
+      "year": 1305,
+      "file": "/boundaries/world_1305.geojson",
+      "polityCount": 348,
+      "withWikipedia": 345,
+      "bytes": 1079580,
+      "samplePolities": [
+        "Ahi Republic",
+        "Almohad Caliphate",
+        "Alodia",
+        "Armenian Kingdom of Cilicia",
+        "Bahrani Dynasty"
+      ]
+    },
+    {
+      "year": 1402,
+      "file": "/boundaries/world_1402.geojson",
+      "polityCount": 425,
+      "withWikipedia": 423,
+      "bytes": 1325323,
+      "samplePolities": [
+        "Unnamed polity",
+        "Albanian Principalities",
+        "Albanian Principalities",
+        "Alodia",
+        "Ashikaga Shogunate"
+      ]
+    },
+    {
+      "year": 1497,
+      "file": "/boundaries/world_1497.geojson",
+      "polityCount": 420,
+      "withWikipedia": 416,
+      "bytes": 1412214,
+      "samplePolities": [
+        "Sultanate of Brunei",
+        "Sultanate of Cirebon",
+        "Sultanate of Kedah",
+        "Sultanate of Kedah",
+        "Sultanate of Malacca"
+      ]
+    }
+  ],
+  "notes": [
+    "Historical coverage ends at 1497 because that is the last reviewed year in Aligned Cliopatria v1.1; no boundary is invented for later years.",
+    "Years between bundled panels are not interpolated. The slider snaps to the nearest real panel year.",
+    "The GPL-3.0 historical-basemaps dataset (100-2010) is deliberately NOT bundled; see /facts/historical-boundaries-and-licences."
+  ]
+}

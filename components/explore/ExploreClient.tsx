@@ -10,6 +10,8 @@ import type { CameraState } from "@/lib/ask-yore/types";
 import { readShareState, replaceShareState, buildShareUrl, type ShareState } from "@/lib/share";
 import { buildDayTour } from "@/lib/tour";
 import NowCard, { type NowTarget } from "@/components/explore/NowCard";
+import HistoricalBoundaryControl from "@/components/explore/HistoricalBoundaryControl";
+import { boundaryUrlForYear, sliderYears } from "@/lib/historical-boundaries";
 import { useI18n } from "@/lib/i18n";
 import { track } from "@/components/funnel";
 
@@ -146,6 +148,13 @@ export default function ExploreClient() {
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [locating, setLocating] = useState(false);
   const [flash, setFlash] = useState("");
+  // 历史国界时间轴：off 时用现代 Natural Earth 基线；on 时按真实面板年加载边界
+  const [boundaryOn, setBoundaryOn] = useState(false);
+  const [boundaryYear, setBoundaryYear] = useState<number>(1000);
+  const boundaryUrl = useMemo(
+    () => (boundaryOn ? (boundaryUrlForYear(boundaryYear) ?? undefined) : undefined),
+    [boundaryOn, boundaryYear]
+  );
 
   const params = useSearchParams();
   const pendingEvRef = useRef<string | null>(null);
@@ -582,6 +591,7 @@ export default function ExploreClient() {
             view={view}
             focus={focus}
             lang={lang}
+            boundaryUrl={boundaryUrl}
             buildings={buildings}
             onCityStatus={setCityStatus}
             onImageryReady={() => { setEarthLoading(false); setEarthProgress(null); }}
@@ -599,7 +609,7 @@ export default function ExploreClient() {
             }}
           />
         ) : (
-          <Globe events={placedEvents} heritage={heritagePts} view={view} focus={focus} lang={lang} onSelect={(e) => {
+          <Globe events={placedEvents} heritage={heritagePts} view={view} focus={focus} lang={lang} boundaryUrl={boundaryUrl} onSelect={(e) => {
             const full = events.find((x) => x.id === e.id);
             if (full) setDetail(full);
           }} height={300} />
@@ -793,6 +803,20 @@ export default function ExploreClient() {
             {flash}
           </div>
         )}
+
+        {/* 历史国界时间轴：真实面板年 + 逐层出处，切换只替换地球边界图层 */}
+        <HistoricalBoundaryControl
+          lang={lang === "zh" ? "zh" : "en"}
+          enabled={boundaryOn}
+          year={boundaryYear}
+          onToggle={(on) => {
+            setBoundaryOn(on);
+            // 两个地球都只在 "countries" 视图绘制国界；打开时间轴时自动切过去，
+            // 否则用户会看到「切了年份但地球没变化」。用户之后仍可手动切回卫星视图。
+            if (on) setView("countries");
+          }}
+          onChangeYear={setBoundaryYear}
+        />
 
         {/* 类别筛选（此前只在定价页文案里出现，现在真实作用于列表与地球点位） */}
         {availableCategories.length > 0 && (

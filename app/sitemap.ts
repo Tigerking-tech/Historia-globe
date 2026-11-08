@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${base}/explore`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/for-teachers`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/historical-boundaries`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/reel.html`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     // 可核对的静态事实页（GEO / 第三方引用）：具体数字、URAA 复核、爬虫放行说明。
     { url: `${base}/facts`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

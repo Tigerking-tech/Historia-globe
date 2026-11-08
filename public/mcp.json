@@ -47,6 +47,14 @@
       "name": "get_coverage_stats",
       "description": "Exact build-time coverage statistics and an explicit statement of what cannot be measured.",
       "inputSchema": { "type": "object", "properties": {} }
+    },
+    {
+      "name": "get_historical_boundaries",
+      "description": "List real historical border layers by year (CC BY 4.0 Cliopatria data) with licence, academic citation, per-polity Wikipedia source links and accuracy limits. Pass a year to snap to the nearest real panel year; never interpolates. Coverage ends at 1497.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "year": { "type": "number", "description": "Optional year, e.g. -44, 1210, 1497" } }
+      }
     }
   ],
   "restEndpoints": {
@@ -55,7 +63,9 @@
     "search": "/api/public/v1/events?q={text}&limit=20&category={slug}",
     "event": "/api/public/v1/event/{slug}",
     "place": "/api/public/v1/place/{slug}",
-    "coverage": "/api/public/v1/coverage"
+    "coverage": "/api/public/v1/coverage",
+    "boundaries": "/api/public/v1/boundaries",
+    "boundariesByYear": "/api/public/v1/boundaries/{year}"
   },
   "siteFacts": "/llms.txt",
   "license": "Free to read, no key. Retain attribution; reuse subject to upstream licences. The dataset is a build-time snapshot, not a complete or regionally balanced historical record."

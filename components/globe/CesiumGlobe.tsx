@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createOsmBuildings,
   type OsmBuildingsController,
@@ -84,6 +84,8 @@ type Props = {
   onCameraChange?: (c: CameraState) => void;
   /** 视线中心的地表经纬度（「此刻此地」用）；低空斜视时与相机自身位置不同 */
   onViewCenter?: (c: { lat: number; lon: number; alt: number }) => void;
+  /** 历史边界时间滑块：指向某个年份的 GeoJSON；不传则用现代 Natural Earth 基线。 */
+  boundaryUrl?: string;
 };
 
 // 连续栅格影像（同源代理 /api/imagery，z0-z19 全覆盖）：
@@ -141,6 +143,7 @@ export default function CesiumGlobe({
   onFatalError,
   onCameraChange,
   onViewCenter,
+  boundaryUrl,
 }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<any>(null);
@@ -160,6 +163,9 @@ export default function CesiumGlobe({
   // 真实 3D 建筑控制器
   const buildingsCtlRef = useRef<OsmBuildingsController | null>(null);
   const countryDsRef = useRef<any>(null);
+  // 历史边界时间滑块：viewer 就绪标志 + 请求序号（快速滑动年份时只保留最后一次结果）
+  const [viewerReady, setViewerReady] = useState(false);
+  const boundaryReqRef = useRef(0);
   const imageryRef = useRef<{ base: any; sat: any }>({ base: null, sat: null });
   const onCameraChangeRef = useRef(onCameraChange);
   const onViewCenterRef = useRef(onViewCenter);
@@ -431,21 +437,10 @@ export default function CesiumGlobe({
           setTimeout(fire, 12000);
         } catch {}
 
-        // 国界线：Natural Earth（公共领域），仅在 "countries" 视图显示
-        Cesium.GeoJsonDataSource.load("/countries.geojson")
-          .then((ds: any) => {
-            if (disposed) return;
-            ds.entities.values.forEach((e: any) => {
-              if (e.polygon) {
-                e.polygon.fill = false;
-                e.polygon.outline = true;
-                e.polygon.outlineColor = Cesium.Color.fromCssColorString("#7fd4ff").withAlpha(0.55);
-              }
-            });
-            countryDsRef.current = ds;
-            if (viewRef.current === "countries") viewer.dataSources.add(ds);
-          })
-          .catch(() => {});
+        // 国界线加载移到下方「历史边界时间轴」独立 effect：viewer 就绪后按
+        // boundaryUrl 加载（默认仍是 /countries.geojson 现代基线），切换年份时
+        // 只替换 dataSource，不重建 viewer、不重载影像瓦片。
+        if (!disposed) setViewerReady(true);
 
         // 城市标注：Natural Earth Populated Places（公共领域）
         // 仅人口前 300 的大城市加文字 label —— 避免大量 label 实体在软件 WebGL
@@ -581,6 +576,44 @@ export default function CesiumGlobe({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 历史边界时间轴：viewer 就绪后按 boundaryUrl 加载国界；切换年份时只替换
+  // dataSource。用自增序号丢弃过时结果，避免快速滑动年份时旧图层后到覆盖新图层。
+  useEffect(() => {
+    if (!viewerReady) return;
+    const viewer = viewerRef.current;
+    const Cesium = window.Cesium;
+    if (!viewer || !Cesium || viewer.isDestroyed?.()) return;
+    const url = boundaryUrl ?? "/countries.geojson";
+    const req = ++boundaryReqRef.current;
+    Cesium.GeoJsonDataSource.load(url)
+      .then((ds: any) => {
+        if (req !== boundaryReqRef.current || viewer.isDestroyed?.()) return;
+        ds.entities.values.forEach((e: any) => {
+          if (e.polygon) {
+            e.polygon.fill = false;
+            e.polygon.outline = true;
+            e.polygon.outlineColor = Cesium.Color.fromCssColorString("#7fd4ff").withAlpha(0.55);
+          }
+          // 历史政体多为面要素，线要素也要能显示边界
+          if (e.polyline) {
+            e.polyline.material = Cesium.Color.fromCssColorString("#7fd4ff").withAlpha(0.55);
+          }
+        });
+        const prev = countryDsRef.current;
+        if (prev && viewer.dataSources.contains(prev)) {
+          viewer.dataSources.remove(prev, true);
+        }
+        countryDsRef.current = ds;
+        if (viewRef.current === "countries" && !viewer.dataSources.contains(ds)) {
+          viewer.dataSources.add(ds);
+        }
+      })
+      .catch(() => {
+        /* 边界是增强层；单个年份加载失败时保留上一个图层，不抛错 */
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boundaryUrl, viewerReady]);
 
   // view switching
   useEffect(() => {
