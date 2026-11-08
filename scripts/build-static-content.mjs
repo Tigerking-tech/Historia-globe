@@ -368,7 +368,23 @@ async function main() {
   }
 
   // 4) 幂等写入：内容逐字节相同就完全不碰文件。
-  const payload = buildPayload(events, failed === 0 ? "ok" : "partial", feedBase);
+  // 关键保护：partial 快照绝不覆盖仓库里已有的 ok 快照。曾发生过上游某天
+  // 抓取失败 → 366 天覆盖退化成 365 天、却被 CI 当成刷新提交的事故。
+  const status = failed === 0 ? "ok" : "partial";
+  let existingStatus = null;
+  try { existingStatus = JSON.parse(existingText).status; } catch { /* 无旧快照或不可解析 */ }
+  if (status === "partial" && existingStatus === "ok") {
+    await ciSummary([
+      `status = partial（拒绝覆盖）`,
+      `原因 = 本次有 ${failed} 天抓取失败，而仓库现有快照为 ok`,
+      `已有事件 = ${existingCount}（未改动）`,
+      `结论 = 保留已有 ok 快照，避免覆盖天数退化`,
+    ]);
+    console.log("[build-static-content] partial 抓取，但现有快照为 ok，保留原快照不覆盖。");
+    if (CI) console.log("::warning::部分日期失败，已保留仓库中已有的 ok 快照，不写入 partial");
+    return 2;
+  }
+  const payload = buildPayload(events, status, feedBase);
   const text = serialize(payload);
   let wrote = false;
   if (text !== existingText) {
@@ -393,7 +409,7 @@ async function main() {
       `失败 ${failed} 天，事件 ${events.length} 条，覆盖 ${payload.daysWithEvents} 天，` +
       `${wrote ? "已写入" : "无变化未写入"} → ${OUT}`,
   );
-  if (CI && failed > 0) console.log(`::warning::有 ${failed} 天抓取失败，已写入 partial 快照（不覆盖已有好数据）`);
+  if (CI && failed > 0) console.log(`::warning::有 ${failed} 天抓取失败；仓库已有 ok 快照时保留原快照，不写入 partial`);
   return failed === 0 ? 0 : 2;
 }
 

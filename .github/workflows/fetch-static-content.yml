@@ -55,7 +55,7 @@ jobs:
           case "$code" in
             0) echo "::notice::数据快照已更新或本就一致" ;;
             1) echo "::warning::上游不可达或无有效条目，本次跳过，旧快照已保留" ;;
-            2) echo "::warning::部分日期失败，已写入 partial 快照（含全部成功条目）" ;;
+            2) echo "::warning::部分日期失败；仓库已有 ok 快照则保留，不写入 partial" ;;
             *) echo "::error::脚本异常退出 ($code)"; exit 1 ;;
           esac
 
@@ -67,8 +67,9 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "::notice::数据无变化，不产生提交，也不会触发 Vercel 无意义部署"
           else
-            # 提交前校验：绝不允许把空快照写进 main。
-            node -e "const d=require('./data/generated-events.json'); if(!Array.isArray(d.events)||d.events.length===0){console.error('快照为空，拒绝提交');process.exit(1)} console.log('events='+d.events.length+' status='+d.status+' daysWithEvents='+d.daysWithEvents)"
+            # 提交前校验：绝不允许把空快照、partial 快照或覆盖天数不足的快照写进 main。
+            # 曾发生上游某天失败 → 366 天退化成 365 天仍被提交的事故，这里做第二道拦截。
+            node -e "const d=require('./data/generated-events.json'); if(!Array.isArray(d.events)||d.events.length===0){console.error('快照为空，拒绝提交');process.exit(1)} if(d.status!=='ok'){console.error('快照 status='+d.status+' 非 ok，拒绝提交');process.exit(1)} if(d.daysWithEvents!==366){console.error('覆盖天数='+d.daysWithEvents+' 未达 366，拒绝提交');process.exit(1)} console.log('events='+d.events.length+' status='+d.status+' daysWithEvents='+d.daysWithEvents)"
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/generated-events.json
