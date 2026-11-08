@@ -696,8 +696,16 @@ export default function ExploreClient() {
             <div className="mt-1 text-slate-400">{t("explore.legendHint")}</div>
           </div>
         </div>
-        <div className="absolute right-4 top-4 flex flex-wrap items-center justify-end gap-2">
-          <div className="glass flex items-center gap-0.5 rounded-lg p-0.5 text-xs">
+        {/* 窄屏（375px）下改为单行横向滚动，避免控件 flex-wrap 成多行互相遮挡 */}
+        <div className="absolute right-4 top-4 z-20 flex max-w-[calc(100%-2rem)] flex-nowrap items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {/* 日期选择器放在最前：窄屏横向滚动时首屏即可见、可直接改日期 */}
+          <input
+            type="date"
+            value={dateStr}
+            onChange={(e) => onDateChange(e.target.value)}
+            className="glass shrink-0 rounded-lg px-3 py-1.5 text-xs text-slate-100 bg-transparent outline-none [color-scheme:dark]"
+          />
+          <div className="glass flex shrink-0 items-center gap-0.5 rounded-lg p-0.5 text-xs">
             {([
               ["satellite", t("explore.viewSatellite")],
               ["countries", t("explore.viewCountries")],
@@ -716,7 +724,7 @@ export default function ExploreClient() {
           </div>
           <button
             onClick={() => setRealEarth((r) => !r)}
-            className={`glass rounded-lg px-3 py-1.5 text-xs transition ${
+            className={`glass shrink-0 rounded-lg px-3 py-1.5 text-xs transition ${
               realEarth ? "bg-emerald-500/90 text-[#04101f] font-semibold" : "text-slate-200 hover:text-white"
             }`}
             title="切换真实地球（Cesium · 连续卫星影像 + OSM 3D 建筑 · 套餐 B 免费商用数据源）"
@@ -726,14 +734,14 @@ export default function ExploreClient() {
           {/* 活在当下：一眼看到这个地点现在的样子 */}
           <button
             onClick={openNow}
-            className="rounded-lg bg-gradient-to-r from-emerald-400 to-sky-400 px-3 py-1.5 text-xs font-semibold text-[#04101f] shadow-lg shadow-emerald-500/20 transition hover:brightness-110"
+            className="shrink-0 rounded-lg bg-gradient-to-r from-emerald-400 to-sky-400 px-3 py-1.5 text-xs font-semibold text-[#04101f] shadow-lg shadow-emerald-500/20 transition hover:brightness-110"
             title={lang === "zh" ? "此刻此地：这个地点现在的地面实景照片 + 此刻当地时间/天气，与历史古今同框" : "Right Now: today's ground-level photos of this place + live local time/weather, alongside its history"}
           >
             ● {lang === "zh" ? "此刻此地" : "Right Now"}
           </button>
           {realEarth && (
             <label
-              className="glass flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-slate-200 cursor-pointer"
+              className="glass flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-slate-200 cursor-pointer"
               title="低空（3km 内）自动浮现真实 OSM 3D 建筑（OpenFreeMap，免费商用）；地面为连续卫星影像"
             >
               <input
@@ -746,7 +754,7 @@ export default function ExploreClient() {
             </label>
           )}
           <label
-            className="glass flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-slate-200 cursor-pointer"
+            className="glass flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-slate-200 cursor-pointer"
             title={
               lang === "zh"
                 ? "世界遗产点位：全球视角自动隐藏，放大到区域级后才逐层显示；取消勾选可完全关闭"
@@ -761,12 +769,6 @@ export default function ExploreClient() {
             />
             {t("explore.worldHeritage")}
           </label>
-          <input
-            type="date"
-            value={dateStr}
-            onChange={(e) => onDateChange(e.target.value)}
-            className="glass rounded-lg px-3 py-1.5 text-xs text-slate-100 bg-transparent outline-none [color-scheme:dark]"
-          />
         </div>
         <div
           title={
