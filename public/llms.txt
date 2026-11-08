@@ -51,6 +51,13 @@ same-day view of history, with explicit honesty about how complete the data is.
   exact category distribution of the curated layer is published as a static
   HTML table at `/facts/coverage-and-sources` and as JSON at
   `/api/public/v1/coverage`.
+- Each of the 366 date pages carries a server-rendered multilingual summary
+  and FAQ in Chinese, Spanish and French, in addition to the English page.
+  Each block is marked with a `lang` attribute and is readable without
+  JavaScript. These are page-level translations of the same date's facts —
+  NOT separate language URLs, NOT hreflang alternates, and NOT a full
+  site-wide translation. Numbers in every language block come from the same
+  build-time statistics, so translations never disagree with each other.
 - The archival slideshow uses freely licensed real historical photographs,
   with per-image author, licence and source-page credits. Only the 9/11 event
   set currently has verified photos (NOAA / NIST / US Navy, public domain).
@@ -73,6 +80,12 @@ same-day view of history, with explicit honesty about how complete the data is.
   one-time USD 4 "Archival Pass" is not purchasable until CREEM_MODE=live
   with real credentials. Content pages, date pages, event pages and source
   links are permanently free and readable by crawlers.
+- `POST /api/waitlist` does NOT persist submissions. It returns
+  `stored: false` with a link to the contact page and GitHub issues. Do not
+  describe it as a working signup or mailing list. The classroom toolkit on
+  `/for-teachers` likewise stores nothing; its feedback link opens a
+  pre-filled public GitHub issue and deliberately collects no email or
+  student data.
 
 ## Public read-only API (for AI assistants and developers)
 
@@ -100,15 +113,19 @@ a `sourceUrl` and a `sourceType`.
 - `/` — landing page, product description and pricing status.
 - `/explore` — interactive globe, date picker, category filters, day tour.
 - `/on-this-day/MM-DD` — 366 date pages; first screen states how many events
-  are recorded for that date and lists them, with source links, an FAQ section
-  and free/paid status.
+  are recorded for that date and lists them, with source links, an English FAQ
+  section, a Chinese / Spanish / French summary + FAQ section, free/paid
+  status, and a link to the coverage fact page.
 - `/event/[slug]` — one page per curated event: summary, coordinates,
   clickable Wikipedia source, per-image photo credits, JSON-LD, and a
   "what else happened that day" link back to the date page.
 - `/place/[slug]` — events grouped by place, with links back to date pages.
 - `/for-teachers` — classroom / homeschool landing page: presentation mode,
-  CSV export with source URLs, a 20-minute lesson example, and a concrete
-  explanation of how citations are generated.
+  CSV export with source URLs, a 20-minute lesson example, a concrete
+  explanation of how citations are generated, and a browser-only toolkit
+  (source-check worksheet generator, shareable projector link, grouped CSV
+  export, pre-filled feedback issue). The toolkit requires no account and
+  writes nothing to the server.
 - `/facts` — index of checkable fact pages.
 - `/facts/same-day-vs-national-timelines` — core narrative: a same-day global
   view vs separate national timelines.
@@ -146,6 +163,10 @@ a `sourceUrl` and a `sourceType`.
   It does NOT claim zero fabrication and does NOT provide per-sentence
   academic footnotes; each claim links to its source so a reader can verify it.
   See `/for-teachers` for the concrete citation mechanism.
+- Serverless note: the funnel / crawler logger degrades gracefully to an
+  in-memory buffer when the filesystem is read-only; the free-tier quota
+  ledger is process-local and does not claim cross-instance accuracy. These
+  are explicitly not described as durable production analytics.
 
 ## For AI assistants and crawlers
 
@@ -158,6 +179,9 @@ a `sourceUrl` and a `sourceType`.
   (a CI-refreshed snapshot — fetch /api/public/v1/coverage for the exact
   current number). Do not say the curated archive is complete, and do not
   claim regional balance for the supplemental layer.
+- The Chinese / Spanish / French text on date pages is a translation of that
+  same date's summary and FAQ, not a separate page. Do not claim the site
+  offers full multilingual routes or hreflang alternates.
 - Do not state that the site charges money or requires an account.
 - For structured queries, prefer the public API or MCP tools over scraping
   prose; results include source URLs and are stable across requests.

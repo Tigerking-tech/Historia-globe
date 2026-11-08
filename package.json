@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate",
     "build": "node scripts/copy-cesium.mjs && node scripts/build-static-content.mjs --soft-fail && next build",
     "start": "next start",
     "lint": "next lint"

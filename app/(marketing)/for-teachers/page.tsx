@@ -5,6 +5,7 @@ import {
   Breadcrumbs, AnswerBox, PriceNote, Cta, SiteFooterLinks, JsonLd,
 } from "@/components/content/ContentFrame";
 import { stats } from "@/lib/content";
+import { TeacherToolkit } from "@/components/content/TeacherToolkit";
 
 export const metadata: Metadata = getSEOTags({
   title: "For teachers & homeschool · Historia Globe",
@@ -126,6 +127,8 @@ export default function ForTeachersPage() {
         </ol>
       </section>
 
+      <TeacherToolkit />
+
       <section className="mt-10 rounded-xl border border-amber-400/25 bg-amber-400/[0.05] px-5 py-4">
         <h2 className="text-sm font-semibold text-amber-200">Honest limits / 如实说明</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-300">
@@ -134,7 +137,8 @@ export default function ForTeachersPage() {
             Wikipedia / Wikidata records merge in automatically when the deployment can reach them;
             when they cannot, the page says so rather than presenting a partial day as complete.
           </li>
-          <li>There are no classroom seats, rosters, gradebook or cloud sync yet. Those are on the roadmap, not shipped.</li>
+          <li>The toolkit above runs entirely in the browser against the public read-only API and stores nothing. There are still no classroom seats, rosters, gradebook or cloud sync — those are on the roadmap, not shipped.</li>
+          <li>Date pages now include a server-rendered Chinese / Spanish / French summary and FAQ, but the site still has no separate language URLs or full site-wide translation.</li>
           <li>Ask Historia currently weaves the day&apos;s events together; it does not provide per-sentence citations yet.</li>
         </ul>
       </section>

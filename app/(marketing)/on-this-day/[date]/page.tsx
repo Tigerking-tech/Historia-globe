@@ -16,6 +16,7 @@ import {
   Breadcrumbs, AnswerBox, PriceNote, SourceNote, Cta, SiteFooterLinks, JsonLd,
 } from "@/components/content/ContentFrame";
 import { VERIFIED_PHOTOS } from "@/lib/content";
+import { dateI18nBlocks, DATE_I18N_NOTE } from "@/lib/date-i18n";
 
 export const dynamicParams = true;
 // 页面按需生成时用 ISR 缓存一天，兼顾爬虫首访与构建稳定性。
@@ -271,6 +272,29 @@ export default function OnThisDayPage({ params }: { params: { date: string } }) 
               <Link href="/facts/coverage-and-sources" className="text-sky-300 underline">coverage fact page ↗</Link>.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* 页内多语言段：服务端直出、带 lang 属性，禁用 JS 也能读到。
+          诚实边界：这是同一日期事实的页内译文，不是独立语言 URL / hreflang。 */}
+      <section className="mt-10" aria-label="Same date in other languages">
+        <h2 className="editorial text-xl text-white">Same date, in other languages · 同一天，其他语言</h2>
+        <p className="mt-2 text-xs leading-relaxed text-slate-500">{DATE_I18N_NOTE}</p>
+        <div className="mt-4 space-y-4">
+          {dateI18nBlocks({ label, total, curated: events.length, supplemental: supplemental.length }).map((b) => (
+            <div key={b.code} lang={b.code} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <h3 className="text-sm font-semibold text-white">{b.name}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{b.summary}</p>
+              <dl className="mt-3 space-y-2">
+                {b.questions.map((qa, i) => (
+                  <div key={i}>
+                    <dt className="text-xs font-semibold text-sky-300">{qa.q}</dt>
+                    <dd className="mt-1 text-xs leading-relaxed text-slate-400">{qa.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
         </div>
       </section>
 
