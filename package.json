@@ -22,7 +22,6 @@
     "@types/three": "^0.160.0",
     "axios": "^1.7.5",
     "better-auth": "^1.2.7",
-    "better-sqlite3": "^11.9.1",
     "cesium": "1.123",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -47,7 +46,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
