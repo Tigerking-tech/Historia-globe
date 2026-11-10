@@ -3,7 +3,7 @@
   "source": "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all",
   "status": "ok",
   "caveat": "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
-  "eventCount": 19986,
+  "eventCount": 19974,
   "daysWithEvents": 366,
   "events": [
     {
@@ -19049,6 +19049,14 @@
     {
       "m": 2,
       "d": 16,
+      "year": 2009,
+      "title": "Travis the chimpanzee attacks Charla Nash leaving her disfigured and blind.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Travis_(chimpanzee)"
+    },
+    {
+      "m": 2,
+      "d": 16,
       "year": 2006,
       "title": "The last Mobile army surgical hospital (MASH) is decommissioned by the United States Army.",
       "description": "",
@@ -23266,7 +23274,7 @@
       "m": 2,
       "d": 26,
       "year": 1914,
-      "title": "HMHS Britannic, sister to the RMS Titanic, is launched at Harland and Wolff shipyard in Belfast.",
+      "title": "HMHS Britannic, sister to the RMS Olympic and RMS Titanic, is launched at Harland and Wolff shipyard in Belfast.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/HMHS_Britannic"
     },
@@ -43033,6 +43041,14 @@
     {
       "m": 4,
       "d": 15,
+      "year": 1919,
+      "title": "Jeam-ri massacre: The Imperial Japanese Army murdered more than 20 residents of Jeam-ri as retaliation of the March First Movement protests in the region.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jeam-ri_massacre"
+    },
+    {
+      "m": 4,
+      "d": 15,
       "year": 1912,
       "title": "The British passenger liner RMS Titanic sinks in the North Atlantic at 2:20 a.m., two hours and forty minutes after hitting an iceberg. Only 712 of 2,207 passengers and crew on board survive.",
       "description": "",
@@ -50996,7 +51012,7 @@
       "year": 2023,
       "title": "Eight people are killed and seven injured in a mass shooting in Allen, Texas. The perpetrator is killed by a police officer.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/2023_Allen%2C_Texas_mall_shooting"
+      "sourceUrl": "https://en.wikipedia.org/wiki/2023_Allen%2C_Texas%2C_mall_shooting"
     },
     {
       "m": 5,
@@ -89348,7 +89364,7 @@
       "year": 1214,
       "title": "Battle of Bouvines: Philip II of France decisively defeats Imperial, English and Flemish armies, effectively ending John of England's Angevin Empire.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Philip_II_of_France"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Battle_of_Bouvines"
     },
     {
       "m": 7,
@@ -91154,14 +91170,6 @@
       "m": 8,
       "d": 1,
       "year": 2008,
-      "title": "The Beijing–Tianjin Intercity Railway begins operation as the fastest commuter rail system in the world.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Beijing%E2%80%93Tianjin_intercity_railway"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 2008,
       "title": "Eleven mountaineers from international expeditions die on K2, the second-highest mountain on Earth, in the worst single accident in the history of K2 mountaineering.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/2008_K2_disaster"
@@ -91217,50 +91225,10 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1984,
-      "title": "Commercial peat-cutters discover the preserved bog body of a man, called Lindow Man, at Lindow Moss, Cheshire, England.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Peat"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1981,
-      "title": "MTV begins broadcasting in the United States and airs its first video, \"Video Killed the Radio Star\" by The Buggles.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/MTV"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1980,
-      "title": "Vigdís Finnbogadóttir is elected President of Iceland and becomes the world's first democratically elected female head of state.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Vigd%C3%ADs_Finnbogad%C3%B3ttir"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1980,
       "title": "A train crash kills 18 people and injures over 170 more in County Cork, Ireland.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Buttevant_Rail_Disaster"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1976,
-      "title": "Trinidad and Tobago officially became a republic.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Trinidad_and_Tobago"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1976,
-      "title": "Niki Lauda has a severe accident that almost claims his life at the German Grand Prix at Nürburgring.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Niki_Lauda"
     },
     {
       "m": 8,
@@ -91289,14 +91257,6 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1968,
-      "title": "The coronation of Hassanal Bolkiah, the 29th Sultan of Brunei, is held.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Hassanal_Bolkiah"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1966,
       "title": "Charles Whitman kills 15 people at the University of Texas at Austin before being killed by the police.",
       "description": "",
@@ -91306,57 +91266,25 @@
       "m": 8,
       "d": 1,
       "year": 1966,
-      "title": "Purges of intellectuals and imperialists becomes official China policy at the beginning of the Cultural Revolution.",
+      "title": "Purges of intellectuals and imperialists becomes official policy in China, starting Red August at the beginning of the Cultural Revolution.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Cultural_Revolution"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1965,
-      "title": "Frank Herbert's novel, Dune, is published for the first time. It was named as the world's best-selling science fiction novel in 2003.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Frank_Herbert"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Red_August"
     },
     {
       "m": 8,
       "d": 1,
       "year": 1964,
-      "title": "The former Belgian Congo is renamed the Democratic Republic of the Congo.",
+      "title": "The former Belgian Congo is renamed the Democratic Republic of the Congo by the enactment of the Luluabourg Constitution.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Belgian_Congo"
     },
     {
       "m": 8,
       "d": 1,
-      "year": 1961,
-      "title": "U.S. Defense Secretary Robert McNamara orders the creation of the Defense Intelligence Agency (DIA), the nation's first centralized military espionage organization.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Robert_McNamara"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1960,
-      "title": "Dahomey (later renamed Benin) declares independence from France.",
+      "title": "Dahomey (later renamed Benin) declares independence from France, celebrating its Independence Day for the first time.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Dahomey"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1960,
-      "title": "Islamabad is declared the federal capital of the Government of Pakistan.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Islamabad"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1957,
-      "title": "The United States and Canada form the North American Aerospace Defense Command (NORAD).",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/NORAD"
     },
     {
       "m": 8,
@@ -91365,14 +91293,6 @@
       "title": "Guam is organized as an unincorporated territory of the United States as the President Harry S. Truman signs the Guam Organic Act.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Guam"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1946,
-      "title": "Leaders of the Russian Liberation Army, a force of Russian prisoners of war that collaborated with Nazi Germany, are executed in Moscow, Soviet Union for treason.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Russian_Liberation_Army"
     },
     {
       "m": 8,
@@ -91393,16 +91313,8 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1937,
-      "title": "Josip Broz Tito reads the resolution \"Manifesto of constitutional congress of KPH\" to the constitutive congress of KPH (Croatian Communist Party) in woods near Samobor.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Josip_Broz_Tito"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1936,
-      "title": "The Olympics open in Berlin with a ceremony presided over by Adolf Hitler.",
+      "title": "The 1936 Summer Olympics open in Berlin with a ceremony presided over by Adolf Hitler.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/1936_Summer_Olympics"
     },
@@ -91410,9 +91322,9 @@
       "m": 8,
       "d": 1,
       "year": 1933,
-      "title": "Anti-Fascist activists Bruno Tesch, Walter Möller, Karl Wolff and August Lütgens are executed by the Nazi regime in Altona.",
+      "title": "Ending the events of Altona Bloody Sunday, anti-Fascist activists Bruno Tesch, Walter Möller, Karl Wolff and August Lütgens are the first political targets executed by the Nazi regime.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Bruno_Tesch_(antifascist)"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Altona_Bloody_Sunday"
     },
     {
       "m": 8,
@@ -91426,33 +91338,9 @@
       "m": 8,
       "d": 1,
       "year": 1915,
-      "title": "Patrick Pearse gives his famous speech \"Ireland unfree shall never be at peace\" at O'Donovan Rossa's funeral in Dublin.",
+      "title": "Patrick Pearse gives his speech \"Ireland unfree shall never be at peace\" at O'Donovan Rossa's funeral in Dublin.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Patrick_Pearse"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1914,
-      "title": "World War I: The German Empire declares war on the Russian Empire.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_I"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1914,
-      "title": "World War I: The Swiss Army mobilizes because of World War I.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Swiss_Armed_Forces"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1911,
-      "title": "Harriet Quimby takes her pilot's test and becomes the first U.S. woman to earn an Aero Club of America aviator's certificate.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Harriet_Quimby"
     },
     {
       "m": 8,
@@ -132570,7 +132458,7 @@
       "m": 10,
       "d": 29,
       "year": 2026,
-      "title": "US$6.3 billion is stolen from cryptocurrency exchange Binance.​",
+      "title": "US$6.3 billion is stolen from cryptocurrency exchange Binance.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/2026_Binance_hack"
     },
@@ -133853,6 +133741,14 @@
       "title": "Andrea Kimi Antonelli becomes the youngest ever Formula One World Champion, as well as the first Italian champion since Alberto Ascari in 1953, securing the title at the Mexican Grand Prix.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Kimi_Antonelli"
+    },
+    {
+      "m": 11,
+      "d": 1,
+      "year": 2026,
+      "title": "A private Learjet 60 business jet, en route from Austin, Texas to North Eleuthera, The Bahamas, crashes at high-speed in Palm Beach County, Florida, killing all nine occupants onboard and injuring one person on the ground.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Learjet_60"
     },
     {
       "m": 11,
@@ -137692,7 +137588,7 @@
       "year": 1971,
       "title": "American banker John List murdered his wife, mother, and three children with a pair of handguns.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/John_List_(murderer)"
+      "sourceUrl": "https://en.wikipedia.org/wiki/John_List"
     },
     {
       "m": 11,
@@ -148669,6 +148565,14 @@
       "title": "American Revolution: USS Alfred becomes the first vessel to fly the Continental Union Flag (precursor to the \"Stars and Stripes\"); the flag is hoisted by John Paul Jones.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/American_Revolution"
+    },
+    {
+      "m": 12,
+      "d": 3,
+      "year": 1533,
+      "title": "Ivan IV succeeds his father Vasili III as Grand Prince of Muscovy at the age of three.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ivan_the_Terrible"
     },
     {
       "m": 12,
