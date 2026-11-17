@@ -3,7 +3,7 @@
   "source": "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all",
   "status": "ok",
   "caveat": "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
-  "eventCount": 19974,
+  "eventCount": 19984,
   "daysWithEvents": 366,
   "events": [
     {
@@ -308,7 +308,7 @@
       "year": 1982,
       "title": "Peruvian Javier Pérez de Cuéllar becomes the first Latin American to hold the title of Secretary-General of the United Nations.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Peru"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Javier_P%C3%A9rez_de_Cu%C3%A9llar"
     },
     {
       "m": 1,
@@ -444,7 +444,7 @@
       "year": 1949,
       "title": "United Nations cease-fire takes effect in Kashmir from one minute before midnight. War between India and Pakistan stops accordingly.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/United_Nations"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ceasefire"
     },
     {
       "m": 1,
@@ -572,7 +572,7 @@
       "year": 1902,
       "title": "The first American college football bowl game, the Rose Bowl between Michigan and Stanford, is held in Pasadena, California.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/College_football"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bowl_game"
     },
     {
       "m": 1,
@@ -7068,7 +7068,7 @@
       "year": 1915,
       "title": "Russia defeats Ottoman Turkey in the Battle of Sarikamish during the Caucasus Campaign of World War I.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Russia"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ottoman_Empire"
     },
     {
       "m": 1,
@@ -17105,6 +17105,14 @@
     {
       "m": 2,
       "d": 11,
+      "year": 1893,
+      "title": "White Star Line cargo ship, SS Naronic, departs Liverpool, England bound for New York City with 74 passengers and crew on board. She is never seen again.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/White_Star_Line"
+    },
+    {
+      "m": 2,
+      "d": 11,
       "year": 1889,
       "title": "The Meiji Constitution of Japan is adopted.",
       "description": "",
@@ -18698,7 +18706,7 @@
       "m": 2,
       "d": 15,
       "year": 1996,
-      "title": "Then-Prime Minister of Canada Jean Chrétien applies a chokehold to protester Bill Clennett, an incident later named the Shawinigan Handshake.",
+      "title": "Prime Minister of Canada Jean Chrétien applies a chokehold to protester Bill Clennett, an incident later named the Shawinigan Handshake.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Prime_Minister_of_Canada"
     },
@@ -19045,14 +19053,6 @@
       "title": "A bomb blast at a market in Hazara Town, Quetta, Pakistan kills more than 80 people and injures 190 others.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/February_2013_Quetta_bombing"
-    },
-    {
-      "m": 2,
-      "d": 16,
-      "year": 2009,
-      "title": "Travis the chimpanzee attacks Charla Nash leaving her disfigured and blind.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Travis_(chimpanzee)"
     },
     {
       "m": 2,
@@ -20933,6 +20933,14 @@
       "title": "American Civil War: Battle of Olustee: The largest battle fought in Florida during the war.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/American_Civil_War"
+    },
+    {
+      "m": 2,
+      "d": 20,
+      "year": 1856,
+      "title": "Packet ship John Rutledge strikes an iceberg and sinks a few hours later. Out of roughly 150 passengers and crew on board, only one person survives and is rescued nine days later by packet ship Germania.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/John_Rutledge_(1851_ship)"
     },
     {
       "m": 2,
@@ -30404,7 +30412,7 @@
       "year": 1978,
       "title": "Supertanker Amoco Cadiz splits in two after running aground on the Portsall Rocks, three miles off the coast of Brittany, resulting in the largest oil spill in history at that time.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Amoco_Cadiz"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Amoco_Cadiz_oil_spill"
     },
     {
       "m": 3,
@@ -32818,7 +32826,7 @@
       "m": 3,
       "d": 22,
       "year": 1960,
-      "title": "Arthur Leonard Schawlow and Charles Hard Townes receive the first patent for a laser.",
+      "title": "Arthur Leonard Schawlow and Charles H. Townes receive the first patent for a laser.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Arthur_Leonard_Schawlow"
     },
@@ -37045,6 +37053,14 @@
       "title": "World War II: The Tenth United States Army attacks the Thirty-Second Japanese Army on Okinawa.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Tenth_United_States_Army"
+    },
+    {
+      "m": 4,
+      "d": 1,
+      "year": 1945,
+      "title": "World War II: Despite being marked and accepted as a protected hospital ship by the United States Navy, Japanese relief ship MV Awa Maru is torpedoed and sunk by USS Queenfish against orders, resulting in the loss of all but one of the 2,00",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/United_States_Navy"
     },
     {
       "m": 4,
@@ -66441,6 +66457,14 @@
     {
       "m": 6,
       "d": 8,
+      "year": 1916,
+      "title": "World War I: Italian warship and ex-passenger liner Principe Umberto is torpedoed and sunk by Austro-Hungarian U-Boat SM U-5 with heavy loss of life. It was the worst naval disaster of the war in terms of human lives lost.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_I"
+    },
+    {
+      "m": 6,
+      "d": 8,
       "year": 1906,
       "title": "Theodore Roosevelt signs the Antiquities Act into law, authorizing the President to restrict the use of certain parcels of public land with historical or conservation value.",
       "description": "",
@@ -71625,6 +71649,14 @@
     {
       "m": 6,
       "d": 20,
+      "year": 1957,
+      "title": "A deadly F5 tornado strikes Fargo, North Dakota, killing twelve.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fargo_tornado"
+    },
+    {
+      "m": 6,
+      "d": 20,
       "year": 1956,
       "title": "A Venezuelan Super-Constellation crashes in the Atlantic Ocean off Asbury Park, New Jersey, killing 74 people.",
       "description": "",
@@ -75013,6 +75045,14 @@
       "title": "The Johor–Singapore Causeway opens after five years of construction, providing a land connection for road and rail vehicles travelling between Johor and Singapore.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Johor%E2%80%93Singapore_Causeway"
+    },
+    {
+      "m": 6,
+      "d": 27,
+      "year": 1918,
+      "title": "HMHS Llandovery Castle, traveling from Halifax, Nova Scotia to Liverpool, England, is torpedoed and sunk by SM U-86 who subsequently run down and machine gun survivors in lifeboats. Only twenty-four survive out of 258 crew members and medic",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/HMHS_Llandovery_Castle"
     },
     {
       "m": 6,
@@ -79668,7 +79708,7 @@
       "year": 2021,
       "title": "Haitian crisis: Haitian President Jovenel Moïse is assassinated in his residence in the capital of Port-au-Prince.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Haitian_crisis_(2018%E2%80%93present)"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Haitian_crisis"
     },
     {
       "m": 7,
@@ -91162,7 +91202,7 @@
       "m": 8,
       "d": 1,
       "year": 2017,
-      "title": "A suicide attack on a mosque in Herat, Afghanistan kills 20 people.",
+      "title": "A suicide attack on a mosque in Herat, Afghanistan kills 33 people.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/August_2017_Herat_mosque_attack"
     },
@@ -91234,17 +91274,9 @@
       "m": 8,
       "d": 1,
       "year": 1975,
-      "title": "The final act of the CSCE meeting is signed in Helsinki, Finland.",
+      "title": "The Helsinki Accords, the final act of the Conference on Security and Co-operation in Europe meeting, is signed in Helsinki, Finland, advancing the process of Cold War détente.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Helsinki_Accords"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1974,
-      "title": "Cyprus dispute: The United Nations Security Council authorizes the UNFICYP to create the \"Green Line\", dividing Cyprus into two zones.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Cyprus_problem"
     },
     {
       "m": 8,
@@ -91306,7 +91338,7 @@
       "m": 8,
       "d": 1,
       "year": 1943,
-      "title": "World War II: Operation Tidal Wave, also known as \"Black Sunday\", is a failed American attempt to destroy Romanian oil fields.",
+      "title": "World War II: Operation Tidal Wave, also known as \"Black Sunday\", is an American attempt to destroy Romanian oil fields at Ploiești.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/World_War_II"
     },
@@ -91345,50 +91377,10 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1907,
-      "title": "The start of the first Scout camp on Brownsea Island, the origin of the worldwide Scouting movement.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Brownsea_Island_Scout_camp"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1894,
       "title": "The Empire of Japan and Qing China declare war on each other after a week of fighting over Korea, formally inaugurating the First Sino-Japanese War.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Empire_of_Japan"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1893,
-      "title": "Henry Perky patents shredded wheat.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Henry_Perky"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1876,
-      "title": "Colorado is admitted as the 38th U.S. state.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Colorado"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1863,
-      "title": "At the suggestion of Senator J. V. Snellman and the order of Emperor Alexander II, full rights are promised to the Finnish language by a language regulation in the Grand Duchy of Finland.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Johan_Vilhelm_Snellman"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1855,
-      "title": "The first ascent of Monte Rosa, the second highest summit in the Alps.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Monte_Rosa"
     },
     {
       "m": 8,
@@ -91417,14 +91409,6 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1834,
-      "title": "Construction begins on the Wilberforce Monument in Kingston Upon Hull.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Wilberforce_Monument"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1801,
       "title": "First Barbary War: The American schooner USS Enterprise captures the Tripolitan polacca Tripoli in a single-ship action off the coast of modern-day Libya.",
       "description": "",
@@ -91445,14 +91429,6 @@
       "title": "French Revolutionary Wars: Battle of the Nile (Battle of Aboukir Bay): Battle begins when a British fleet engages the French Revolutionary Navy fleet in an unusual night action.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/French_Revolutionary_Wars"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1774,
-      "title": "British scientist Joseph Priestley discovers oxygen gas, corroborating the prior discovery of this element by German-Swedish chemist Carl Wilhelm Scheele.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Joseph_Priestley"
     },
     {
       "m": 8,
@@ -91481,50 +91457,18 @@
     {
       "m": 8,
       "d": 1,
-      "year": 1620,
-      "title": "Speedwell leaves Delfshaven to bring pilgrims to America by way of England.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Speedwell_(1577_ship)"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1571,
-      "title": "The Ottoman conquest of Cyprus is concluded, by the surrender of Famagusta.",
+      "title": "The Ottoman conquest of Cyprus concludes with Venetian surrender in the Siege of Famagusta.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Ottoman%E2%80%93Venetian_War_(1570%E2%80%931573)"
     },
     {
       "m": 8,
       "d": 1,
-      "year": 1498,
-      "title": "Christopher Columbus becomes the first European to visit what is now Venezuela.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Christopher_Columbus"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1469,
-      "title": "Louis XI of France founds the chivalric order called the Order of Saint Michael in Amboise.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Louis_XI"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 1291,
-      "title": "The Old Swiss Confederacy is formed with the signature of the Federal Charter.",
+      "title": "The Old Swiss Confederacy is formed with the signature of the Federal Charter, later remembered as the Swiss National Day.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Old_Swiss_Confederacy"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 1203,
-      "title": "Alexios IV Angelos is crowned Byzantine co-emperor after his father Isaac II Angelos is pressured to do so by the leaders of the Fourth Crusade.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Alexios_IV_Angelos"
     },
     {
       "m": 8,
@@ -91537,42 +91481,10 @@
     {
       "m": 8,
       "d": 1,
-      "year": 607,
-      "title": "Ono no Imoko is dispatched as envoy to the Sui court in China (Traditional Japanese date: July 3, 607).",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Ono_no_Imoko"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 527,
-      "title": "Justinian I becomes the sole ruler of the Byzantine Empire.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Justinian_I"
-    },
-    {
-      "m": 8,
-      "d": 1,
       "year": 314,
       "title": "The first synod of Arles is opened by bishop Marinus of Arles.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/314"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": 69,
-      "title": "Batavian rebellion: The Batavians in Germania Inferior (Netherlands) revolt under the leadership of Gaius Julius Civilis.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/AD_69"
-    },
-    {
-      "m": 8,
-      "d": 1,
-      "year": -30,
-      "title": "Octavian (later known as Augustus) enters Alexandria, Egypt, executes Marcus Antonius Antyllus, and brings the city under the control of the Roman Republic. (date is O.S.)",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Augustus"
     },
     {
       "m": 8,
@@ -92020,7 +91932,7 @@
       "year": 2014,
       "title": "The genocide of Yazidis by ISIL begins.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Yazidi_genocide"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Yezidi_genocide"
     },
     {
       "m": 8,
@@ -107698,7 +107610,7 @@
       "m": 9,
       "d": 4,
       "year": 1864,
-      "title": "American Civil War: Confederate calvary general John Hunt Morgan is ambushed and killed by Union troops during a surprise raid on Greeneville, Tennessee.",
+      "title": "American Civil War: Confederate cavalry general John Hunt Morgan is ambushed and killed by Union troops during a surprise raid on Greeneville, Tennessee.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/John_Hunt_Morgan"
     },
@@ -111914,7 +111826,7 @@
       "m": 9,
       "d": 12,
       "year": 1966,
-      "title": "Gemini 11, the penultimate mission of NASA's Gemini program, and the current human altitude record holder (except for the Apollo lunar missions and Artemis II).",
+      "title": "Launch of Gemini 11, the penultimate mission of NASA's Gemini program, and the current human altitude record holder (except for the Apollo lunar missions and Artemis II).",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Gemini_11"
     },
@@ -111994,7 +111906,7 @@
       "m": 9,
       "d": 12,
       "year": 1942,
-      "title": "World War II: RMS Laconia, carrying civilians, Allied soldiers and Italian POWs is torpedoed off the coast of West Africa and sinks with a heavy loss of life.",
+      "title": "World War II: HMT Laconia, carrying civilians, Allied soldiers and Italian POWs is torpedoed off the coast of West Africa and sinks with a heavy loss of life. Main article: Laconia incident",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/World_War_II"
     },
@@ -112066,7 +111978,7 @@
       "m": 9,
       "d": 12,
       "year": 1906,
-      "title": "The Newport Transporter Bridge is opened in Newport, South Wales by Viscount Tredegar.",
+      "title": "The Newport Transporter Bridge is opened in Newport, South Wales by Godfrey Morgan, 1st Viscount Tredegar.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Newport_Transporter_Bridge"
     },
@@ -122994,7 +122906,7 @@
       "m": 10,
       "d": 7,
       "year": 1961,
-      "title": "A Douglas Dakota IV operated by Derby Aviation (later renamed to British Midland International) crashes in Canigou, France, killing 34 people.",
+      "title": "A Douglas Dakota IV operated by Derby Aviation (later renamed to British Midland International) crashes in Canigó, France, killing 34 people.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Douglas_C-47_Skytrain"
     },
@@ -124434,7 +124346,7 @@
       "m": 10,
       "d": 10,
       "year": 1575,
-      "title": "Roman Catholic forces under Henry I, Duke of Guise, defeat the Protestants, capturing Philippe de Mornay among others.",
+      "title": "Roman Catholic forces under Henri I, Duke of Guise, defeat the Protestants, capturing Philippe de Mornay among others.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Henri_I%2C_Duke_of_Guise"
     },
@@ -134017,14 +133929,6 @@
     {
       "m": 11,
       "d": 1,
-      "year": 1950,
-      "title": "Puerto Rican nationalists Griselio Torresola and Oscar Collazo attempt to assassinate US President Harry S. Truman at Blair House.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Puerto_Rico"
-    },
-    {
-      "m": 11,
-      "d": 1,
       "year": 1949,
       "title": "All 55 people on board Eastern Air Lines Flight 537 are killed when the Douglas DC-4 operating the flight collides in mid-air with a Bolivian Air Force Lockheed P-38 Lightning aircraft over Alexandria, Virginia.",
       "description": "",
@@ -134250,7 +134154,7 @@
       "m": 11,
       "d": 1,
       "year": 1856,
-      "title": "The British Empire declare war on Iran following Naser al-Din Shah's capture of Herat.",
+      "title": "The British Empire declares war on Iran following Naser al-Din Shah's capture of Herat.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/British_Empire"
     },
@@ -134285,14 +134189,6 @@
       "title": "John Adams becomes the first President of the United States to live in the Executive Mansion (later renamed the White House).",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/John_Adams"
-    },
-    {
-      "m": 11,
-      "d": 1,
-      "year": 1790,
-      "title": "Edmund Burke publishes Reflections on the Revolution in France, in which he predicts that the French Revolution will end in a disaster.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Edmund_Burke"
     },
     {
       "m": 11,
@@ -138497,6 +138393,14 @@
     {
       "m": 11,
       "d": 11,
+      "year": 2026,
+      "title": "The historic ocean liner SS United States is sunk off the coast of Destin, Florida, to become the world's largest artificial reef.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/SS_United_States"
+    },
+    {
+      "m": 11,
+      "d": 11,
       "year": 2024,
       "title": "A vehicle-ramming attack in Zhuhai, China, kills 38 people and injures 48.",
       "description": "",
@@ -138537,6 +138441,14 @@
     {
       "m": 11,
       "d": 11,
+      "year": 2008,
+      "title": "After 30 years in power, Maumoon Abdul Gayoom was succeeded by Mohamed Nasheed as the president of the Maldives.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Maumoon_Abdul_Gayoom"
+    },
+    {
+      "m": 11,
+      "d": 11,
       "year": 2006,
       "title": "Queen Elizabeth II unveils the New Zealand War Memorial in London, United Kingdom, commemorating the loss of soldiers from the New Zealand Army and the British Army.",
       "description": "",
@@ -138570,7 +138482,7 @@
       "m": 11,
       "d": 11,
       "year": 2002,
-      "title": "Russian mathematician Grigori Perelman posts the first of three preprint texts with his proof of the Poincaré conjecture. It remains the only of the Millennium Prize Problems in mathematics to be solved. He later refused both the prize mone",
+      "title": "Russian mathematician Grigori Perelman posts the first of three preprint texts with his proof of the Poincaré conjecture. It remains the only Millennium Prize Problem in mathematics to be solved. He later refused both the prize money from t",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Grigori_Perelman"
     },
@@ -138865,22 +138777,6 @@
     {
       "m": 11,
       "d": 11,
-      "year": 1887,
-      "title": "Four convicted anarchists were executed as a result of the Haymarket affair.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Anarchism_in_the_United_States"
-    },
-    {
-      "m": 11,
-      "d": 11,
-      "year": 1880,
-      "title": "Australian bushranger Ned Kelly is hanged at Melbourne Gaol.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Bushranger"
-    },
-    {
-      "m": 11,
-      "d": 11,
       "year": 1869,
       "title": "The Victorian Aboriginal Protection Act is enacted in Australia, giving the government control of indigenous people's wages, their terms of employment, where they could live, and of their children, effectively leading to the Stolen Generati",
       "description": "",
@@ -139077,14 +138973,6 @@
       "title": "Roman emperor Trajan celebrates his newly constructed naumachia with a display of ships and mock battles.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/AD_109"
-    },
-    {
-      "m": 11,
-      "d": 12,
-      "year": 2026,
-      "title": "The S.S. United States is planned to be sunk off of the coast of Okaloosa County, Florida.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/SS_United_States"
     },
     {
       "m": 11,
@@ -139554,7 +139442,7 @@
       "m": 11,
       "d": 12,
       "year": 1614,
-      "title": "The treaty of Xanten ends the Jülich-Cleves Succession Crises, which nearly brouht Europe to the brink of war, and divides the disputed lands between Brandenburg and Neuburg.",
+      "title": "The treaty of Xanten ends the Jülich-Cleves Succession Crises, which nearly brought Europe to the brink of war, and divides the disputed lands between Brandenburg and Neuburg.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/War_of_the_J%C3%BClich_Succession"
     },
@@ -139589,6 +139477,14 @@
       "title": "The 13-year-old Lothair III is crowned at the Abbey of Saint-Remi as king of the West Frankish Kingdom.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Lothair_of_France"
+    },
+    {
+      "m": 11,
+      "d": 13,
+      "year": 2026,
+      "title": "The asphalt and bitumen tanker Atlantic Asphalt collides with the river cruise ship American Heritage in New Orleans, Louisiana. 32 were injured and no fatalities were reported.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bitumen"
     },
     {
       "m": 11,
@@ -139836,7 +139732,7 @@
       "year": 1942,
       "title": "World War II: Naval Battle of Guadalcanal: U.S. and Japanese ships engage in an intense, close-quarters surface naval engagement during the Guadalcanal campaign.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Naval_Battle_of_Guadalcanal"
+      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_II"
     },
     {
       "m": 11,
@@ -139994,7 +139890,7 @@
       "m": 11,
       "d": 13,
       "year": 1093,
-      "title": "Battle of Alnwick: in an English victory over the Scots, Malcolm III of Scotland, and his son Edward, are killed.",
+      "title": "Battle of Alnwick: in an English victory over the Scots, Malcolm III of Scotland and his son Edward are killed.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Battle_of_Alnwick_(1093)"
     },
@@ -140425,6 +140321,14 @@
     {
       "m": 11,
       "d": 15,
+      "year": 2025,
+      "title": "Anti-government demonstrations are held across Mexico following the assassination of Carlos Manzo earlier that month.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2025_Mexican_protests"
+    },
+    {
+      "m": 11,
+      "d": 15,
       "year": 2022,
       "title": "The world population reached eight billion.",
       "description": "",
@@ -140434,7 +140338,7 @@
       "m": 11,
       "d": 15,
       "year": 2020,
-      "title": "Lewis Hamilton wins the Turkish Grand Prix and secures his seventh drivers' title, equalling the all-time record held by Michael Schumacher.",
+      "title": "Lewis Hamilton wins the Turkish Grand Prix and secures his seventh drivers' title, equaling the all-time record held by Michael Schumacher.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Lewis_Hamilton"
     },
@@ -140445,6 +140349,22 @@
       "title": "A flood a few miles outside of Athens results in the death of 25 people.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/2017_West_Attica_floods"
+    },
+    {
+      "m": 11,
+      "d": 15,
+      "year": 2017,
+      "title": "Khabarovsk Airlines Flight 463 crashes on approach to Nelkan Airport, killing six people.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Khabarovsk_Airlines_Flight_463"
+    },
+    {
+      "m": 11,
+      "d": 15,
+      "year": 2017,
+      "title": "Argentine submarine ARA San Juan disappears in the South Atlantic off the coast of Argentina while on a training exercise.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/ARA_San_Juan_(S-42)"
     },
     {
       "m": 11,
@@ -140537,6 +140457,14 @@
     {
       "m": 11,
       "d": 15,
+      "year": 1992,
+      "title": "An Aero Caribbean Ilyushin Il-18 crashes on approach to Gregorio Luperón International Airport in Puerto Plata, killing 34.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/1992_Aero_Caribbean_Ilyushin_Il-18_crash"
+    },
+    {
+      "m": 11,
+      "d": 15,
       "year": 1990,
       "title": "The Communist People's Republic of Bulgaria is disestablished and a new republican government is instituted.",
       "description": "",
@@ -140589,6 +140517,14 @@
       "title": "Continental Airlines Flight 1713 crashes during takeoff from Stapleton International Airport in Denver, Colorado, killing 25.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Continental_Airlines_Flight_1713"
+    },
+    {
+      "m": 11,
+      "d": 15,
+      "year": 1986,
+      "title": "Israeli yeshiva student Eliahu Amedi is murdered in the Old City of Jerusalem by three members of the Popular Front for the Liberation of Palestine.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Killing_of_Eliahu_Amedi"
     },
     {
       "m": 11,
@@ -140700,7 +140636,7 @@
       "year": 1959,
       "title": "Four members of the Clutter family are murdered near Holcomb, Kansas, by Perry Smith and Richard Hickock, a crime later detailed by Truman Capote in his 1966 non-fiction novel In Cold Blood.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Clutter_family_murders"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Murder_of_the_Clutter_family"
     },
     {
       "m": 11,
@@ -141346,7 +141282,7 @@
       "m": 11,
       "d": 16,
       "year": 565,
-      "title": "Justin II is crowned in the Hagia Sophia two days following the death of emperor Justinian I, who is burried in the Church of the Holy Apostles.",
+      "title": "Justin II is crowned in the Hagia Sophia two days following the death of emperor Justinian I, who is buried in the Church of the Holy Apostles.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Justin_II"
     },
@@ -142465,6 +142401,14 @@
     {
       "m": 11,
       "d": 19,
+      "year": 1969,
+      "title": "Egyptian President Anwar Sadat adresses the knesset during his visit to Jerusalem, calling for peace between Egypt and Israel.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Anwar_Sadat"
+    },
+    {
+      "m": 11,
+      "d": 19,
       "year": 1967,
       "title": "The establishment of TVB, the first wireless commercial television station in Hong Kong.",
       "description": "",
@@ -142665,6 +142609,14 @@
     {
       "m": 11,
       "d": 19,
+      "year": 1341,
+      "title": "Coronation of John V Palaiologos as Byzantine Emperor during the Byzantine civil war of 1341–1347.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/John_V_Palaiologos"
+    },
+    {
+      "m": 11,
+      "d": 19,
       "year": 636,
       "title": "The Rashidun Caliphate defeats the Sasanian Empire at the Battle of al-Qādisiyyah in Iraq.",
       "description": "",
@@ -142677,6 +142629,14 @@
       "title": "Libius Severus is declared emperor of the Western Roman Empire. The real power is in the hands of the magister militum Ricimer.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Libius_Severus"
+    },
+    {
+      "m": 11,
+      "d": 19,
+      "year": 461,
+      "title": "Beginning of the papacy of pope Hilarius.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Pope_Hilarius"
     },
     {
       "m": 11,
@@ -143017,10 +142977,26 @@
     {
       "m": 11,
       "d": 20,
+      "year": 1759,
+      "title": "The British fleet under Edward Hawke defeats a French fleet under Hubert de Brienne in the battle of Quiberon Bay, thus diminishing the chances for a French invasion of Britain.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Edward_Hawke%2C_1st_Baron_Hawke"
+    },
+    {
+      "m": 11,
+      "d": 20,
       "year": 1739,
       "title": "Start of the Battle of Porto Bello between British and Spanish forces during the War of Jenkins' Ear.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Battle_of_Porto_Bello_(1739)"
+    },
+    {
+      "m": 11,
+      "d": 20,
+      "year": 1710,
+      "title": "Begin of the Russo-Turkish War of 1710–1713, after tensions between the two states escalate as the Ottomans provide shelter to King Charles XII of Sweden in their fortress of Bender.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Russo-Turkish_War_(1710%E2%80%931713)"
     },
     {
       "m": 11,
@@ -143045,6 +143021,14 @@
       "title": "John the Fearless, Duke of Burgundy, and Louis of Valois, Duke of Orléans, agree to a truce, but Burgundy would kill Orléans three days later.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/John_the_Fearless"
+    },
+    {
+      "m": 11,
+      "d": 20,
+      "year": 1272,
+      "title": "Edward I becomes king of England following the death of his father Henry III of England.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Edward_I"
     },
     {
       "m": 11,
@@ -143498,7 +143482,7 @@
       "m": 11,
       "d": 21,
       "year": 1916,
-      "title": "World War I:  Mines from SM U-73 sink HMHS Britannic, the largest ship lost in the war.",
+      "title": "World War I:  One of the mines laid by SM U-73 sink HMHS Britannic in the Kea Channel, the largest ship lost in the war.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/World_War_I"
     },
@@ -143581,6 +143565,14 @@
       "title": "In Paris, Jean-François Pilâtre de Rozier and François Laurent d'Arlandes make the first untethered hot air balloon flight.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Jean-Fran%C3%A7ois_Pil%C3%A2tre_de_Rozier"
+    },
+    {
+      "m": 11,
+      "d": 21,
+      "year": 1739,
+      "title": "The fortress of Portobello, Panama, surrenders to a Royal Navy squadron under Edward Vernon during the War of Jenkins' Ear.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Battle_of_Porto_Bello_(1739)"
     },
     {
       "m": 11,
@@ -143901,6 +143893,22 @@
       "title": "The first duke of Brittany, Nominoe, defeats the Frankish king Charles the Bald at the Battle of Ballon near Redon.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Brittany"
+    },
+    {
+      "m": 11,
+      "d": 22,
+      "year": 602,
+      "title": "Emperor Maurice looses control over Constantinople and flees the city.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Maurice_(emperor)"
+    },
+    {
+      "m": 11,
+      "d": 22,
+      "year": 545,
+      "title": "During the Three-Chapter Controversy, Pope Vigilius is abducted on order of emperor Justinian I in order to force him to agree with Byzantine imperial religious policy.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Three-Chapter_Controversy"
     },
     {
       "m": 11,
@@ -144289,6 +144297,14 @@
     {
       "m": 11,
       "d": 23,
+      "year": 1589,
+      "title": "Marriage of king James VI of Scotland and Anne of Denmark.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/James_VI_and_I"
+    },
+    {
+      "m": 11,
+      "d": 23,
       "year": 1499,
       "title": "Seven days after being convicted of treason, Perkin Warbeck, a pretender to the throne of England, is hanged for attempting to escape from the Tower of London; his supporter John Atwater is executed with him.",
       "description": "",
@@ -144301,6 +144317,30 @@
       "title": "Conquest of Seville by Christian troops under King Ferdinand III of Castile.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Siege_of_Seville"
+    },
+    {
+      "m": 11,
+      "d": 23,
+      "year": 1059,
+      "title": "Constantine X Doukas becomes Byzantine emperor, with his son Michael as nominal co-emperor and Michael Psellos as chief minister.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Constantine_X_Doukas"
+    },
+    {
+      "m": 11,
+      "d": 23,
+      "year": 602,
+      "title": "Phocas is crowned Byzantine emperor after a rebellion of the Thracian army against reigning emperor Maurice and after Phocas' rival Germanus has been rebuffed by the Greens.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Phocas"
+    },
+    {
+      "m": 11,
+      "d": 23,
+      "year": 375,
+      "title": "16-year-old Gratian is proclaimed augustus following the death of his father Valentinian I, though a couple of days later his half-brother Valentinian is also proclaimed augustus and becomes his co-ruler.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gratian"
     },
     {
       "m": 11,
@@ -144673,6 +144713,14 @@
     {
       "m": 11,
       "d": 24,
+      "year": 1331,
+      "title": "David II is annointed as king of Scotland, but has to spent most of his reign outside Scotland.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/David_II_of_Scotland"
+    },
+    {
+      "m": 11,
+      "d": 24,
       "year": 1248,
       "title": "An overnight landslide on the north side of Mont Granier, one of the largest historical rockslope failures ever recorded in Europe, destroys five villages.",
       "description": "",
@@ -144685,6 +144733,14 @@
       "title": "Gąsawa massacre: At an assembly of Piast dukes at Gąsawa, Polish Prince Leszek the White,  Duke Henry the Bearded and others are attacked by assassins while bathing.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/G%C4%85sawa_massacre"
+    },
+    {
+      "m": 11,
+      "d": 24,
+      "year": 1221,
+      "title": "The army of the Fourth Crusade take Zara for Venice in order to pay for the debts to the Venetians.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fourth_Crusade"
     },
     {
       "m": 11,
@@ -144709,6 +144765,14 @@
       "title": "An earthquake hits Syria, causing multiple casualties and damages in Antioch, Damascus and Mosul.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/847_Damascus_earthquake"
+    },
+    {
+      "m": 11,
+      "d": 24,
+      "year": 496,
+      "title": "Election of pope pope Anastasius II following the death of pope Gelasius I a few days prior.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Pope_Anastasius_II"
     },
     {
       "m": 11,
@@ -145173,6 +145237,22 @@
       "title": "A tsunami, caused by an earthquake in the Tyrrhenian Sea, devastates Naples and the Maritime Republic of Amalfi, among other places.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Tsunami"
+    },
+    {
+      "m": 11,
+      "d": 25,
+      "year": 1277,
+      "title": "Election of pope Nicholas III following the death of pope John XXI.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/1277_papal_election"
+    },
+    {
+      "m": 11,
+      "d": 25,
+      "year": 1185,
+      "title": "Election of pope Urban III following the death of pope Lucius III.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/1185_papal_election"
     },
     {
       "m": 11,
@@ -148356,7 +148436,7 @@
       "year": 1972,
       "title": "Spantax Flight 275 crashes during takeoff from Tenerife North–Ciudad de La Laguna Airport, killing all 155 people on board.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/1972_Tenerife_Spantax_Convair_CV-990_crash"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Spantax_Flight_275"
     },
     {
       "m": 12,
