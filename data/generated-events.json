@@ -3,7 +3,7 @@
   "source": "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all",
   "status": "ok",
   "caveat": "本数据集只用于静态日期页的文本补充：条目没有经纬度，不生成事件页/地点页，也不进入地球点位层。",
-  "eventCount": 19984,
+  "eventCount": 20003,
   "daysWithEvents": 366,
   "events": [
     {
@@ -4340,7 +4340,7 @@
       "year": 1812,
       "title": "The first steamboat on the Ohio River or the Mississippi River arrives in New Orleans, 82 days after departing from Pittsburgh.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/New_Orleans_(steamboat)"
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_Orleans_(1811_steamboat)"
     },
     {
       "m": 1,
@@ -7282,7 +7282,7 @@
       "m": 1,
       "d": 18,
       "year": 2012,
-      "title": "More than 115,000 websites engage in an online protest against the Stop Online Piracy Act and the Protect IP Act in the US.[citation needed] The websites involved viewed the laws as infringing on the right to free speech and many of them te",
+      "title": "More than 115,000 websites engage in an online protest against the Stop Online Piracy Act and the Protect IP Act in the US. The websites involved viewed the laws as infringing on the right to free speech and many of them temporarily shut do",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Protests_against_SOPA_and_PIPA"
     },
@@ -18674,7 +18674,7 @@
       "m": 2,
       "d": 15,
       "year": 2003,
-      "title": "Protests against the Iraq war take place in over 600 cities worldwide. It is estimated that between eight million and 30 million people participate, making this the largest peace demonstration in history.[citation needed]",
+      "title": "Protests against the Iraq war take place in over 600 cities worldwide. It is estimated that between eight million and 30 million people participate, making this the largest peace demonstration in history.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/15_February_2003_Iraq_War_protests"
     },
@@ -18690,7 +18690,7 @@
       "m": 2,
       "d": 15,
       "year": 2001,
-      "title": "The first draft of the complete human genome is published in Nature.[citation needed]",
+      "title": "The first draft of the complete human genome is published in Nature.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Human_genome"
     },
@@ -19724,7 +19724,7 @@
       "year": 1838,
       "title": "In the Weenen massacre, hundreds of Voortrekkers along the Blaukraans River, Natal are killed by Zulus.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Weenen_massacre"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Weenen_battle"
     },
     {
       "m": 2,
@@ -20689,6 +20689,14 @@
     {
       "m": 2,
       "d": 20,
+      "year": 1991,
+      "title": "LAN Chile Flight 1069 overshoots the runway while landing at Guardia Marina Zañartu Airport and crashes into the Beagle Channel, killing 20 people.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/LAN_Chile_Flight_1069"
+    },
+    {
+      "m": 2,
+      "d": 20,
       "year": 1988,
       "title": "The Nagorno-Karabakh Autonomous Oblast votes to secede from Azerbaijan and join Armenia, triggering the First Nagorno-Karabakh War.",
       "description": "",
@@ -20905,6 +20913,14 @@
     {
       "m": 2,
       "d": 20,
+      "year": 1885,
+      "title": "James McNeill Whistler gives the Ten O'Clock Lecture at Prince's Hall in London outlining his theory of art.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/James_McNeill_Whistler"
+    },
+    {
+      "m": 2,
+      "d": 20,
       "year": 1877,
       "title": "Tchaikovsky's ballet Swan Lake receives its premiere at the Bolshoi Theatre in Moscow.",
       "description": "",
@@ -20938,7 +20954,7 @@
       "m": 2,
       "d": 20,
       "year": 1856,
-      "title": "Packet ship John Rutledge strikes an iceberg and sinks a few hours later. Out of roughly 150 passengers and crew on board, only one person survives and is rescued nine days later by packet ship Germania.",
+      "title": "Packet ship John Rutledge strikes an iceberg and sinks a few hours later. Only one survivor is subsequently rescued out of around 150 people aboard.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/John_Rutledge_(1851_ship)"
     },
@@ -47713,10 +47729,18 @@
     {
       "m": 4,
       "d": 27,
-      "year": 1861,
-      "title": "American President Abraham Lincoln suspends the writ of habeas corpus.",
+      "year": 1865,
+      "title": "American Civil War: Carrying around 2,400 people, mostly Union army soldiers, the steamboat SS Sultana suffers a series of boiler explosions and catches fire, killing at least 1,164 passengers and crew. It is the worst maritime disaster in ",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/President_of_the_United_States"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Union_army"
+    },
+    {
+      "m": 4,
+      "d": 27,
+      "year": 1861,
+      "title": "American Civil War: In response to the outbreak of hostilities between the Union and Confederacy, President Abraham Lincoln suspends the writ of habeas corpus.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/American_Civil_War"
     },
     {
       "m": 4,
@@ -61290,7 +61314,7 @@
       "m": 5,
       "d": 28,
       "year": 2010,
-      "title": "In West Bengal, India, the Jnaneswari Express train derailment and subsequent collision kills 148 passengers.",
+      "title": "In West Bengal, India, the Jnaneswari Express train derailment and subsequent collision kills 148 passengers.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/West_Bengal"
     },
@@ -61321,34 +61345,10 @@
     {
       "m": 5,
       "d": 28,
-      "year": 2002,
-      "title": "The last steel girder is removed from the original World Trade Center site. Cleanup duties officially end with closing ceremonies at Ground Zero in Manhattan, New York City.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/World_Trade_Center_site"
-    },
-    {
-      "m": 5,
-      "d": 28,
-      "year": 1999,
-      "title": "In Milan, Italy, after 22 years of restoration work, Leonardo da Vinci's masterpiece The Last Supper is put back on display.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Milan"
-    },
-    {
-      "m": 5,
-      "d": 28,
       "year": 1998,
       "title": "Nuclear testing: Pakistan responds to a series of nuclear tests by India with five of its own codenamed Chagai-I, prompting the United States, Japan, and other nations to impose economic sanctions. Pakistan celebrates Youm-e-Takbir annually",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Nuclear_weapons_testing"
-    },
-    {
-      "m": 5,
-      "d": 28,
-      "year": 1996,
-      "title": "U.S. President Bill Clinton's former business partners in the Whitewater land deal, Jim McDougal and Susan McDougal, and the Governor of Arkansas, Jim Guy Tucker, are convicted of fraud.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Bill_Clinton"
     },
     {
       "m": 5,
@@ -61442,7 +61442,7 @@
       "m": 5,
       "d": 28,
       "year": 1961,
-      "title": "Peter Benenson's article The Forgotten Prisoners is published in several internationally read newspapers. This will later be thought of as the founding of the human rights organization Amnesty International.",
+      "title": "Peter Benenson's article The Forgotten Prisoners is published in several internationally read newspapers. This will later be thought of as the founding of the human rights organization Amnesty International.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Peter_Benenson"
     },
@@ -61481,16 +61481,8 @@
     {
       "m": 5,
       "d": 28,
-      "year": 1937,
-      "title": "Volkswagen, the German automobile manufacturer, is founded.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Volkswagen"
-    },
-    {
-      "m": 5,
-      "d": 28,
       "year": 1936,
-      "title": "Alan Turing submits On Computable Numbers for publication.",
+      "title": "Alan Turing submits On Computable Numbers for publication.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Alan_Turing"
     },
@@ -61498,7 +61490,7 @@
       "m": 5,
       "d": 28,
       "year": 1934,
-      "title": "Near Callander, Ontario, Canada, the Dionne quintuplets are born to Oliva and Elzire Dionne; they will be the first quintuplets to survive infancy.",
+      "title": "Near Callander, Ontario, Canada, the Dionne quintuplets are born to Oliva and Elzire Dionne; they will be the first quintuplets to survive infancy.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Callander%2C_Ontario"
     },
@@ -61506,7 +61498,7 @@
       "m": 5,
       "d": 28,
       "year": 1932,
-      "title": "In the Netherlands, construction of the Afsluitdijk is completed and the Zuiderzee bay is converted to the freshwater IJsselmeer.",
+      "title": "In the Netherlands, construction of the Afsluitdijk is completed and the Zuiderzee bay is converted to the freshwater IJsselmeer.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Afsluitdijk"
     },
@@ -61530,7 +61522,7 @@
       "m": 5,
       "d": 28,
       "year": 1907,
-      "title": "The first Isle of Man TT race is held.",
+      "title": "The first Isle of Man TT race is held.[citation needed]",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Isle_of_Man_TT"
     },
@@ -61545,10 +61537,10 @@
     {
       "m": 5,
       "d": 28,
-      "year": 1892,
-      "title": "In San Francisco, John Muir organizes the Sierra Club.",
+      "year": 1898,
+      "title": "Secondo Pia takes the first photographs of the Shroud of Turin and discovers that the image on the Shroud itself appears to be a photographic negative.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/San_Francisco"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Secondo_Pia"
     },
     {
       "m": 5,
@@ -69548,7 +69540,7 @@
       "year": 1896,
       "title": "One of the deadliest tsunamis in Japan's history kills more than 22,000 people.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/1896_Sanriku_earthquake"
+      "sourceUrl": "https://en.wikipedia.org/wiki/1896_Meiji_Sanriku_earthquake_and_tsunami"
     },
     {
       "m": 6,
@@ -72325,6 +72317,14 @@
       "title": "Külüg Khan is enthroned as Khagan of the Mongols and Wuzong of the Yuan.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/K%C3%BCl%C3%BCg_Khan"
+    },
+    {
+      "m": 6,
+      "d": 21,
+      "year": 1010,
+      "title": "An Umayyad-Catalan army is defeated by the Berbers near the Guadiaro river",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Umayyad_state_of_C%C3%B3rdoba"
     },
     {
       "m": 6,
@@ -89572,7 +89572,7 @@
       "year": 1957,
       "title": "Heavy rain and a mudslide in Isahaya, western Kyushu, Japan, kills 992.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Isahaya%2C_Nagasaki"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Isahaya"
     },
     {
       "m": 7,
@@ -89821,6 +89821,14 @@
       "title": "Three children are stabbed to death and 10 other people injured at a dance studio in Southport, England. This incident, coupled with widespread online misinformation, leads to various racially motivated riots across the UK.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/2024_Southport_stabbings"
+    },
+    {
+      "m": 7,
+      "d": 29,
+      "year": 2024,
+      "title": "Protesters break into the Beit Lid army base in correlation with the prosecution of the Sde Teiman gang rape.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Sde_Teiman_gang_rape"
     },
     {
       "m": 7,
@@ -90853,6 +90861,14 @@
       "title": "The United States and Soviet Union both sign the START I Strategic Arms Reduction Treaty, the first to reduce (with verification) both countries' stockpiles.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Soviet_Union"
+    },
+    {
+      "m": 7,
+      "d": 31,
+      "year": 1991,
+      "title": "Singing Revolution: Soviet Special Purpose Police Unit forces (OMON) kill seven Lithuanian customs officials in Medininkai, the deadliest of the Soviet OMON assaults on Lithuanian border posts.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Singing_Revolution"
     },
     {
       "m": 7,
@@ -91932,7 +91948,7 @@
       "year": 2014,
       "title": "The genocide of Yazidis by ISIL begins.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Yezidi_genocide"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Yazidi_genocide"
     },
     {
       "m": 8,
@@ -98333,6 +98349,14 @@
       "title": "The Battle of Lake Baikal is fought between the Czechoslovak Legion and the Red Army.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Battle_of_Lake_Baikal"
+    },
+    {
+      "m": 8,
+      "d": 16,
+      "year": 1917,
+      "title": "British merchantman SS Athenia is torpedoed and sunk by SM U-53 off the coast of Inishtrahull, Ireland, with the loss of 15 crew and passengers and 440 war horses.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Merchant_ship"
     },
     {
       "m": 8,
@@ -107057,6 +107081,14 @@
     {
       "m": 9,
       "d": 3,
+      "year": 1939,
+      "title": "World War II: Passenger liner Athenia is torpedoed and sunk by German submarine U-30. She is the first British ship lost in World War II, with a reported 117 civillian passenger and crew killed out of 1,418 aboard.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/SS_Athenia_(1922)"
+    },
+    {
+      "m": 9,
+      "d": 3,
       "year": 1935,
       "title": "Sir Malcolm Campbell reaches a speed of 304.331 miles per hour on the Bonneville Salt Flats in Utah, becoming the first person to drive an automobile over 300 mph.",
       "description": "",
@@ -107101,14 +107133,6 @@
       "title": "French composer Albéric Magnard is killed defending his estate against invading German soldiers.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Alb%C3%A9ric_Magnard"
-    },
-    {
-      "m": 9,
-      "d": 3,
-      "year": 1914,
-      "title": "World War I: Start of the Battle of Grand Couronné, a German assault against French positions on high ground near the city of Nancy.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_I"
     },
     {
       "m": 9,
@@ -107565,6 +107589,14 @@
       "title": "Mustafa Kemal Atatürk, who founded the Republic of Turkey, gathers a congress in Sivas to make decisions as to the future of Anatolia and Thrace.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Mustafa_Kemal_Atat%C3%BCrk"
+    },
+    {
+      "m": 9,
+      "d": 4,
+      "year": 1914,
+      "title": "World War I: Start of the Battle of Grand Couronné, a German assault against French positions on high ground near the city of Nancy.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_I"
     },
     {
       "m": 9,
@@ -110522,7 +110554,7 @@
       "m": 9,
       "d": 10,
       "year": 2017,
-      "title": "Hurricane Irma makes landfall on Cudjoe Key, Florida as a Category 4, after causing catastrophic damage throughout the Caribbean. Irma resulted in 134 deaths and $77.2 billion (2017 USD) in damage.",
+      "title": "Hurricane Irma makes landfall on Cudjoe Key, Florida as a Category 4, after causing catastrophic damage throughout the Caribbean. Irma resulted in 134 deaths and $77.2 billion (2017 USD) in damage.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Hurricane_Irma"
     },
@@ -123588,7 +123620,7 @@
       "year": 1986,
       "title": "The Phantom of the Opera, eventually the second longest running musical in London, opens at Her Majesty's Theatre.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical)"
+      "sourceUrl": "https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(musical)"
     },
     {
       "m": 10,
@@ -132250,7 +132282,7 @@
       "m": 10,
       "d": 28,
       "year": 1562,
-      "title": "James Stewart, 1st Earl of Moray, defeats the forces of the rebelious George Gordon, 4th Earl of Huntly, in the battle of Corrichie.",
+      "title": "James Stewart, 1st Earl of Moray, defeats the forces of the rebellious George Gordon, 4th Earl of Huntly, in the battle of Corrichie.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/James_Stewart%2C_1st_Earl_of_Moray"
     },
@@ -141769,6 +141801,14 @@
     {
       "m": 11,
       "d": 18,
+      "year": 2026,
+      "title": "Voyager 1 becomes the first manmade object to travel a full light day from Earth.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Voyager_1"
+    },
+    {
+      "m": 11,
+      "d": 18,
       "year": 2020,
       "title": "The Utah monolith, built sometime in 2016 is discovered by state biologists of the Utah Division of Wildlife Resources.",
       "description": "",
@@ -142209,6 +142249,22 @@
     {
       "m": 11,
       "d": 19,
+      "year": 2026,
+      "title": "The International Court of Justice delivers a 9-6 ruling finding Myanmar committed a genocide against the Rohingya people.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/International_Court_of_Justice"
+    },
+    {
+      "m": 11,
+      "d": 19,
+      "year": 2026,
+      "title": "Rockstar Games releases Grand Theft Auto VI for PlayStation 5 and Xbox Series X/S, considered the most anticipated video game in history.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Rockstar_Games"
+    },
+    {
+      "m": 11,
+      "d": 19,
       "year": 2023,
       "title": "The 2023 Cricket World Cup final takes place at the Narendra Modi Stadium in Ahmedabad, India, played between host nation India and Australia.",
       "description": "",
@@ -142237,6 +142293,14 @@
       "title": "The first of four explosions takes place at the Pike River Mine in New Zealand. Twenty-nine people are killed in the nation's worst mining disaster since 1914.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Pike_River_Mine_disaster"
+    },
+    {
+      "m": 11,
+      "d": 19,
+      "year": 2006,
+      "title": "Nintendo release the Wii, a motion-controlled home video game console that sold over 101 million units and helped expand the gaming market to a broader audience.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Nintendo"
     },
     {
       "m": 11,
@@ -142385,6 +142449,14 @@
     {
       "m": 11,
       "d": 19,
+      "year": 1977,
+      "title": "Egyptian President Anwar Sadat adresses the knesset during his visit to Jerusalem, calling for peace between Egypt and Israel.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Anwar_Sadat"
+    },
+    {
+      "m": 11,
+      "d": 19,
       "year": 1969,
       "title": "Apollo program: Apollo 12 astronauts Pete Conrad and Alan Bean land at Oceanus Procellarum (the \"Ocean of Storms\") and become the third and fourth humans to walk on the Moon.",
       "description": "",
@@ -142397,14 +142469,6 @@
       "title": "Association football player Pelé scores his 1,000th goal.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Association_football"
-    },
-    {
-      "m": 11,
-      "d": 19,
-      "year": 1969,
-      "title": "Egyptian President Anwar Sadat adresses the knesset during his visit to Jerusalem, calling for peace between Egypt and Israel.",
-      "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Anwar_Sadat"
     },
     {
       "m": 11,
@@ -143601,6 +143665,14 @@
     {
       "m": 11,
       "d": 21,
+      "year": 1009,
+      "title": "The Lý dynasty in Vietnam is proclaimed by Emperor Lý Thái Tổ.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/L%C3%BD_dynasty"
+    },
+    {
+      "m": 11,
+      "d": 21,
       "year": 235,
       "title": "Pope Anterus succeeds Pontian as the nineteenth pope.",
       "description": "",
@@ -143898,7 +143970,7 @@
       "m": 11,
       "d": 22,
       "year": 602,
-      "title": "Emperor Maurice looses control over Constantinople and flees the city.",
+      "title": "Emperor Maurice loses control over Constantinople and flees the city.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Maurice_(emperor)"
     },
@@ -144173,6 +144245,14 @@
       "title": "World War II: Tarawa and Makin atolls fall to American forces.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Tarawa"
+    },
+    {
+      "m": 11,
+      "d": 23,
+      "year": 1942,
+      "title": "World War II: The British passenger liner SS Tilawa is torpedoed and sunk by Japanese submarine I-29, with 280 passengers and crew killed out of 954 on board.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/World_War_II"
     },
     {
       "m": 11,
@@ -144714,7 +144794,7 @@
       "m": 11,
       "d": 24,
       "year": 1331,
-      "title": "David II is annointed as king of Scotland, but has to spent most of his reign outside Scotland.",
+      "title": "David II is anointed as king of Scotland, but has to spend most of his reign outside Scotland.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/David_II_of_Scotland"
     },
@@ -144738,17 +144818,17 @@
       "m": 11,
       "d": 24,
       "year": 1221,
-      "title": "The army of the Fourth Crusade take Zara for Venice in order to pay for the debts to the Venetians.",
+      "title": "Genghis Khan defeats the renegade Khwarazmian prince Jalal al-Din at the Battle of the Indus, completing the Mongol conquest of Central Asia.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Fourth_Crusade"
+      "sourceUrl": "https://en.wikipedia.org/wiki/Genghis_Khan"
     },
     {
       "m": 11,
       "d": 24,
-      "year": 1221,
-      "title": "Genghis Khan defeats the renegade Khwarazmian prince Jalal al-Din at the Battle of the Indus, completing the Mongol conquest of Central Asia.",
+      "year": 1202,
+      "title": "The army of the Fourth Crusade take Zara for Venice in order to pay for the debts to the Venetians.",
       "description": "",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Genghis_Khan"
+      "sourceUrl": "https://en.wikipedia.org/wiki/1221"
     },
     {
       "m": 11,
@@ -144770,7 +144850,7 @@
       "m": 11,
       "d": 24,
       "year": 496,
-      "title": "Election of pope pope Anastasius II following the death of pope Gelasius I a few days prior.",
+      "title": "Election of pope Anastasius II following the death of pope Gelasius I a few days prior.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Pope_Anastasius_II"
     },
@@ -146049,6 +146129,14 @@
     {
       "m": 11,
       "d": 27,
+      "year": 1840,
+      "title": "Muhammad Ali of Egypt accepts the London Convention of 1840 in which he  renounces his claims to Syria, Crete, and Hejaz in exchange for recognition of his hereditary rule of Egypt and Syria.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Muhammad_Ali_of_Egypt"
+    },
+    {
+      "m": 11,
+      "d": 27,
       "year": 1839,
       "title": "In Boston, Massachusetts, the American Statistical Association is founded.",
       "description": "",
@@ -146121,6 +146209,14 @@
     {
       "m": 11,
       "d": 27,
+      "year": 1237,
+      "title": "Frederick II, Holy Roman Emperor, defeats the Lombard League in the battle of Cortenuova.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Frederick_II%2C_Holy_Roman_Emperor"
+    },
+    {
+      "m": 11,
+      "d": 27,
       "year": 1095,
       "title": "Pope Urban II declares the First Crusade at the Council of Clermont.",
       "description": "",
@@ -146130,7 +146226,7 @@
       "m": 11,
       "d": 27,
       "year": 602,
-      "title": "Byzantine Emperor Maurice is forced to watch as the usurper Phocas executes his five sons before Maurice is beheaded himself.",
+      "title": "Byzantine Emperor Maurice and his sons are beheaded by officers of the usurper Phocas and subsequently burried at the monastery of St. Mamas.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Byzantine_Empire"
     },
@@ -146141,6 +146237,14 @@
       "title": "King Clovis I dies at Lutetia and is buried in the Abbey of St Genevieve.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Clovis_I"
+    },
+    {
+      "m": 11,
+      "d": 27,
+      "year": 399,
+      "title": "Election of pope Anastasius I following the death of pope Siricius the day prior.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Pope_Anastasius_I"
     },
     {
       "m": 11,
@@ -146505,6 +146609,14 @@
     {
       "m": 11,
       "d": 28,
+      "year": 1855,
+      "title": "Russian forces under general Nikolay Muravyov-Karsky capture the strategic fortress of Kars from the Ottoman Empire.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Nikolay_Muravyov-Karsky"
+    },
+    {
+      "m": 11,
+      "d": 28,
       "year": 1843,
       "title": "Ka Lā Hui (Hawaiian Independence Day): The Kingdom of Hawaii is officially recognized by the United Kingdom and France as an independent nation.",
       "description": "",
@@ -146605,6 +146717,14 @@
       "title": "Skanderbeg and his forces liberate Kruja in central Albania and raise the Albanian flag.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Skanderbeg"
+    },
+    {
+      "m": 11,
+      "d": 28,
+      "year": 1240,
+      "title": "Mongol troops under Batu Khan begin with the siege of Kiev.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Mongol_Empire"
     },
     {
       "m": 11,
@@ -146953,10 +147073,26 @@
     {
       "m": 11,
       "d": 29,
+      "year": 1198,
+      "title": "Al-Mansur becomes Ayyubid Sultan of Egypt following the death of his father Al-Aziz Uthman in a hunting accident. As al-Mansur is still under-age, his ministers invite his uncle Al-Afdal to act as regent.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Al-Mansur_Nasir_al-Din_Muhammad"
+    },
+    {
+      "m": 11,
+      "d": 29,
       "year": 1114,
       "title": "A large earthquake damages the areas of the Crusaders in the Middle East. Antioch, Mamistra, Marash and Edessa are hit by the shocks.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/1114_Marash_earthquake"
+    },
+    {
+      "m": 11,
+      "d": 29,
+      "year": 1031,
+      "title": "Al-Qa'im becomes Abbasid caliph following the death of his father al-Qadir.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Al-Qa'im_(Abbasid_caliph_at_Baghdad)"
     },
     {
       "m": 11,
@@ -147301,6 +147437,22 @@
       "title": "Queen Anne's War: The second Siege of Pensacola comes to end with the failure of the British Empire and their Creek allies to capture Pensacola, Spanish Florida.",
       "description": "",
       "sourceUrl": "https://en.wikipedia.org/wiki/Queen_Anne's_War"
+    },
+    {
+      "m": 11,
+      "d": 30,
+      "year": 1652,
+      "title": "The Dutch fleet under Maarten Tromp defeats the English fleet under Robert Blake in the battle of Dungeness during the First Anglo-Dutch War.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Maarten_Tromp"
+    },
+    {
+      "m": 11,
+      "d": 30,
+      "year": 1292,
+      "title": "John Balliol is enthroned as king of Scots following the approval of the Guardians of Scotland.",
+      "description": "",
+      "sourceUrl": "https://en.wikipedia.org/wiki/John_Balliol"
     },
     {
       "m": 11,
